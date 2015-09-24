@@ -1,14 +1,14 @@
 #pragma once
 
-#include "../jsonrpc/conveyor/conveyor_config.hpp"
+#include "../jsonrpc/broker/broker_config.hpp"
 #include <wfc/json.hpp>
 
 namespace wfc{
   
-struct conveyor_config_json
+struct broker_config_json
 {
   typedef json::object<
-    conveyor_config,
+    broker_config,
     ::wfc::json::member_list<
     >
   > type;

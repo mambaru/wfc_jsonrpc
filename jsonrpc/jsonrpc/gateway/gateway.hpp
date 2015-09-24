@@ -1,6 +1,6 @@
 #pragma once
 
-#include "conveyor_config.hpp"
+#include "gateway_config.hpp"
 #include <wfc/domain_object.hpp>
 #include <wfc/jsonrpc/ijsonrpc.hpp>
 #include <string>
@@ -8,12 +8,12 @@
 
 namespace wfc{
 
-class conveyor
-  : public ::wfc::domain_object< ijsonrpc, conveyor_config>
+class gateway
+  : public ::wfc::domain_object< ijsonrpc, gateway_config>
 {
 public:
-  virtual ~conveyor();
-  conveyor();
+  virtual ~gateway();
+  gateway();
 
   virtual void reconfigure() override;
   virtual void start(const std::string&) override;

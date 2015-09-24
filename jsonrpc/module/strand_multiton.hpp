@@ -4,12 +4,12 @@
 
 namespace wfc{
 
-class conveyor_multiton
+class strand_multiton
   : public ::wfc::object
 {
   class impl;
 public:
-  conveyor_multiton();
+  strand_multiton();
 };
 
 }
