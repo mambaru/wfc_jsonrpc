@@ -8,6 +8,24 @@
 
 namespace wfc{
 
+struct _strand_context_;
+struct strand_context
+{
+  typedef ::iow::asio::io_service io_service_type;
+  typedef io_service_type::strand strand_type;
+  typedef std::shared_ptr<strand_type> strand_ptr;
+  
+  typedef std::atomic<size_t> counter_type;
+  typedef std::shared_ptr<counter_type> counter_ptr;
+  std::string name;
+  counter_ptr counter;
+  strand_ptr strand;
+};
+
+struct strand_aspect: public fas::aspect
+<
+>{};
+
 class basic_strand
   : public ::iow::io::basic_io< /*fas::aspect< fas::stub< ::iow::io::_initialize_> >*/ >
   , public std::enable_shared_from_this<basic_strand>
