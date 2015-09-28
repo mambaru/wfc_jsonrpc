@@ -5,29 +5,225 @@
 #include <iow/io/basic_io.hpp>
 #include <cassert>
 #include <thread>
+#include <boost/concept_check.hpp>
 
-namespace wfc{
+namespace wfc{ 
 
-struct _strand_context_;
-struct strand_context
+namespace io{ namespace strand{
+
+struct _context_;
+struct _post_;
+struct _wrap_;
+struct _size_;
+
+struct options
+{
+  std::string name;
+  bool disabled = false;
+  size_t maxsize = 0;
+  size_t wrnsize = 0;
+};
+
+struct context: options
 {
   typedef ::iow::asio::io_service io_service_type;
   typedef io_service_type::strand strand_type;
   typedef std::shared_ptr<strand_type> strand_ptr;
-  
   typedef std::atomic<size_t> counter_type;
   typedef std::shared_ptr<counter_type> counter_ptr;
+  
   std::string name;
+  size_t maxsize = 0;
+  size_t wrnsize = 0;
+  time_t wrntime = 0;
   counter_ptr counter;
   strand_ptr strand;
 };
 
+struct ad_initialize
+{
+  template<typename T, typename Opt>
+  void operator()(T& t, Opt&& opt)
+  {
+    typedef typename T::aspect::template advice_cast<_context_>::type context_type;
+    typedef typename context_type::counter_type counter_type;
+    typedef typename context_type::strand_type strand_type;
+    context_type& context = t.get_aspect().template get<_context_>();
+    context.maxsize = opt.maxsize;
+    context.wrnsize = opt.wrnsize;
+    context.wrntime = time(0);
+    context.name = opt.name;
+    context.counter = std::make_shared<counter_type>(0);
+    if ( !opt.disabled )
+    {
+      context.strand = std::make_shared<strand_type>(t.get_io_service());
+    }
+  }
+};
+
+struct ad_size
+{
+  template<typename T>
+  size_t operator()(T& t) const
+  {
+    auto& context = t.get_aspect().template get<_context_>();
+    return *(context.counter);
+  }
+};
+
+struct ad_post
+{
+  template<typename T, typename F>
+  bool operator()(T& t,F&& f)
+  {
+    auto& context = t.get_aspect().template get<_context_>();
+    auto func = t.get_aspect().template get<_wrap_>()(t, std::forward<F>(f) );
+    auto counter = context.counter;
+    ++(*counter);
+    
+    if ( context.strand != nullptr )
+    {
+      context.strand->post( std::move(func) );
+    }
+    else
+    {
+      t.get_io_service().post( std::move(func)  );
+    }
+    
+    // TODO:
+    return false;
+  }
+};
+
+struct ad_wrap
+{
+  typedef std::function<void()> strand_wrapper;
+  
+  template<typename T, typename F>
+  auto operator()(T& t, F&& f)
+    -> typename T::template result_of< ::iow::io::_wrap_, strand_wrapper >::type
+  {
+    auto& context = t.get_aspect().template get<_context_>();
+    auto counter = context.counter;
+    ++(*counter);
+    
+    std::function<void()> ff = [f, counter]()
+    {
+      assert( *counter > 0 );
+      --(*counter);
+      f();
+    };
+    
+    return t.basic_wrap_( t, std::move(ff) );
+  }
+};
+
+
 struct strand_aspect: public fas::aspect
 <
+  fas::advice< _context_, context >,
+  fas::advice< ::iow::io::_initialize_, ad_initialize >,
+  fas::advice< _wrap_, ad_wrap >,
+  fas::advice< _post_, ad_post >,
+  fas::advice< _size_, ad_size >
 >{};
 
 class basic_strand
-  : public ::iow::io::basic_io< /*fas::aspect< fas::stub< ::iow::io::_initialize_> >*/ >
+  : public ::iow::io::basic_io< strand_aspect >
+  //, public std::enable_shared_from_this<basic_strand>
+{
+public:
+  typedef ::iow::io::basic_io< strand_aspect > super;
+  typedef ::iow::asio::io_service io_service_type;
+  typedef typename super::mutex_type mutex_type;
+  
+  basic_strand(io_service_type& io)
+    : _io_service(io)
+  {
+  }
+  
+  template<typename F>
+  bool post(F&& f)
+  {
+    std::lock_guard<mutex_type> lk( super::mutex() );
+    return this->post_(*this, std::forward<F>(f));
+  }
+
+  template<typename F>
+  auto wrap(F&& f)
+    -> typename super::template result_of< iow::io::_wrap_, F>::type
+  {
+    std::lock_guard<mutex_type> lk( super::mutex() );
+    return std::move( this->wrap_(*this, std::forward<F>(f) ) );
+  }
+  
+  template<typename F>
+  auto basic_wrap(F&& f)
+    -> typename super::template result_of< iow::io::_wrap_, F>::type
+  {
+    std::lock_guard<mutex_type> lk( super::mutex() );
+    return std::move( this->basic_wrap_(*this, std::forward<F>(f) ) );
+  }
+
+  template<typename O>
+  void start(O&& opt)
+  {
+    std::lock_guard< mutex_type > lk(_mutex);
+    this->start_(*this, std::forward<O>(opt));
+  }
+
+  template<typename O>
+  void reconfigure(O&& opt)
+  {
+    std::lock_guard< mutex_type > lk(_mutex);
+    this->reconfigure_(*this, std::forward<O>(opt));
+  }
+
+  size_t size() const
+  {
+    std::lock_guard<mutex_type> lk( super::mutex() );
+    return this->size_(*this);
+  }
+  
+  io_service_type& get_io_service() { return _io_service;}
+
+public:
+  
+  template<typename T>
+  size_t size_(T& t) const
+  {
+    return t.get_aspect().template get<_size_>()(t);
+  }
+
+  
+  template<typename T, typename F>
+  bool post_(T& t, F&& f)
+  {
+    return t.get_aspect().template get<_post_>()(t, std::forward<F>(f) );
+  }
+
+  template<typename T, typename F>
+  auto wrap_(T& t, F&& f)
+    -> typename T::template result_of< iow::io::_wrap_, F>::type
+  {
+    return std::move( 
+      t.get_aspect().template get<_wrap_>()(t, std::forward<F>(f) )
+    );
+  }
+
+  template<typename T, typename F>
+  auto basic_wrap_(T& t, F&& f)
+    -> typename T::template result_of< iow::io::_wrap_, F>::type
+  {
+    return super::wrap_(t, std::forward<F>(f));
+  }
+private:
+  io_service_type& _io_service;
+};
+
+/*
+class basic_strand
+  : public ::iow::io::basic_io<  >
   , public std::enable_shared_from_this<basic_strand>
 {
 public:
@@ -72,12 +268,17 @@ public:
   {
     return *_counter;
   }
+  
+  io_service_type& get_io_service() { return _io_service;}
 
 private:
+  
   typedef std::atomic<size_t> counter_type;
   std::shared_ptr<counter_type> _counter;
   io_service_type::strand _strand;
+  
 };
+*/
 
 class mt_strand
 {
@@ -237,6 +438,8 @@ private:
   mutable mutex_type _mutex;
 };
 
+}} // iow::io::strand
+
 
 /*
  *   virtual void perform_incoming(incoming_holder, io_id_t, outgoing_handler_t handler) = 0;
@@ -246,7 +449,7 @@ class jsonrpc_strand
   : public ijsonrpc
   , public std::enable_shared_from_this<jsonrpc_strand>
 {
-  typedef mt_strand strand_type;
+  typedef ::wfc::io::strand::mt_strand strand_type;
   typedef std::shared_ptr<strand_type> strand_ptr;
   typedef std::recursive_mutex mutex_type;
 public:
