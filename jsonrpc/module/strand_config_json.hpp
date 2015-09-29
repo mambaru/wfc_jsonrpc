@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../jsonrpc/strand/strand_config.hpp""
+#include "../jsonrpc/strand/strand_config.hpp"
 #include <iow/io/strand/mtoptions_json.hpp>
 #include <wfc/json.hpp>
 

@@ -1,13 +1,13 @@
 #include "broker.hpp"
+#include "broker_impl.hpp"
 #include <wfc/logger.hpp>
-#include <wfc/asio.hpp>
 
 namespace wfc{
 
-class broker::impl
+class broker::impl: public broker_impl
 {
 public:
-  impl( ::wfc::asio::io_service& )
+  impl()
   {}
 };
 
@@ -21,6 +21,14 @@ broker::broker()
 
 void broker::reconfigure()
 {
+  if ( auto g = this->global() )
+  {
+    if ( _impl == nullptr )
+    {
+       _impl = std::make_shared<broker::impl>( );
+    }
+    _impl->reconfigure(this->options(), this->global()->registry);
+  }
 }
 
 void broker::stop(const std::string&) 
@@ -29,38 +37,41 @@ void broker::stop(const std::string&)
 
 void broker::start(const std::string&)
 {
-  if ( auto g = this->global() )
-  {
-    _impl = std::make_shared<broker::impl>( g->io_service );
-    //auto opt = this->options();
-  }
 }
 
-void broker::reg_io(io_id_t /*io_id*/, std::weak_ptr<iinterface> /*itf*/)
+void broker::reg_io(io_id_t io_id, std::weak_ptr<iinterface> itf)
 {
-  DEBUG_LOG_MESSAGE("broker::reg_io")
+  _impl->reg_io(io_id, itf);
 }
 
-void broker::unreg_io(io_id_t )
+void broker::unreg_io(io_id_t io_id)
 {
-  DEBUG_LOG_MESSAGE("broker::unreg_io")
+  _impl->unreg_io(io_id);
 }
 
-void broker::perform_io(data_ptr d, io_id_t io_id, outgoing_handler_t ) 
+void broker::perform_io(data_ptr d, io_id_t io_id, outgoing_handler_t handler) 
 {
-  DEBUG_LOG_MESSAGE("broker::perform_io io_id=" << io_id << "[" << d << "]")
+  _impl->perform_io(std::move(d), io_id, std::move(handler) );
 }
 
-void broker::perform_incoming(incoming_holder, io_id_t, outgoing_handler_t ) 
+void broker::perform_incoming(incoming_holder holder, io_id_t io_id, outgoing_handler_t handler) 
 {
-  DEBUG_LOG_MESSAGE("broker::perform_incoming")
-  abort();
+  _impl->perform_incoming(std::move(holder), io_id, std::move(handler) );
 }
   
-void broker::perform_outgoing(outgoing_holder , io_id_t )
+void broker::perform_outgoing(outgoing_holder holder, io_id_t io_id)
 {
-  DEBUG_LOG_MESSAGE("broker::perform_outgoing")
-  abort();
+  _impl->perform_outgoing(std::move(holder), io_id );
+}
+
+void broker::generate(broker_config& opt, const std::string& /*type*/)
+{
+  opt = broker_config();
+  opt.target="*default-target*";
+  opt.reject={"*reject", "method", "list*"};
+  opt.targets.push_back(broker_config::method_target());
+  opt.targets.back().target="*target for method list*";
+  opt.targets.back().methods={"*method", "list*"};
 }
 
 

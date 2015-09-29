@@ -5,6 +5,7 @@
 #include <iow/io/strand/mtholder.hpp>
 #include <memory>
 #include <mutex>
+#include <boost/concept_check.hpp>
 
 namespace wfc{ 
 
@@ -63,16 +64,24 @@ public:
   
   virtual void perform_outgoing(outgoing_holder holder, io_id_t io_id) override
   {
-    if ( _incoming->enabled() )
+    this->make_result_(holder, io_id);
+    
+    if ( _outgoing->enabled() )
     {
       auto pholder = std::make_shared<outgoing_holder>( std::move(holder) );
       auto ptarget = _target;
-      _incoming->post([ptarget, pholder, io_id]()
+      _outgoing->post([ptarget, pholder, io_id]()
       {
         ptarget->perform_outgoing( std::move(*pholder), io_id);
       });
     }
-    
+    else
+    {
+      if ( auto result_handler = holder.result_handler() )
+      {
+        result_handler( std::move(incoming_holder(nullptr)) );
+      }
+    }
   }
   
   virtual void reg_io(io_id_t io_id, std::weak_ptr<iinterface> itf)
@@ -87,63 +96,67 @@ public:
 
   virtual void perform_io(data_ptr d, io_id_t io_id, outgoing_handler_t h)
   {
-    std::cout << "make_handler_... " << d << std::endl;
     auto handler = make_handler_( std::move(h) );
-    std::cout << "make_handler_... ready" << std::endl;
-
     if ( _incoming->enabled() )
     {
       auto pd = std::make_shared<data_ptr>( std::move(d) );
       auto ptarget = _target;
-      std::cout << "==1==" << std::endl;
       _incoming->post([ptarget, pd, io_id, handler]()
       {
-        std::cout << "--1--" << std::endl;
         ptarget->perform_io( std::move(*pd), io_id, handler);
-        std::cout << "--2--" << std::endl;
       });
-      std::cout << "==2==" << std::endl;
     }
     else if ( handler != nullptr )
     {
       handler(nullptr);
     }
-    
   }
   
 private:
   
-  
   outgoing_handler_t make_handler_(outgoing_handler_t handler)
   {
-    std::cout << "make_handler_ 1" << std::endl;
     if ( handler!=nullptr && _outgoing->enabled() )
     {
-      std::cout << "make_handler_ 2" << std::endl;
       std::weak_ptr<strand_impl> wthis = this->shared_from_this();
-      std::cout << "make_handler_ 3" << std::endl;
       outgoing_handler_t h = [wthis, handler]( data_ptr d)
       {
-        std::cout << "make_handler_ call  " << d << std::endl;
         if ( auto pthis = wthis.lock() )
         {
           auto pd = std::make_shared<data_ptr>( std::move(d));
-          std::cout << "make_handler_ post ..." << std::endl;
-          std::cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++1> " << pthis->_outgoing->size() << std::endl;
           pthis->_outgoing->post([pd, handler](){
-            std::cout << "make_handler_ READY" << std::endl;
             handler(std::move(*pd));
           });
-          std::cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++2>" << pthis->_outgoing->size() << std::endl;
-          std::cout << "make_handler_ posted" << std::endl;
         }
       };
-      std::cout << "make_handler_ 4" << std::endl;
       auto h1 =  std::move(h);
-      std::cout << "make_handler_ 5" << std::endl;
       return std::move(h1);
     }
     return std::move(handler);
+  }
+  
+  void make_result_(outgoing_holder& holder, io_id_t io_id)
+  {
+    if ( !_incoming->enabled() ) 
+      return;
+    
+    if ( auto orig = holder.result_handler() )
+    {
+      std::weak_ptr<strand_impl> wthis = this->shared_from_this();
+      outgoing_holder::result_handler_t h=[wthis, orig, io_id](incoming_holder holder)
+      {
+        if ( auto pthis = wthis.lock() )
+        {
+          auto pholder = std::make_shared<incoming_holder>( std::move(holder) );
+          pthis->_incoming->post([pholder, orig]()
+          {
+            orig(std::move(*pholder));
+          });
+        }
+      };
+      
+      holder.result_handler( std::move(h) );
+    }
   }
 
 private:

@@ -15,12 +15,14 @@ public:
   virtual ~broker();
   broker();
 
+  static void generate(broker_config& opt, const std::string& );
+  
   virtual void reconfigure() override;
   virtual void start(const std::string&) override;
   virtual void stop(const std::string&) override;
   
-  
   // iinterface
+  
   virtual void reg_io(io_id_t /*io_id*/, std::weak_ptr<iinterface> /*itf*/) override;
 
   virtual void unreg_io(io_id_t /*io_id*/) override;
