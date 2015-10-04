@@ -32,7 +32,7 @@ public:
     _other = reg.get<ijsonrpc>(opt.target);
   }
   
-  void reg_io(io_id_t io_id, std::weak_ptr<iinterface> itf)
+  virtual void reg_io(io_id_t io_id, std::weak_ptr<iinterface> itf) override
   {
     for (auto& t : _targets )
     {
@@ -40,7 +40,7 @@ public:
     }
   }
 
-  void unreg_io(io_id_t io_id)
+  virtual void unreg_io(io_id_t io_id) override
   {
     for (auto& t : _targets )
     {
@@ -48,13 +48,17 @@ public:
     }
   }
 
-  void perform_io(data_ptr d, io_id_t io_id, outgoing_handler_t handler) 
+  virtual void perform_io(data_ptr d, io_id_t io_id, io_outgoing_handler_t handler) override
   {
     using namespace std::placeholders;
+    /*
     ::iow::jsonrpc::incoming_holder::perform(std::move(d), io_id, handler, std::bind(&broker_impl::perform_incoming, this, _1, _2, _3) );
+    */
+#warning TODO: сделать
+    abort();
   }
 
-  void perform_incoming(incoming_holder holder, io_id_t io_id, outgoing_handler_t handler) 
+  virtual void perform_incoming(incoming_holder holder, io_id_t io_id, rpc_outgoing_handler_t handler) override
   {
     if ( !holder.has_method() )
     {
@@ -88,7 +92,7 @@ public:
     
   }
     
-  void perform_outgoing(outgoing_holder holder, io_id_t io_id)
+  virtual void perform_outgoing(outgoing_holder holder, io_id_t io_id) override
   {
     if ( _other != nullptr )
     {

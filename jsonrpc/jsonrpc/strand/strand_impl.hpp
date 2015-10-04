@@ -43,7 +43,7 @@ public:
     _outgoing->stop();
   }
   
-  virtual void perform_incoming(incoming_holder holder, io_id_t io_id, outgoing_handler_t h) override
+  virtual void perform_incoming(incoming_holder holder, io_id_t io_id, rpc_outgoing_handler_t h) override
   {
     auto handler = make_handler_( std::move(h) );
     
@@ -58,7 +58,7 @@ public:
     }
     else if ( handler != nullptr )
     {
-      handler(nullptr);
+      handler( std::move(outgoing_holder()) );
     }
   }
   
@@ -94,9 +94,13 @@ public:
     _target->unreg_io(io_id);
   }
 
-  virtual void perform_io(data_ptr d, io_id_t io_id, outgoing_handler_t h)
+  virtual void perform_io(data_ptr d, io_id_t io_id, io_outgoing_handler_t h)
   {
-    auto handler = make_handler_( std::move(h) );
+#warning TODO rpc
+    // auto handler = make_handler_( std::move(h) );
+    rpc_outgoing_handler_t handler = nullptr;
+    abort();
+    
     if ( _incoming->enabled() )
     {
       auto pd = std::make_shared<data_ptr>( std::move(d) );
@@ -108,22 +112,22 @@ public:
     }
     else if ( handler != nullptr )
     {
-      handler(nullptr);
+      handler( std::move(outgoing_holder()) );
     }
   }
   
 private:
   
-  outgoing_handler_t make_handler_(outgoing_handler_t handler)
+  rpc_outgoing_handler_t make_handler_(rpc_outgoing_handler_t handler)
   {
     if ( handler!=nullptr && _outgoing->enabled() )
     {
       std::weak_ptr<strand_impl> wthis = this->shared_from_this();
-      outgoing_handler_t h = [wthis, handler]( data_ptr d)
+      rpc_outgoing_handler_t h = [wthis, handler]( outgoing_holder holder)
       {
         if ( auto pthis = wthis.lock() )
         {
-          auto pd = std::make_shared<data_ptr>( std::move(d));
+          auto pd = std::make_shared<outgoing_holder>( std::move(holder));
           pthis->_outgoing->post([pd, handler](){
             handler(std::move(*pd));
           });

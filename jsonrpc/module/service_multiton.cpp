@@ -2,7 +2,7 @@
 #include "service_multiton.hpp"
 #include <wfc/module/multiton.hpp>
 #include <wfc/module/instance.hpp>
-#include <wfc/module/object.hpp>
+#include <wfc/module/component.hpp>
 #include "../jsonrpc/service/service.hpp"
 #include "service_config_json.hpp"
 
@@ -21,7 +21,7 @@ class service_multiton::impl: public ::wfc::multiton<
 
 
 service_multiton::service_multiton()
-  : ::wfc::object( std::make_shared<service_multiton::impl>() )
+  : ::wfc::component( std::make_shared<service_multiton::impl>() )
 {}
 
 }

@@ -46,12 +46,12 @@ void gateway::unreg_io(io_id_t )
   DEBUG_LOG_MESSAGE("gateway::unreg_io")
 }
 
-void gateway::perform_io(data_ptr d, io_id_t io_id, outgoing_handler_t ) 
+void gateway::perform_io(data_ptr d, io_id_t io_id, io_outgoing_handler_t ) 
 {
   DEBUG_LOG_MESSAGE("gateway::perform_io io_id=" << io_id << "[" << d << "]")
 }
 
-void gateway::perform_incoming(incoming_holder, io_id_t, outgoing_handler_t ) 
+void gateway::perform_incoming(incoming_holder, io_id_t, rpc_outgoing_handler_t ) 
 {
   DEBUG_LOG_MESSAGE("gateway::perform_incoming")
   abort();

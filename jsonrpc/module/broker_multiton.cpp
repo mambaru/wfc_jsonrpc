@@ -2,7 +2,7 @@
 #include "broker_multiton.hpp"
 #include <wfc/module/multiton.hpp>
 #include <wfc/module/instance.hpp>
-#include <wfc/module/object.hpp>
+#include <wfc/module/component.hpp>
 #include "../jsonrpc/broker/broker.hpp"
 #include "broker_config_json.hpp"
 
@@ -21,7 +21,7 @@ class broker_multiton::impl: public ::wfc::multiton<
 
 
 broker_multiton::broker_multiton()
-  : ::wfc::object( std::make_shared<broker_multiton::impl>() )
+  : ::wfc::component( std::make_shared<broker_multiton::impl>() )
 {}
 
 }

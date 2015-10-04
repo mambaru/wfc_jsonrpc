@@ -1,11 +1,11 @@
 #pragma once
 
-#include <wfc/module/object.hpp>
+#include <wfc/module/component.hpp>
 
 namespace wfc{
 
 class service_multiton
-  : public ::wfc::object
+  : public ::wfc::component
 {
   class impl;
 public:

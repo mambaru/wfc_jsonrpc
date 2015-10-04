@@ -2,7 +2,7 @@
 #include "gateway_multiton.hpp"
 #include <wfc/module/multiton.hpp>
 #include <wfc/module/instance.hpp>
-#include <wfc/module/object.hpp>
+#include <wfc/module/component.hpp>
 #include "../jsonrpc/gateway/gateway.hpp"
 #include "gateway_config_json.hpp"
 
@@ -21,7 +21,7 @@ class gateway_multiton::impl: public ::wfc::multiton<
 
 
 gateway_multiton::gateway_multiton()
-  : ::wfc::object( std::make_shared<gateway_multiton::impl>() )
+  : ::wfc::component( std::make_shared<gateway_multiton::impl>() )
 {}
 
 }

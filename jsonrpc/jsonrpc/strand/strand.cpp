@@ -75,7 +75,7 @@ void strand::unreg_io(io_id_t io_id)
   }
 }
 
-void strand::perform_io(data_ptr d, io_id_t io_id, outgoing_handler_t handler) 
+void strand::perform_io(data_ptr d, io_id_t io_id, io_outgoing_handler_t handler) 
 {
   if ( _impl != nullptr )
   {
@@ -83,7 +83,7 @@ void strand::perform_io(data_ptr d, io_id_t io_id, outgoing_handler_t handler)
   }
 }
 
-void strand::perform_incoming(incoming_holder holder, io_id_t io_id, outgoing_handler_t handler) 
+void strand::perform_incoming(incoming_holder holder, io_id_t io_id, rpc_outgoing_handler_t handler) 
 {
   if ( _impl != nullptr )
   {

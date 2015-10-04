@@ -49,12 +49,12 @@ void broker::unreg_io(io_id_t io_id)
   _impl->unreg_io(io_id);
 }
 
-void broker::perform_io(data_ptr d, io_id_t io_id, outgoing_handler_t handler) 
+void broker::perform_io(data_ptr d, io_id_t io_id, io_outgoing_handler_t handler) 
 {
   _impl->perform_io(std::move(d), io_id, std::move(handler) );
 }
 
-void broker::perform_incoming(incoming_holder holder, io_id_t io_id, outgoing_handler_t handler) 
+void broker::perform_incoming(incoming_holder holder, io_id_t io_id, rpc_outgoing_handler_t handler) 
 {
   _impl->perform_incoming(std::move(holder), io_id, std::move(handler) );
 }
