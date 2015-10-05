@@ -71,7 +71,7 @@ public:
     
     if ( _reject.find( holder.method() ) != _reject.end() )
     {
-      ::iow::jsonrpc::incoming_holder::send_error(std::move(holder), std::make_unique< ::iow::jsonrpc::service_unavailable > (), std::move(handler));
+      ::iow::jsonrpc::aux::send_error(std::move(holder), std::make_unique< ::iow::jsonrpc::service_unavailable > (), std::move(handler));
       return;
     }
     
@@ -88,7 +88,7 @@ public:
       return;
     }
 
-    ::iow::jsonrpc::incoming_holder::send_error(std::move(holder), std::make_unique< ::iow::jsonrpc::procedure_not_found > (), std::move(handler));
+    ::iow::jsonrpc::aux::send_error(std::move(holder), std::make_unique< ::iow::jsonrpc::procedure_not_found > (), std::move(handler));
     
   }
     
