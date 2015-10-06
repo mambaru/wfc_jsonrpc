@@ -3,6 +3,7 @@
 #include "broker.hpp"
 #include <wfc/logger.hpp>
 #include <wfc/asio.hpp>
+#include <iow/jsonrpc/incoming/aux.hpp>
 
 namespace wfc{
 

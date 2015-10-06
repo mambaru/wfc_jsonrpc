@@ -1,6 +1,7 @@
 #pragma once
 
-#include <wfc/jsonrpc.hpp>
+#include <string>
+#include <vector>
 
 namespace wfc{
 
