@@ -89,7 +89,7 @@ public:
       return;
     }
 
-    ::iow::jsonrpc::aux::send_error(std::move(holder), std::make_unique< ::iow::jsonrpc::procedure_not_found > (), std::move(handler));
+    ::iow::jsonrpc::aux::send_error(std::move(holder),  std::make_unique< ::iow::jsonrpc::procedure_not_found > (), std::move(handler));
     
   }
     

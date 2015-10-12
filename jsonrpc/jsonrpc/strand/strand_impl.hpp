@@ -45,7 +45,7 @@ public:
   
   virtual void perform_incoming(incoming_holder holder, io_id_t io_id, rpc_outgoing_handler_t h) override
   {
-    auto handler = make_handler_( std::move(h) );
+    auto handler = make_handler_( std::move(h), io_id );
     
     if ( _incoming->enabled() )
     {
@@ -58,7 +58,7 @@ public:
     }
     else if ( handler != nullptr )
     {
-      handler( std::move(outgoing_holder()) );
+      handler( std::move(outgoing_holder()) /*, io_id*/ );
     }
   }
   
@@ -94,13 +94,15 @@ public:
     _target->unreg_io(io_id);
   }
 
-  virtual void perform_io(data_ptr d, io_id_t io_id, io_outgoing_handler_t h)
+  virtual void perform_io(data_ptr d, io_id_t io_id, io_outgoing_handler_t handler)
   {
+    /*
 #warning TODO rpc
     // auto handler = make_handler_( std::move(h) );
     rpc_outgoing_handler_t handler = nullptr;
     abort();
-    
+    */
+   
     if ( _incoming->enabled() )
     {
       auto pd = std::make_shared<data_ptr>( std::move(d) );
@@ -110,26 +112,30 @@ public:
         ptarget->perform_io( std::move(*pd), io_id, handler);
       });
     }
-    else if ( handler != nullptr )
+    else if ( _target != nullptr )
     {
-      handler( std::move(outgoing_holder()) );
+      _target->perform_io( std::move(d), io_id, handler);
+     /* handler( std::move(d) );
+      //handler( std::move(outgoing_holder()), io_id );
+      */
     }
   }
   
 private:
   
-  rpc_outgoing_handler_t make_handler_(rpc_outgoing_handler_t handler)
+  rpc_outgoing_handler_t make_handler_(rpc_outgoing_handler_t handler, io_id_t/* io_id*/)
   {
     if ( handler!=nullptr && _outgoing->enabled() )
     {
       std::weak_ptr<strand_impl> wthis = this->shared_from_this();
-      rpc_outgoing_handler_t h = [wthis, handler]( outgoing_holder holder)
+      rpc_outgoing_handler_t h = [wthis, handler]( outgoing_holder holder/*, io_id_t io_id*/)
       {
         if ( auto pthis = wthis.lock() )
         {
           auto pd = std::make_shared<outgoing_holder>( std::move(holder));
-          pthis->_outgoing->post([pd, handler](){
-            handler(std::move(*pd));
+          pthis->_outgoing->post([pd, handler/*, io_id*/ ]()
+          {
+            handler(std::move(*pd)/*, io_id*/ );
           });
         }
       };
