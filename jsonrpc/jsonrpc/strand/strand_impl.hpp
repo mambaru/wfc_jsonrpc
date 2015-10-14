@@ -41,6 +41,7 @@ public:
   {
     _incoming->stop();
     _outgoing->stop();
+    _target = nullptr;
   }
   
   virtual void perform_incoming(incoming_holder holder, io_id_t io_id, rpc_outgoing_handler_t h) override
@@ -96,13 +97,6 @@ public:
 
   virtual void perform_io(data_ptr d, io_id_t io_id, io_outgoing_handler_t handler)
   {
-    /*
-#warning TODO rpc
-    // auto handler = make_handler_( std::move(h) );
-    rpc_outgoing_handler_t handler = nullptr;
-    abort();
-    */
-   
     if ( _incoming->enabled() )
     {
       auto pd = std::make_shared<data_ptr>( std::move(d) );
@@ -115,9 +109,6 @@ public:
     else if ( _target != nullptr )
     {
       _target->perform_io( std::move(d), io_id, handler);
-     /* handler( std::move(d) );
-      //handler( std::move(outgoing_holder()), io_id );
-      */
     }
   }
   
