@@ -52,7 +52,6 @@ public:
     {
       _target->perform_io( holder.detach(), io_id, [rh](data_ptr d)
       {
-        std::cout << "starand wrapper " << d << std::endl;
         incoming_holder holder( std::move(d) );
         holder.parse();
         rh( std::move(holder) );

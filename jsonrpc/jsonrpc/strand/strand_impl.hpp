@@ -46,45 +46,26 @@ public:
   
   virtual void perform_incoming(incoming_holder holder, io_id_t io_id, rpc_outgoing_handler_t h) override
   {
-    auto handler = make_handler_( std::move(h), io_id );
-    
-    if ( _incoming->enabled() )
+    auto handler = make_handler_( std::move(h) );
+    auto pholder = std::make_shared<incoming_holder>( std::move(holder) );
+    auto ptarget = _target;
+    _incoming->post([ptarget, pholder, io_id, handler]()
     {
-      auto pholder = std::make_shared<incoming_holder>( std::move(holder) );
-      auto ptarget = _target;
-      _incoming->post([ptarget, pholder, io_id, handler]()
-      {
-        ptarget->perform_incoming( std::move(*pholder), io_id, handler);
-      });
-    }
-    else if ( handler != nullptr )
-    {
-      handler( std::move(outgoing_holder()) /*, io_id*/ );
-    }
+      ptarget->perform_incoming( std::move(*pholder), io_id, handler);
+    });
   }
-  
+
   virtual void perform_outgoing(outgoing_holder holder, io_id_t io_id) override
   {
-    this->make_result_(holder, io_id);
-    
-    if ( _outgoing->enabled() )
+    this->make_result_(holder);
+    auto pholder = std::make_shared<outgoing_holder>( std::move(holder) );
+    auto ptarget = _target;
+    _outgoing->post([ptarget, pholder, io_id]()
     {
-      auto pholder = std::make_shared<outgoing_holder>( std::move(holder) );
-      auto ptarget = _target;
-      _outgoing->post([ptarget, pholder, io_id]()
-      {
-        ptarget->perform_outgoing( std::move(*pholder), io_id);
-      });
-    }
-    else
-    {
-      if ( auto result_handler = holder.result_handler() )
-      {
-        result_handler( std::move(incoming_holder(nullptr)) );
-      }
-    }
+      ptarget->perform_outgoing( std::move(*pholder), io_id);
+    });
   }
-  
+
   virtual void reg_io(io_id_t io_id, std::weak_ptr<iinterface> itf)
   {
     _target->reg_io(io_id, itf);
@@ -97,36 +78,29 @@ public:
 
   virtual void perform_io(data_ptr d, io_id_t io_id, io_outgoing_handler_t handler)
   {
-    if ( _incoming->enabled() )
+    auto pd = std::make_shared<data_ptr>( std::move(d) );
+    auto ptarget = _target;
+    _incoming->post([ptarget, pd, io_id, handler]()
     {
-      auto pd = std::make_shared<data_ptr>( std::move(d) );
-      auto ptarget = _target;
-      _incoming->post([ptarget, pd, io_id, handler]()
-      {
-        ptarget->perform_io( std::move(*pd), io_id, handler);
-      });
-    }
-    else if ( _target != nullptr )
-    {
-      _target->perform_io( std::move(d), io_id, handler);
-    }
+      ptarget->perform_io( std::move(*pd), io_id, handler);
+    });
   }
-  
+
 private:
-  
-  rpc_outgoing_handler_t make_handler_(rpc_outgoing_handler_t handler, io_id_t/* io_id*/)
+
+  rpc_outgoing_handler_t make_handler_(rpc_outgoing_handler_t handler)
   {
     if ( handler!=nullptr && _outgoing->enabled() )
     {
       std::weak_ptr<strand_impl> wthis = this->shared_from_this();
-      rpc_outgoing_handler_t h = [wthis, handler]( outgoing_holder holder/*, io_id_t io_id*/)
+      rpc_outgoing_handler_t h = [wthis, handler]( outgoing_holder holder)
       {
         if ( auto pthis = wthis.lock() )
         {
           auto pd = std::make_shared<outgoing_holder>( std::move(holder));
-          pthis->_outgoing->post([pd, handler/*, io_id*/ ]()
+          pthis->_outgoing->post([pd, handler]()
           {
-            handler(std::move(*pd)/*, io_id*/ );
+            handler(std::move(*pd));
           });
         }
       };
@@ -136,7 +110,7 @@ private:
     return std::move(handler);
   }
   
-  void make_result_(outgoing_holder& holder, io_id_t io_id)
+  void make_result_(outgoing_holder& holder)
   {
     if ( !_incoming->enabled() ) 
       return;
@@ -144,7 +118,7 @@ private:
     if ( auto orig = holder.result_handler() )
     {
       std::weak_ptr<strand_impl> wthis = this->shared_from_this();
-      outgoing_holder::result_handler_t h=[wthis, orig, io_id](incoming_holder holder)
+      outgoing_holder::result_handler_t h=[wthis, orig](incoming_holder holder)
       {
         if ( auto pthis = wthis.lock() )
         {
@@ -155,7 +129,7 @@ private:
           });
         }
       };
-      
+
       holder.result_handler( std::move(h) );
     }
   }
