@@ -48,6 +48,7 @@ void service::unreg_io(io_id_t )
 
 void service::perform_io(data_ptr d, io_id_t io_id, io_outgoing_handler_t ) 
 {
+  wfc::only_for_log(d, io_id);
   DEBUG_LOG_MESSAGE("service::perform_io io_id=" << io_id << "[" << d << "]")
 }
 
