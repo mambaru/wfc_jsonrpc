@@ -2,7 +2,6 @@
 #include "strand_impl.hpp"
 #include "strand.hpp"
 #include <wfc/asio.hpp>
-
 #include <iow/jsonrpc/engine/call_map.hpp>
 
 namespace wfc{
@@ -75,6 +74,9 @@ public:
     : strand_impl(io)
   {}
 };
+
+
+//class strand::impl: public delayed_queue{};
 
 strand::~strand()
 {
