@@ -1,19 +1,19 @@
 #pragma once
 
-#include "service_config.hpp"
+#include "repli_config.hpp"
 #include <wfc/domain_object.hpp>
 #include <wfc/jsonrpc/ijsonrpc.hpp>
 #include <string>
 #include <memory>
 
-namespace wfc{
+namespace wfc{ namespace jsonrpc{ namespace repli{ 
 
-class service
-  : public ::wfc::domain_object< ijsonrpc, service_config>
+class repli
+  : public ::wfc::domain_object< ijsonrpc, repli_config>
 {
 public:
-  virtual ~service();
-  service();
+  virtual ~repli();
+  repli();
 
   virtual void reconfigure() override;
   virtual void start(const std::string&) override;
@@ -39,4 +39,4 @@ private:
   std::weak_ptr<iinterface> _target;
 };
 
-}
+}}}

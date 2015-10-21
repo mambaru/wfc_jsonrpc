@@ -8,7 +8,7 @@ namespace wfc{
   
 class jsonrpc_package::impl: public ::wfc::module_list<
   jsonrpc_build_info,
-  jsonrpc_module
+  jsonrpc::jsonrpc_module
 >
 {  
 };

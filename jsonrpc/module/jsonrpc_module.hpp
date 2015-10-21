@@ -2,7 +2,7 @@
 
 #include <wfc/module/module.hpp>
 
-namespace wfc{
+namespace wfc{ namespace jsonrpc{
 
 class jsonrpc_module
   : public ::wfc::module
@@ -12,4 +12,4 @@ public:
   jsonrpc_module();
 };
 
-}
+}}
