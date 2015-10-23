@@ -59,14 +59,14 @@ public:
 
   void perform_incoming(incoming_holder , io_id_t, rpc_outgoing_handler_t ) 
   {
-#error TODO: holder.clone()
+//#error TODO: holder.clone()
     DEBUG_LOG_MESSAGE("repli::perform_incoming")
     abort();
   }
 
   void perform_outgoing(outgoing_holder , io_id_t )
   {
-#error TODO: holder.clone()
+//#error TODO: holder.clone()
     DEBUG_LOG_MESSAGE("repli::perform_outgoing")
     abort();
   }
