@@ -78,11 +78,25 @@ public:
     (*last)->perform_incoming( std::move(holder), io_id, std::move(handler) );
   }
 
-  void perform_outgoing(outgoing_holder , io_id_t )
+  void perform_outgoing(outgoing_holder holder, io_id_t io_id)
   {
-//#error TODO: holder.clone()
-    DEBUG_LOG_MESSAGE("repli::perform_outgoing")
-    abort();
+    if ( _targets.empty() )
+    {
+      _primary->perform_outgoing( std::move(holder), io_id );
+      return;
+    }
+    else
+    {
+      _primary->perform_outgoing( holder.clone(), io_id );
+    }
+
+    auto last = (++_targets.rbegin()).base();
+    for ( auto itr = _targets.begin(); itr!=last; ++itr )
+    {
+      (*itr)->perform_outgoing( holder.clone(), io_id );
+    }
+
+    (*last)->perform_outgoing( std::move(holder), io_id );
   }
 
 private:
