@@ -35,7 +35,7 @@ public:
       p->unreg_io(io_id);
     }
   }
-
+  
   void perform_io(data_ptr d, io_id_t io_id, io_outgoing_handler_t handler) 
   {
     if ( _targets.empty() )
@@ -57,11 +57,25 @@ public:
     (*last)->perform_io( std::move(d), io_id, std::move(handler) );
   }
 
-  void perform_incoming(incoming_holder , io_id_t, rpc_outgoing_handler_t ) 
+  void perform_incoming(incoming_holder holder, io_id_t io_id, rpc_outgoing_handler_t handler) 
   {
-//#error TODO: holder.clone()
-    DEBUG_LOG_MESSAGE("repli::perform_incoming")
-    abort();
+    if ( _targets.empty() )
+    {
+      _primary->perform_incoming( std::move(holder), io_id, std::move(handler) );
+      return;
+    }
+    else
+    {
+      _primary->perform_incoming( holder.clone(), io_id, handler );
+    }
+
+    auto last = (++_targets.rbegin()).base();
+    for ( auto itr = _targets.begin(); itr!=last; ++itr )
+    {
+      (*itr)->perform_incoming( holder.clone(), io_id, handler );
+    }
+
+    (*last)->perform_incoming( std::move(holder), io_id, std::move(handler) );
   }
 
   void perform_outgoing(outgoing_holder , io_id_t )
