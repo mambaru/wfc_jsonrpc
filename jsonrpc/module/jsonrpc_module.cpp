@@ -9,21 +9,23 @@
 
 namespace wfc{ namespace jsonrpc{
   
-WFC_NAME2(jsonrpc_module_name, "jsonrpc")
-
-class jsonrpc_module::impl: public ::wfc::component_list<
-  jsonrpc_module_name,
-  repli::repli_multiton,
-  gateway_multiton,
-  broker_multiton,
-  strand_multiton
->
+namespace
 {
-  
-};
+  WFC_NAME2(jsonrpc_module_name, "jsonrpc")
+
+  class impl: public ::wfc::component_list<
+    jsonrpc_module_name,
+    repli::repli_multiton,
+    gateway_multiton,
+    broker_multiton,
+    strand_multiton
+  >
+  {
+  };
+}
 
 jsonrpc_module::jsonrpc_module()
-  : module( std::make_shared<jsonrpc_module::impl>() )
+  : module( std::make_shared<impl>() )
 {
 }
 
