@@ -167,6 +167,7 @@ void strand::perform_incoming(incoming_holder holder, io_id_t io_id, rpc_outgoin
   
 void strand::perform_outgoing(outgoing_holder holder, io_id_t io_id)
 {
+
   if ( _impl != nullptr )
   {
     _impl->perform_outgoing( std::move(holder), io_id );
