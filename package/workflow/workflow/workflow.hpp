@@ -1,7 +1,7 @@
 #pragma once
 
 #include "workflow_config.hpp"
-#include <domain_base.hpp>
+#include <wfc/jsonrpc/domain_proxy.hpp>
 #include <wfc/jsonrpc/ijsonrpc.hpp>
 #include <wfc/workflow.hpp>
 
@@ -11,7 +11,7 @@
 namespace wfc{ namespace jsonrpc{
   
 class workflow
-  : public domain_base<workflow_config>
+  : public ::wfc::jsonrpc::domain_proxy<workflow_config>
 {
   typedef std::shared_ptr< ::wfc::workflow > workflow_ptr;
 public:

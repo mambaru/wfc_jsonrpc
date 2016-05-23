@@ -8,7 +8,7 @@ workflow::workflow()
 
 void workflow::reconfigure()
 {
-  domain_base::reconfigure();
+  domain_proxy::reconfigure();
   const auto& opt = this->options();
   if ( !opt.incoming_disabled )
   {
