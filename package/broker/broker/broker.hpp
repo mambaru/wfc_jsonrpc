@@ -7,7 +7,7 @@
 #include <memory>
 
 namespace wfc{
-
+  
 class broker
   : public ::wfc::domain_object< ijsonrpc, broker_config>
 {
@@ -15,7 +15,7 @@ public:
   virtual ~broker();
   broker();
 
-  static void generate(broker_config& opt, const std::string& );
+  static void generate1(broker_config& opt, const std::string& );
   
   virtual void reconfigure() override;
   virtual void start(const std::string&) override;

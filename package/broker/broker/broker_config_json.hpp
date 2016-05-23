@@ -1,26 +1,11 @@
 #pragma once
 
-#include "../jsonrpc/broker/broker_config.hpp"
+#include "broker_config.hpp"
 #include <wfc/json.hpp>
 
 namespace wfc{
   
-/*
-struct broker_config
-{
-  struct method_target
-  {
-    std::string target;
-    std::vector<std::string> methods;
-  };
-  
-  std::string target;
-  std::vector<method_target> targets;
-  std::vector<std::string> reject;
-};
-
-*/
-  
+ 
 struct broker_config_json
 {
   JSON_NAME(target)

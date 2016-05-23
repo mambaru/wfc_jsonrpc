@@ -49,14 +49,26 @@ public:
     }
   }
 
-  virtual void perform_io(data_ptr /*d*/, io_id_t /*io_id*/, io_outgoing_handler_t /*handler*/) override
+  virtual void perform_io(data_ptr d, io_id_t io_id, io_outgoing_handler_t handler) override
   {
     using namespace std::placeholders;
+    
+    while ( d != nullptr )
+    {
+      incoming_holder holder( std::move(d), false);
+      d = holder.parse();
+      this->perform_incoming( std::move(holder), io_id, [handler](outgoing_holder holder)
+      {
+        handler( holder.detach() );
+      } );
+    }
     /*
     ::iow::jsonrpc::incoming_holder::perform(std::move(d), io_id, handler, std::bind(&broker_impl::perform_incoming, this, _1, _2, _3) );
     */
+    /*
 #warning TODO: сделать
     abort();
+    */
   }
 
   virtual void perform_incoming(incoming_holder holder, io_id_t io_id, rpc_outgoing_handler_t handler) override

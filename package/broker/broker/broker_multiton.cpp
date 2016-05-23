@@ -1,11 +1,12 @@
 
 #include "broker_multiton.hpp"
+#include "broker.hpp"
+#include "broker_config_json.hpp"
+
+
 #include <wfc/module/multiton.hpp>
 #include <wfc/module/instance.hpp>
 #include <wfc/module/component.hpp>
-#include "../jsonrpc/broker/broker.hpp"
-#include "broker_config_json.hpp"
-
 #include <wfc/name.hpp>
 
 namespace wfc{

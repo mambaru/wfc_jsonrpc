@@ -2,7 +2,6 @@
 #include "jsonrpc_module.hpp"
 #include "../jsonrpc/repli/repli_multiton.hpp"
 #include "gateway_multiton.hpp"
-#include "broker_multiton.hpp"
 #include "strand_multiton.hpp"
 #include <wfc/module/component_list.hpp>
 #include <wfc/name.hpp>
@@ -17,7 +16,6 @@ namespace
     jsonrpc_module_name,
     repli::repli_multiton,
     gateway_multiton,
-    broker_multiton,
     strand_multiton
   >
   {

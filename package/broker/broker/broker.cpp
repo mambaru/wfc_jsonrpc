@@ -64,7 +64,7 @@ void broker::perform_outgoing(outgoing_holder holder, io_id_t io_id)
   _impl->perform_outgoing(std::move(holder), io_id );
 }
 
-void broker::generate(broker_config& opt, const std::string& /*type*/)
+void broker::generate1(broker_config& opt, const std::string& /*type*/)
 {
   opt = broker_config();
   opt.target="*default-target*";
