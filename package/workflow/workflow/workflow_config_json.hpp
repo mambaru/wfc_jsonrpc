@@ -21,10 +21,10 @@ struct workflow_config_json
       ::wfc::json::member<n_target,   workflow_config, std::string, &workflow_config::target >,
       
       ::wfc::json::member<n_incoming_disabled, workflow_config, bool, &workflow_config::incoming_disabled>,
-      ::wfc::json::member<n_incoming, workflow_config, ::wfc::workflow_options, &workflow_config::incoming, ::wfc::workflow_options_json >,
+      ::wfc::json::member<n_incoming, workflow_config, ::wfc::workflow_options, &workflow_config::incoming, ::wfc::workflow_options2_json >,
       
       ::wfc::json::member<n_outgoing_disabled, workflow_config, bool, &workflow_config::outgoing_disabled>,
-      ::wfc::json::member<n_outgoing, workflow_config, ::wfc::workflow_options, &workflow_config::outgoing, ::wfc::workflow_options_json >
+      ::wfc::json::member<n_outgoing, workflow_config, ::wfc::workflow_options, &workflow_config::outgoing, ::wfc::workflow_options2_json >
     >
   > type;
   
