@@ -12,12 +12,13 @@ namespace wfc{ namespace jsonrpc{
 
 namespace 
 { 
-  WFC_NAME2(component_name, "jsonrpc-workflow") 
+  WFC_NAME2(multiton_name, "jsonrpc-queue") 
 
   class impl: public ::wfc::multiton<
-    component_name,
+    multiton_name,
     ::wfc::instance<workflow>,
-    workflow_config_json
+    workflow_config_json,
+    ::wfc::component_features::CommonWorkflow
   >
   {};
 }

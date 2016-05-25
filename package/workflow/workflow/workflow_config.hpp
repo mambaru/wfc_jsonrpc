@@ -6,14 +6,6 @@
 
 namespace wfc{ namespace jsonrpc{
 
-  /*
-struct workflow_options: ::wfc::workflow_options
-{
-  // time_t delay_ms = 0;    // задержка в миллисекундах (todo: вынести в wfc::workflow_config_jsonex)
-  // size_t rate_limit = 0;  // ограничение скорости (в сообщениях в секунду)
-};
-*/
-  
 struct workflow_config
 {
   std::string target;
@@ -25,8 +17,6 @@ struct workflow_config
   // Очередь для ответов (опционально)
   bool outgoing_disabled = true;
   ::wfc::workflow_options outgoing;
-  
-  
 };
 
-} }
+}}
