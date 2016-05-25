@@ -1,5 +1,5 @@
-#include "workflow/workflow_multiton.hpp"
-#include "workflow_module.hpp"
+#include "domain/queue_multiton.hpp"
+#include "queue_module.hpp"
 #include <wfc/module/component_list.hpp>
 #include <wfc/name.hpp>
 
@@ -7,17 +7,16 @@ namespace wfc{ namespace jsonrpc{
   
 namespace
 {
-  WFC_NAME2(module_name, "workflow")
+  WFC_NAME2(module_name, "jsonrpc-queue")
 
   class impl: public ::wfc::component_list<
     module_name,
-    workflow_multiton
+    queue_multiton
   >
-  {
-  };
+  {};
 }
 
-workflow_module::workflow_module()
+queue_module::queue_module()
   : module( std::make_shared<impl>() )
 {
 }

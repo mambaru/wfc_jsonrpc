@@ -1,7 +1,7 @@
 
-#include "workflow_multiton.hpp"
-#include "workflow.hpp"
-#include "workflow_config_json.hpp"
+#include "queue_multiton.hpp"
+#include "queue.hpp"
+#include "queue_config_json.hpp"
 
 #include <wfc/module/multiton.hpp>
 #include <wfc/module/instance.hpp>
@@ -16,15 +16,15 @@ namespace
 
   class impl: public ::wfc::multiton<
     multiton_name,
-    ::wfc::instance<workflow>,
-    workflow_config_json,
+    ::wfc::instance<queue>,
+    queue_config_json,
     ::wfc::component_features::CommonWorkflow
   >
   {};
 }
 
 
-workflow_multiton::workflow_multiton()
+queue_multiton::queue_multiton()
   : component( std::make_shared<impl>() )
 {}
 

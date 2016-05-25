@@ -1,6 +1,6 @@
 #pragma once
 
-#include "workflow_config.hpp"
+#include "queue_config.hpp"
 #include <wfc/jsonrpc/domain_proxy.hpp>
 #include <wfc/jsonrpc/ijsonrpc.hpp>
 #include <wfc/workflow.hpp>
@@ -10,12 +10,12 @@
 
 namespace wfc{ namespace jsonrpc{
   
-class workflow
-  : public ::wfc::jsonrpc::domain_proxy<workflow_config>
+class queue
+  : public ::wfc::jsonrpc::domain_proxy<queue_config>
 {
   typedef std::shared_ptr< ::wfc::workflow > workflow_ptr;
 public:
-  workflow();
+  queue();
 // domain
   virtual void reconfigure() override;
   virtual void stop(const std::string&) override;

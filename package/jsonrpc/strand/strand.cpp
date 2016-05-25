@@ -88,7 +88,7 @@ strand::strand()
 
 void strand::reconfigure()
 {
-#warning Сделать нормальный реконфиг
+// #warning Сделать нормальный реконфиг
   if ( auto g = this->global() )
   {
     const auto& conf = this->options();

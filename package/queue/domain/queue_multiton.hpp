@@ -4,11 +4,11 @@
 
 namespace wfc{ namespace jsonrpc{
 
-class workflow_multiton
+class queue_multiton
   : public ::wfc::component
 {
 public:
-  workflow_multiton();
+  queue_multiton();
 };
 
 }}

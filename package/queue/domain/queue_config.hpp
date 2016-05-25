@@ -6,7 +6,7 @@
 
 namespace wfc{ namespace jsonrpc{
 
-struct workflow_config
+struct queue_config
 {
   std::string target;
   

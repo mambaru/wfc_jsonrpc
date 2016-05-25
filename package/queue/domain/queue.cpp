@@ -1,12 +1,12 @@
-#include "workflow.hpp"
+#include "queue.hpp"
 #include <wfc/logger.hpp>
 
 namespace wfc{ namespace jsonrpc{
 
-workflow::workflow()
+queue::queue()
 {}
 
-void workflow::reconfigure()
+void queue::reconfigure()
 {
   domain_proxy::reconfigure();
   const auto& opt = this->options();
@@ -32,7 +32,7 @@ void workflow::reconfigure()
   
 }
 
-void workflow::stop(const std::string&)
+void queue::stop(const std::string&)
 {
   if ( auto w = _incoming ) w->stop();
   if ( auto w = _outgoing ) w->stop();
@@ -40,7 +40,7 @@ void workflow::stop(const std::string&)
   _outgoing = nullptr;
 }
 
-void workflow::perform_incoming(incoming_holder holder, io_id_t io_id, rpc_outgoing_handler_t handler) 
+void queue::perform_incoming(incoming_holder holder, io_id_t io_id, rpc_outgoing_handler_t handler) 
 {
   if ( this->suspended()  )
   {
@@ -62,7 +62,7 @@ void workflow::perform_incoming(incoming_holder holder, io_id_t io_id, rpc_outgo
   }
 }
   
-void workflow::perform_outgoing(outgoing_holder holder, io_id_t io_id)
+void queue::perform_outgoing(outgoing_holder holder, io_id_t io_id)
 {
   if ( this->suspended() )
   {
@@ -84,7 +84,7 @@ void workflow::perform_outgoing(outgoing_holder holder, io_id_t io_id)
   }
 }
 
-workflow::rpc_outgoing_handler_t workflow::make_handler_(rpc_outgoing_handler_t&& handler)
+queue::rpc_outgoing_handler_t queue::make_handler_(rpc_outgoing_handler_t&& handler)
 {
   if ( _outgoing == nullptr ) return std::move(handler);
   

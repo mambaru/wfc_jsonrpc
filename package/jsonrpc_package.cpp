@@ -1,7 +1,7 @@
 
 #include "jsonrpc_package.hpp"
 #include "broker/broker_module.hpp"
-#include "workflow/workflow_module.hpp"
+#include "queue/queue_module.hpp"
 
 #include "module/jsonrpc_module.hpp"
 #include <wfc/module/module_list.hpp>
@@ -12,7 +12,7 @@ namespace wfc{
 class jsonrpc_package::impl: public ::wfc::module_list<
   jsonrpc_build_info,
   jsonrpc::broker_module,
-  jsonrpc::workflow_module,
+  jsonrpc::queue_module,
   jsonrpc::jsonrpc_module
 >
 {  

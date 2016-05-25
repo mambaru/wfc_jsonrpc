@@ -4,11 +4,11 @@
 
 namespace wfc{ namespace jsonrpc{
 
-class workflow_module
+class queue_module
   : public ::wfc::module
 {
 public:
-  workflow_module();
+  queue_module();
 };
 
 }}
