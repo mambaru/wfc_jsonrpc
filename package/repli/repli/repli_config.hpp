@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-namespace wfc{ namespace jsonrpc{ namespace repli{
+namespace wfc{ namespace jsonrpc{ 
   
 struct repli_config
 {
@@ -11,4 +11,4 @@ struct repli_config
   std::vector<std::string> reply_targets;
 };
 
-}}}
+}}

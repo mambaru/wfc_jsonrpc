@@ -2,6 +2,7 @@ include(BuildInfo)
 
 SET(
   wfc_jsonrpc_source_list
+
   jsonrpc_package.cpp
   
   broker/broker_module.cpp
@@ -9,16 +10,14 @@ SET(
   broker/broker/broker.cpp
 
   queue/queue_module.cpp
-  queue/domain/queue_multiton.cpp
-  queue/domain/queue.cpp
-  
-  module/jsonrpc_module.cpp
-  module/gateway_multiton.cpp
+  queue/queue/queue_multiton.cpp
+  queue/queue/queue.cpp
 
-  jsonrpc/repli/repli.cpp
-  jsonrpc/repli/repli_multiton.cpp
-  jsonrpc/gateway/gateway.cpp
-)
+  repli/repli_module.cpp
+  repli/repli/repli_multiton.cpp
+  repli/repli/repli.cpp
+
+  )
 
 include_directories(./include/)
 

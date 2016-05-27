@@ -1,4 +1,4 @@
-#include "domain/queue_multiton.hpp"
+#include "queue/queue_multiton.hpp"
 #include "queue_module.hpp"
 #include <wfc/module/component_list.hpp>
 #include <wfc/name.hpp>

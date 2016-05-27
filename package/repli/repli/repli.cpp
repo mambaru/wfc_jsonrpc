@@ -3,7 +3,7 @@
 #include <wfc/asio.hpp>
 #include <wfc/jsonrpc/target.hpp>
 
-namespace wfc{ namespace jsonrpc{ namespace repli{
+namespace wfc{ namespace jsonrpc{ 
 
 class repli::impl
 {
@@ -11,8 +11,8 @@ public:
 
   impl( const repli_config& conf, ::wfc::wfcglobal::ptr g)
   {
-    _primary = std::make_shared<target>( conf.primary_target, g);
-    for (const auto& c: conf.targets )
+    _primary = std::make_shared<target>( conf.target, g);
+    for (const auto& c: conf.reply_targets )
     {
       _targets.push_back( std::make_shared<target>(c, g) );
     }
@@ -147,4 +147,4 @@ void repli::perform_outgoing(outgoing_holder holder, io_id_t io_id)
 }
 
 
-}}}
+}}

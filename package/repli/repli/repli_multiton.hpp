@@ -2,14 +2,13 @@
 
 #include <wfc/module/component.hpp>
 
-namespace wfc{ namespace jsonrpc{ namespace repli{
+namespace wfc{ namespace jsonrpc{ 
 
 class repli_multiton
   : public ::wfc::component
 {
-  class impl;
 public:
   repli_multiton();
 };
 
-}}}
+}}

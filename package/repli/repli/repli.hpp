@@ -6,7 +6,7 @@
 #include <string>
 #include <memory>
 
-namespace wfc{ namespace jsonrpc{ namespace repli{ 
+namespace wfc{ namespace jsonrpc{ 
 
 class repli
   : public ::wfc::domain_object< ijsonrpc, repli_config>
@@ -36,4 +36,4 @@ private:
   std::weak_ptr<iinterface> _target;
 };
 
-}}}
+}}
