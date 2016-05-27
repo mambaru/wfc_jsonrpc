@@ -1,78 +1,114 @@
 #include "broker.hpp"
-#include "broker_impl.hpp"
+//#include "broker_impl.hpp"
+#include <iow/jsonrpc/incoming/aux.hpp>
 #include <wfc/logger.hpp>
 
-namespace wfc{
 
-class broker::impl: public broker_impl
-{
-public:
-  impl()
-  {}
-};
-
-broker::~broker()
-{
-}
-
-broker::broker()
-{
-}
+namespace wfc{ namespace jsonrpc{ 
 
 void broker::reconfigure()
 {
-  if ( auto g = this->global() )
+  domain_proxy::reconfigure();
+  const auto& opt = this->options();
+  _reject.insert( opt.reject.begin(), opt.reject.end() );
+
+  for (const auto& o: opt.targets)
   {
-    if ( _impl == nullptr )
-    {
-       _impl = std::make_shared<broker::impl>( );
-    }
-    _impl->reconfigure(this->options(), this->global()->registry);
+    auto target = this->get_adapter(o.target);
+    _targets.push_back( target );
+    for (const auto& m: o.methods)
+      _methods[m] = target;
   }
 }
 
-void broker::stop(const std::string&) 
+void broker::reg_io(io_id_t io_id, std::weak_ptr<iinterface> itf) 
 {
+  domain_proxy::reg_io(io_id, itf);
+  for (auto& t : _targets )
+  {
+    t.reg_io(io_id, itf);
+  }
 }
 
-void broker::start(const std::string&)
+void broker::unreg_io(io_id_t io_id) 
 {
+  domain_proxy::unreg_io(io_id);
+  for (auto& t : _targets )
+  {
+    t.unreg_io(io_id);
+  }
 }
 
-void broker::reg_io(io_id_t io_id, std::weak_ptr<iinterface> itf)
-{
-  _impl->reg_io(io_id, itf);
-}
-
-void broker::unreg_io(io_id_t io_id)
-{
-  _impl->unreg_io(io_id);
-}
-
-void broker::perform_io(data_ptr d, io_id_t io_id, io_outgoing_handler_t handler) 
-{
-  _impl->perform_io(std::move(d), io_id, std::move(handler) );
-}
 
 void broker::perform_incoming(incoming_holder holder, io_id_t io_id, rpc_outgoing_handler_t handler) 
 {
-  _impl->perform_incoming(std::move(holder), io_id, std::move(handler) );
+  if ( this->suspended() )
+  {
+    domain_proxy::perform_incoming(std::move(holder), io_id, std::move(handler) );
+    return;
+  }
+  
+  if ( !holder.has_method() )
+  {
+    domain_proxy::perform_incoming(std::move(holder), io_id, std::move(handler) );
+    return;
+  }
+    
+  if ( _reject.find( holder.method() ) != _reject.end() )
+  {
+    ::iow::jsonrpc::aux::send_error(std::move(holder), std::make_unique< ::iow::jsonrpc::service_unavailable > (), std::move(handler));
+    return;
+  }
+    
+  auto itr = _methods.find(holder.method());
+  if ( itr != _methods.end() )
+  {
+    itr->second.perform_incoming(std::move(holder), io_id, std::move(handler) );
+    return;
+  }
+    
+  if ( this->target() ) 
+  {
+    domain_proxy::perform_incoming(std::move(holder), io_id, std::move(handler) );
+    return;
+  }
+
+  ::iow::jsonrpc::aux::send_error(std::move(holder),  std::make_unique< ::iow::jsonrpc::procedure_not_found > (), std::move(handler));
 }
   
 void broker::perform_outgoing(outgoing_holder holder, io_id_t io_id)
 {
-  _impl->perform_outgoing(std::move(holder), io_id );
+  if ( this->suspended() )
+  {
+    domain_proxy::perform_outgoing( std::move(holder), io_id );
+    return;
+  }
+
+  if ( !holder.is_request() )
+  {
+    domain_proxy::perform_outgoing(std::move(holder), io_id );
+    return;
+  }
+    
+  if ( _reject.find( holder.name() ) != _reject.end() )
+  {
+    if ( auto rh = holder.result_handler() )
+      rh( incoming_holder(nullptr) );
+    // ::iow::jsonrpc::aux::send_error(std::move(holder), std::make_unique< ::iow::jsonrpc::service_unavailable > (), std::move(handler));
+    return;
+  }
+    
+  auto itr = _methods.find(holder.name());
+  if ( itr != _methods.end() )
+  {
+    itr->second.perform_outgoing(std::move(holder), io_id );
+    return;
+  }
+    
+  domain_proxy::perform_outgoing(std::move(holder), io_id /*, std::move(handler)*/ );
+//  ::iow::jsonrpc::aux::send_error(std::move(holder),  std::make_unique< ::iow::jsonrpc::procedure_not_found > (), std::move(handler));
+
 }
 
-void broker::generate1(broker_config& opt, const std::string& /*type*/)
-{
-  opt = broker_config();
-  opt.target="*default-target*";
-  opt.reject={"*reject", "method", "list*"};
-  opt.targets.push_back(broker_config::method_target());
-  opt.targets.back().target="*target for method list*";
-  opt.targets.back().methods={"*method", "list*"};
-}
 
-
-}
+}}

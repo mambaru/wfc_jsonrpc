@@ -2,14 +2,13 @@
 
 #include <wfc/module/component.hpp>
 
-namespace wfc{
+namespace wfc{ namespace jsonrpc{ 
 
 class broker_multiton
   : public ::wfc::component
 {
-  class impl;
 public:
   broker_multiton();
 };
 
-}
+}}

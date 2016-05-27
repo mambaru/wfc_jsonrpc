@@ -2,14 +2,13 @@
 
 #include <wfc/module/component.hpp>
 
-namespace wfc{
+namespace wfc{ namespace jsonrpc{
 
-class gateway_multiton
+class hub_multiton
   : public ::wfc::component
 {
-  class impl;
 public:
-  gateway_multiton();
+  hub_multiton();
 };
 
-}
+}}

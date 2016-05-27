@@ -3,9 +3,8 @@
 #include "broker_config.hpp"
 #include <wfc/json.hpp>
 
-namespace wfc{
+namespace wfc{  namespace jsonrpc{ 
   
- 
 struct broker_config_json
 {
   JSON_NAME(target)
@@ -41,4 +40,4 @@ struct broker_config_json
   typedef type::member_list member_list;
 };
 
-}
+}}

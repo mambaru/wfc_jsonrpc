@@ -2,43 +2,39 @@
 
 #include "broker_config.hpp"
 #include <wfc/domain_object.hpp>
-#include <wfc/jsonrpc/ijsonrpc.hpp>
+#include <wfc/jsonrpc/domain_proxy.hpp>
+#include <wfc/mutex.hpp>
 #include <string>
 #include <memory>
 
-namespace wfc{
+namespace wfc{ namespace jsonrpc{ 
   
 class broker
-  : public ::wfc::domain_object< ijsonrpc, broker_config>
+  : public ::wfc::jsonrpc::domain_proxy<broker_config>
 {
 public:
-  virtual ~broker();
-  broker();
-
-  static void generate1(broker_config& opt, const std::string& );
-  
+  // domain_proxy
   virtual void reconfigure() override;
-  virtual void start(const std::string&) override;
-  virtual void stop(const std::string&) override;
-  
-  // iinterface
-  
-  virtual void reg_io(io_id_t /*io_id*/, std::weak_ptr<iinterface> /*itf*/) override;
-
-  virtual void unreg_io(io_id_t /*io_id*/) override;
-
-  virtual void perform_io(data_ptr /*d*/, io_id_t /*io_id*/, io_outgoing_handler_t handler) override;
+  virtual void reg_io(io_id_t io_id, std::weak_ptr<iinterface> itf) override;
+  virtual void unreg_io(io_id_t io_id) override;
 
   // ijsonrpc
-
   virtual void perform_incoming(incoming_holder, io_id_t, rpc_outgoing_handler_t handler) override;
-  
   virtual void perform_outgoing(outgoing_holder, io_id_t) override;
-  
+
 private:
-  class impl;
-  std::shared_ptr<impl> _impl;
-  std::weak_ptr<iinterface> _target;
+ 
+  typedef std::list<target_adapter> target_list;
+  typedef std::map<std::string, target_adapter> method_map;
+  typedef std::set<std::string> reject_list;
+  typedef rwlock<std::mutex> mutex_type;
+
+  target_list  _targets;
+  method_map   _methods;
+  reject_list  _reject;
+
+  mutable mutex_type _mutex;
+
 };
 
-}
+}}

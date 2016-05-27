@@ -9,20 +9,24 @@
 #include <wfc/module/component.hpp>
 #include <wfc/name.hpp>
 
-namespace wfc{
+namespace wfc{ namespace jsonrpc{ 
 
-namespace { WFC_NAME2(broker_name, "jsonrpc-broker") }
+namespace { 
+  
+  WFC_NAME2(component_name, "jsonrpc-broker") 
 
-class broker_multiton::impl: public ::wfc::multiton<
-  broker_name,
-  ::wfc::instance<broker>,
-  broker_config_json
->
-{};
+  class impl: public ::wfc::multiton<
+    component_name,
+    ::wfc::instance<broker>,
+    broker_config_json
+  >
+  {};
+
+}
 
 
 broker_multiton::broker_multiton()
-  : ::wfc::component( std::make_shared<broker_multiton::impl>() )
+  : ::wfc::component( std::make_shared<impl>() )
 {}
 
-}
+}}

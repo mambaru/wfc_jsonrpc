@@ -17,7 +17,10 @@ SET(
   repli/repli/repli_multiton.cpp
   repli/repli/repli.cpp
 
-  )
+  hub/hub_module.cpp
+  hub/hub/hub_multiton.cpp
+  hub/hub/hub.cpp
+)
 
 include_directories(./include/)
 

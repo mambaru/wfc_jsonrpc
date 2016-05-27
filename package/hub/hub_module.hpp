@@ -4,11 +4,11 @@
 
 namespace wfc{ namespace jsonrpc{
 
-class jsonrpc_module
+class hub_module
   : public ::wfc::module
 {
 public:
-  jsonrpc_module();
+  hub_module();
 };
 
 }}

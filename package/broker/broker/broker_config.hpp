@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-namespace wfc{
+namespace wfc{ namespace jsonrpc{ 
 
 struct broker_config
 {
@@ -18,4 +18,4 @@ struct broker_config
   std::vector<std::string> reject;
 };
 
-}
+} }
