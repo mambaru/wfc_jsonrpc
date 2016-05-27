@@ -7,16 +7,15 @@ namespace wfc{ namespace jsonrpc{ namespace repli{
   
 struct repli_config_json
 {
-  JSON_NAME(primary_target)
-  JSON_NAME(targets)
+  JSON_NAME(target)
+  JSON_NAME(reply_targets)
 
   
   typedef json::object<
     repli_config,
     ::wfc::json::member_list<
-      ::wfc::json::member<n_primary_target, repli_config, std::string, &repli_config::primary_target>,
-      ::wfc::json::member<n_targets, repli_config, std::vector<std::string>, &repli_config::targets
-                        , ::wfc::json::array< std::vector< ::wfc::json::value< std::string > > >
+      ::wfc::json::member<n_target, repli_config, std::string, &repli_config::target>,
+      ::wfc::json::member<n_reply_targets, repli_config, std::vector<std::string>, &repli_config::reply_targets, vector_of_strings<10> >
       >
     >
   > type;
