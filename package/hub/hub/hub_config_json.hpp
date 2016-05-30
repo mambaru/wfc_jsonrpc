@@ -8,7 +8,7 @@ namespace wfc{ namespace jsonrpc{
  
 struct hub_config_json
 {
-    JSON_NAME(target)
+  JSON_NAME(target)
 
   typedef ::wfc::json::object<
     hub_config,
