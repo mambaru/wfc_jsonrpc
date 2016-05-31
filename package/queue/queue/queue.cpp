@@ -12,21 +12,40 @@ void queue::reconfigure()
   const auto& opt = this->options();
   if ( !opt.incoming_disabled )
   {
+    if ( opt.incoming_workflow.empty() )
+    {
+      _incoming = this->get_workflow();
+    }
+    else
+    {
+      _incoming = this->get_target< ::wfc::workflow >( opt.incoming_workflow );
+    }
+    /*
     _incoming = ::wfc::workflow::recreate_and_start( _incoming, opt.incoming );
+    */
   }
   else
   {
-    if ( _incoming!=nullptr ) _incoming->stop();
+    //if ( _incoming!=nullptr ) _incoming->stop();
     _incoming = nullptr;
   }
   
   if ( !opt.outgoing_disabled )
   {
-    _outgoing = ::wfc::workflow::recreate_and_start( _outgoing, opt.outgoing );
+    if ( opt.outgoing_workflow.empty() )
+    {
+      _outgoing = this->get_workflow();
+    }
+    else
+    {
+      _outgoing = this->get_target< ::wfc::workflow >( opt.outgoing_workflow );
+    }
+
+    //_outgoing = ::wfc::workflow::recreate_and_start( _outgoing, opt.outgoing );
   }
   else 
   {
-    if ( _outgoing!=nullptr ) _outgoing->stop();
+    //if ( _outgoing!=nullptr ) _outgoing->stop();
     _outgoing = nullptr;
   }
   
