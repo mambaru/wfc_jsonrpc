@@ -67,7 +67,7 @@ void broker::perform_incoming(incoming_holder holder, io_id_t io_id, rpc_outgoin
     return;
   }
     
-  if ( this->target() ) 
+  if ( this->get_target() ) 
   {
     domain_proxy::perform_incoming(std::move(holder), io_id, std::move(handler) );
     return;

@@ -10,15 +10,9 @@ struct queue_config
 {
   std::string target;
   
-  // Входящая очередь (основная)
-  bool incoming_disabled = false;
-  std::string incoming_workflow;
-  //::wfc::workflow_options incoming;
-  
   // Очередь для ответов (опционально)
-  bool outgoing_disabled = true;
-  //::wfc::workflow_options outgoing;
-  std::string outgoing_workflow;
+  bool callback_queue = false;
+  std::string callback_workflow;
 };
 
 }}

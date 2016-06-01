@@ -27,8 +27,8 @@ public:
 private:
   rpc_outgoing_handler_t make_handler_(rpc_outgoing_handler_t&& handler);
 private:
-  workflow_ptr _incoming;
-  workflow_ptr _outgoing;
+  //workflow_ptr _incoming;
+  workflow_ptr _callback_workflow;
 };
 
 }}
