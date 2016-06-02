@@ -19,7 +19,7 @@ namespace {
     component_name,
     ::wfc::instance<broker>,
     broker_config_json,
-    component_features::CommonWorkflow
+    component_features::DisabledWorkflow
   >
   {};
 

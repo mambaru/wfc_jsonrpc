@@ -18,7 +18,7 @@ namespace
     multiton_name,
     ::wfc::instance<hub>,
     hub_config_json,
-    ::wfc::component_features::CommonWorkflow
+    ::wfc::component_features::DisabledWorkflow
   >
   {};
 }
