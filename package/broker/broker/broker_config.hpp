@@ -7,14 +7,14 @@ namespace wfc{ namespace jsonrpc{
 
 struct broker_config
 {
-  struct method_target
+  struct rule
   {
     std::string target;
     std::vector<std::string> methods;
   };
   
   std::string target;
-  std::vector<method_target> targets;
+  std::vector<rule> rules;
   std::vector<std::string> reject;
 };
 

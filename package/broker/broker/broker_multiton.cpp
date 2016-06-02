@@ -18,7 +18,8 @@ namespace {
   class impl: public ::wfc::multiton<
     component_name,
     ::wfc::instance<broker>,
-    broker_config_json
+    broker_config_json,
+    component_features::CommonWorkflow
   >
   {};
 

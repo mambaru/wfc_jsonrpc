@@ -12,11 +12,11 @@ void broker::reconfigure()
   const auto& opt = this->options();
   _reject.insert( opt.reject.begin(), opt.reject.end() );
 
-  for (const auto& o: opt.targets)
+  for (const auto& r: opt.rules)
   {
-    auto target = this->get_adapter(o.target);
+    auto target = this->get_adapter(r.target);
     _targets.push_back( target );
-    for (const auto& m: o.methods)
+    for (const auto& m: r.methods)
       _methods[m] = target;
   }
 }
@@ -94,7 +94,6 @@ void broker::perform_outgoing(outgoing_holder holder, io_id_t io_id)
   {
     if ( auto rh = holder.result_handler() )
       rh( incoming_holder(nullptr) );
-    // ::iow::jsonrpc::aux::send_error(std::move(holder), std::make_unique< ::iow::jsonrpc::service_unavailable > (), std::move(handler));
     return;
   }
     
@@ -105,9 +104,7 @@ void broker::perform_outgoing(outgoing_holder holder, io_id_t io_id)
     return;
   }
     
-  domain_proxy::perform_outgoing(std::move(holder), io_id /*, std::move(handler)*/ );
-//  ::iow::jsonrpc::aux::send_error(std::move(holder),  std::make_unique< ::iow::jsonrpc::procedure_not_found > (), std::move(handler));
-
+  domain_proxy::perform_outgoing(std::move(holder), io_id );
 }
 
 
