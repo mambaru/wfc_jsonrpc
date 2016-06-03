@@ -118,9 +118,9 @@ repli::repli()
 }
 */
 
-void repli::reconfigure()
+void repli::ready()
 {
-  domain_proxy::reconfigure();
+  //domain_proxy::reconfigure();
   for ( auto name : this->options().reply_targets )
   {
     _targets.push_back(  this->get_adapter(name) );

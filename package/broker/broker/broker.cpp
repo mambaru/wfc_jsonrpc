@@ -6,9 +6,8 @@
 
 namespace wfc{ namespace jsonrpc{ 
 
-void broker::reconfigure()
+void broker::ready()
 {
-  domain_proxy::reconfigure();
   const auto& opt = this->options();
   _reject.insert( opt.reject.begin(), opt.reject.end() );
 

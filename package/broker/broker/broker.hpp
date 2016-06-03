@@ -14,7 +14,7 @@ class broker
 {
 public:
   // domain_proxy
-  virtual void reconfigure() override;
+  virtual void ready() override;
   virtual void reg_io(io_id_t io_id, std::weak_ptr<iinterface> itf) override;
   virtual void unreg_io(io_id_t io_id) override;
 

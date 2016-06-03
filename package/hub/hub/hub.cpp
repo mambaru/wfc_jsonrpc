@@ -6,9 +6,8 @@ namespace wfc{ namespace jsonrpc{
 hub::hub()
 {}
 
-void hub::reconfigure()
+void hub::ready()
 {
-  domain_proxy::reconfigure();
 }
 
 

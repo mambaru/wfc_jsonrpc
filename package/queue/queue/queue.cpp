@@ -6,9 +6,9 @@ namespace wfc{ namespace jsonrpc{
 queue::queue()
 {}
 
-void queue::reconfigure()
+void queue::ready()
 {
-  domain_proxy::reconfigure();
+ // domain_proxy::reconfigure();
   const auto& opt = this->options();
   /*
   if ( !opt.incoming_disabled )

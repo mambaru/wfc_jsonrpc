@@ -16,7 +16,7 @@ class hub
 public:
   hub();
 // domain
-  virtual void reconfigure() override;
+  virtual void ready() override;
 
   /*
   virtual void reg_io(io_id_t , std::weak_ptr<iinterface> );
