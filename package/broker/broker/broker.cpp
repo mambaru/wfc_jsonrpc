@@ -1,6 +1,6 @@
 #include "broker.hpp"
 //#include "broker_impl.hpp"
-#include <iow/jsonrpc/incoming/aux.hpp>
+#include <iow/jsonrpc/incoming/send_error.hpp>
 #include <wfc/logger.hpp>
 
 
