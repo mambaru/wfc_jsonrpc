@@ -1,6 +1,6 @@
 #include "broker.hpp"
 //#include "broker_impl.hpp"
-#include <iow/jsonrpc/incoming/send_error.hpp>
+#include <wjrpc/incoming/send_error.hpp>
 #include <wfc/logger.hpp>
 
 
@@ -55,7 +55,7 @@ void broker::perform_incoming(incoming_holder holder, io_id_t io_id, rpc_outgoin
     
   if ( _reject.find( holder.method() ) != _reject.end() )
   {
-    ::iow::jsonrpc::aux::send_error(std::move(holder), std::make_unique< ::iow::jsonrpc::service_unavailable > (), std::move(handler));
+    ::wjrpc::aux::send_error(std::move(holder), std::make_unique< ::wjrpc::service_unavailable > (), std::move(handler));
     return;
   }
     
@@ -72,7 +72,7 @@ void broker::perform_incoming(incoming_holder holder, io_id_t io_id, rpc_outgoin
     return;
   }
 
-  ::iow::jsonrpc::aux::send_error(std::move(holder),  std::make_unique< ::iow::jsonrpc::procedure_not_found > (), std::move(handler));
+  ::wjrpc::aux::send_error(std::move(holder),  std::make_unique< ::wjrpc::procedure_not_found > (), std::move(handler));
 }
   
 void broker::perform_outgoing(outgoing_holder holder, io_id_t io_id)
