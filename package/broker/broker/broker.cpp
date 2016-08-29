@@ -92,7 +92,7 @@ void broker::perform_outgoing(outgoing_holder holder, io_id_t io_id)
   if ( _reject.find( holder.name() ) != _reject.end() )
   {
     if ( auto rh = holder.result_handler() )
-      rh( incoming_holder(nullptr) );
+      rh( incoming_holder( data_ptr() ) );
     return;
   }
     
