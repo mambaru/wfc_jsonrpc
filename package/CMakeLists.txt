@@ -20,6 +20,10 @@ SET(
   hub/hub_module.cpp
   hub/hub/hub_multiton.cpp
   hub/hub/hub.cpp
+
+  statistics/statistics_module.cpp
+  statistics/statistics/statistics_multiton.cpp
+  statistics/statistics/statistics.cpp
 )
 
 include_directories(./include/)
