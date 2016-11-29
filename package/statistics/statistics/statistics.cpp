@@ -32,7 +32,6 @@ void statistics::perform_incoming(incoming_holder holder, io_id_t io_id, rpc_out
   } );
 }
 
-
 statistics::meter_ptr statistics::request_meter_(std::string name, size_t size)
 {
   std::lock_guard<std::mutex> lk(_mutex);
@@ -55,7 +54,6 @@ statistics::meter_ptr statistics::notify_meter_(std::string name, size_t size)
     itr = _ntf_meters.insert( std::make_pair(name, prototype) ).first;
   }
   return this->create_meter(itr->second, size);
- 
 }
 
 statistics::meter_ptr statistics::other_meter_(size_t size)
