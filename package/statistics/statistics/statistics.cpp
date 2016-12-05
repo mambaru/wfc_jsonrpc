@@ -38,7 +38,8 @@ statistics::meter_ptr statistics::request_meter_(std::string name, size_t size)
   auto itr = _req_meters.find(name);
   if (itr == _req_meters.end() )
   {
-    auto prototype = this->create_meter_prototype( std::string("req:") + name + ".rate", std::string("req:") + name + ".size");
+    auto opt = this->options();
+    auto prototype = this->create_meter_prototype( opt.request_prefix + name + opt.time_suffix, opt.request_prefix + name + opt.size_suffix);
     itr = _req_meters.insert( std::make_pair(name, prototype) ).first;
   }
   return this->create_meter(itr->second, size);
@@ -50,7 +51,8 @@ statistics::meter_ptr statistics::notify_meter_(std::string name, size_t size)
   auto itr = _ntf_meters.find(name);
   if (itr == _ntf_meters.end() )
   {
-    auto prototype = this->create_meter_prototype( std::string("ntf:") + name + ".rate", std::string("ntf:") + name + ".size");
+    auto opt = this->options();
+    auto prototype = this->create_meter_prototype( opt.notify_prefix + name + opt.time_suffix, opt.notify_prefix + name + opt.size_suffix);
     itr = _ntf_meters.insert( std::make_pair(name, prototype) ).first;
   }
   return this->create_meter(itr->second, size);
