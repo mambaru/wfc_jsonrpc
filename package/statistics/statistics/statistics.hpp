@@ -20,11 +20,13 @@ public:
   virtual void reconfigure() override;
   // ijsonrpc
   virtual void perform_incoming(incoming_holder, io_id_t, rpc_outgoing_handler_t handler) override;
+
 private:
   meter_ptr request_meter_(std::string name, size_t size);
+  meter_ptr create_meter_(meter_map& meters, size_t size);
   meter_ptr notify_meter_(std::string name, size_t size);
   meter_ptr other_meter_(size_t size);
-  meter_ptr create_meter_(meter_map& meters, size_t size);
+  
 private:
   meter_map _req_meters;
   meter_map _ntf_meters;

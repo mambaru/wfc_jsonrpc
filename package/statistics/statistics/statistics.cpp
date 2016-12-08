@@ -39,7 +39,10 @@ statistics::meter_ptr statistics::request_meter_(std::string name, size_t size)
   if (itr == _req_meters.end() )
   {
     auto opt = this->options();
-    auto prototype = this->create_meter_prototype( opt.request_prefix + name + opt.time_suffix, opt.request_prefix + name + opt.size_suffix);
+    auto prototype = this->create_meter_prototype(
+      opt.request_prefix + name + opt.time_suffix,
+      opt.request_prefix + name + opt.size_suffix
+    );
     itr = _req_meters.insert( std::make_pair(name, prototype) ).first;
   }
   return this->create_meter(itr->second, size, 1);
@@ -47,12 +50,15 @@ statistics::meter_ptr statistics::request_meter_(std::string name, size_t size)
 
 statistics::meter_ptr statistics::notify_meter_(std::string name, size_t size)
 {
+  auto opt = this->options();
   std::lock_guard<std::mutex> lk(_mutex);
   auto itr = _ntf_meters.find(name);
   if (itr == _ntf_meters.end() )
   {
-    auto opt = this->options();
-    auto prototype = this->create_meter_prototype( opt.notify_prefix + name + opt.time_suffix, opt.notify_prefix + name + opt.size_suffix);
+    auto prototype = this->create_meter_prototype(
+      opt.notify_prefix + name + opt.time_suffix,
+      opt.notify_prefix + name + opt.size_suffix
+    );
     itr = _ntf_meters.insert( std::make_pair(name, prototype) ).first;
   }
   return this->create_meter(itr->second, size, 1);
@@ -60,10 +66,11 @@ statistics::meter_ptr statistics::notify_meter_(std::string name, size_t size)
 
 statistics::meter_ptr statistics::other_meter_(size_t size)
 {
+  auto opt = this->options();
   std::lock_guard<std::mutex> lk(_mutex);
   if ( _other == nullptr )
-    _other = this->create_meter_prototype("other.rate", "other.size");
-  return this->create_meter(_other, size, 1 );
+    _other = this->create_meter_prototype( opt.other_time, opt.other_size );
+  return this->create_meter( _other, size, 1 );
 }
 
 }}
