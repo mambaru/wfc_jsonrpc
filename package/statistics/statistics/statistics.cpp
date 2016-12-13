@@ -26,6 +26,8 @@ void statistics::perform_incoming(incoming_holder holder, io_id_t io_id, rpc_out
   else
     meter = this->other_meter_(size);
 
+  meter->inc(0, size - 1);
+
   domain_proxy::perform_incoming( std::move(holder), io_id, [handler, meter]( outgoing_holder outholder)
   {
     handler( std::move(outholder) );
