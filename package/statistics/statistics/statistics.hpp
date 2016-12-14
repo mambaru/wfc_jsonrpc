@@ -3,7 +3,7 @@
 #include "statistics_config.hpp"
 #include <wfc/jsonrpc/domain_proxy.hpp>
 #include <wfc/jsonrpc/ijsonrpc.hpp>
-#include <wfc/statistics/multi_meter.hpp>
+#include <wfc/statistics/meters.hpp>
 #include <string>
 #include <memory>
 
@@ -12,11 +12,12 @@ namespace wfc{ namespace jsonrpc{
 class statistics
   : public ::wfc::jsonrpc::domain_proxy< statistics_config >
 {
-  typedef multi_meter meter_type;
+  typedef composite_meter meter_type;
   typedef std::shared_ptr<meter_type> meter_ptr;
   typedef std::map< std::string, meter_ptr > meter_map;
 
 public:
+  virtual void configure() override;
   virtual void reconfigure() override;
   // ijsonrpc
   virtual void perform_incoming(incoming_holder, io_id_t, rpc_outgoing_handler_t handler) override;
@@ -28,6 +29,7 @@ private:
   meter_ptr other_meter_(size_t size);
   
 private:
+  bool _enable_write_size = false;
   meter_map _req_meters;
   meter_map _ntf_meters;
   meter_ptr  _other;
