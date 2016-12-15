@@ -65,7 +65,6 @@ void statistics::perform_incoming(incoming_holder holder, io_id_t io_id, rpc_out
               message = message.substr(1, message.size()-2 );
             else
               message="Error";
-            COMMON_LOG_ERROR( "JSON-RPC: " << d )
             auto proto = stat->create_value_prototype("JSON-RPC:" + message);
             stat->create_meter(proto, 0, 1);
             auto mproto = stat->create_value_prototype(method + ":" + message);
