@@ -48,6 +48,7 @@ void statistics::perform_incoming(incoming_holder holder, io_id_t io_id, rpc_out
       auto holder = outholder.clone();
       if ( auto d = holder.detach() )
       {
+        COMMON_LOG_ERROR( "JSON-RPC TRACE!!!: " << d )
         if ( enable_write_size)
           meter->set_write_size( d->size() );
         if ( enable_error_stat )
