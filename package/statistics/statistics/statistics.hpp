@@ -30,6 +30,7 @@ private:
   
 private:
   bool _enable_write_size = false;
+  bool _enable_error_stat = false;
   meter_map _req_meters;
   meter_map _ntf_meters;
   meter_ptr  _other;

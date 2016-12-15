@@ -14,6 +14,7 @@ void statistics::reconfigure()
 {
   std::lock_guard<std::mutex> lk(_mutex);
   _enable_write_size = this->options().enable_write_size;
+  _enable_error_stat = this->options().enable_error_stat;
   _req_meters.clear();
   _ntf_meters.clear();
 }
@@ -24,27 +25,50 @@ void statistics::perform_incoming(incoming_holder holder, io_id_t io_id, rpc_out
     return domain_proxy::perform_incoming( std::move(holder), io_id, handler );
 
   size_t size = holder.size();
+  std::string method =  holder.method();
   meter_ptr meter;
   if (holder.is_request() )
-    meter = this->request_meter_(holder.method(), size);
+    meter = this->request_meter_(method, size);
   else if (holder.is_notify() )
-    meter = this->notify_meter_(holder.method(), size);
+    meter = this->notify_meter_(method, size);
   else
     meter = this->other_meter_(size);
 
   //meter->inc(0, size - 1);
 
+  std::weak_ptr< wfc::statistics > wstat;
   bool enable_write_size = this->_enable_write_size;
-  domain_proxy::perform_incoming( std::move(holder), io_id, [handler, meter, enable_write_size]( outgoing_holder outholder)
+  bool enable_error_stat = this->_enable_error_stat;
+  if ( enable_write_size || enable_error_stat)
+    wstat = this->get_statistics();
+  domain_proxy::perform_incoming( std::move(holder), io_id, [handler, meter, wstat, enable_write_size, enable_error_stat, method]( outgoing_holder outholder)
   {
-    if ( enable_write_size )
+    if ( auto stat = wstat.lock() )
     {
       auto holder = outholder.clone();
-      auto d = holder.detach();
-      if ( d != nullptr )
-        meter->set_write_size( d->size() );
+      if ( auto d = holder.detach() )
+      {
+        if ( enable_write_size)
+          meter->set_write_size( d->size() );
+        if ( enable_error_stat )
+        {
+          wfc::json::json_error e;
+          wfc::jsonrpc::outgoing_error<wfc::jsonrpc::error> err;
+          typedef wfc::jsonrpc::outgoing_error_json<wfc::jsonrpc::error_json> error_json;
+          error_json::serializer()(err, d->begin(), d->end(), &e);
+          if ( !e && err.error!=nullptr )
+          {
+            std::string message;
+            wfc::jsonrpc::error_codes_json::serializer()( err.error->code, std::back_inserter(message) );
+            auto proto = stat->create_value_prototype(message);
+            stat->create_meter(proto, 0, 1);
+            auto mproto = stat->create_value_prototype(method + ":" + message);
+            stat->create_meter(mproto, 0, 1);
+          }
+        }
+      }
     }
-    handler( std::move(outholder) );
+    handler( std::move(outholder) );    
   } );
 }
 

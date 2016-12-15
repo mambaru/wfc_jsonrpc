@@ -9,6 +9,7 @@ struct statistics_config_json
 {
   JSON_NAME(target)
   JSON_NAME(enable_write_size)
+  JSON_NAME(enable_error_stat)
   JSON_NAME(time_suffix)
   JSON_NAME(read_size_suffix)
   JSON_NAME(write_size_suffix)
@@ -25,6 +26,7 @@ struct statistics_config_json
     ::wfc::json::member_list<
       ::wfc::json::member<n_target, statistics_config, std::string, &statistics_config::target>,
       ::wfc::json::member<n_enable_write_size, statistics_config, bool, &statistics_config::enable_write_size>,
+      ::wfc::json::member<n_enable_error_stat, statistics_config, bool, &statistics_config::enable_error_stat>,
       ::wfc::json::member<n_time_suffix, statistics_config, std::string, &statistics_config::time_suffix>,
       ::wfc::json::member<n_read_size_suffix, statistics_config, std::string, &statistics_config::read_size_suffix>,
       ::wfc::json::member<n_write_size_suffix, statistics_config, std::string, &statistics_config::write_size_suffix>,

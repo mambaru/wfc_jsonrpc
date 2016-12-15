@@ -9,6 +9,7 @@ struct statistics_config
 {
   std::string target;
   bool enable_write_size = true;
+  bool enable_error_stat = true;
   std::string time_suffix = ".time";
   std::string read_size_suffix = ".rsize";
   std::string write_size_suffix = ".wsize";
