@@ -56,10 +56,12 @@ void statistics::perform_incoming(incoming_holder holder, io_id_t io_id, rpc_out
           wfc::jsonrpc::outgoing_error<wfc::jsonrpc::error> err;
           typedef wfc::jsonrpc::outgoing_error_json<wfc::jsonrpc::error_json> error_json;
           error_json::serializer()(err, d->begin(), d->end(), &e);
+          COMMON_LOG_ERROR( "JSON-RPC ERROR: " << d )
           if ( !e && err.error!=nullptr )
           {
             std::string message;
             wfc::jsonrpc::error_codes_json::serializer()( err.error->code, std::back_inserter(message) );
+            COMMON_LOG_ERROR( "JSON-RPC ERROR message: " << message )
             auto proto = stat->create_value_prototype(message);
             stat->create_meter(proto, 0, 1);
             auto mproto = stat->create_value_prototype(method + ":" + message);
