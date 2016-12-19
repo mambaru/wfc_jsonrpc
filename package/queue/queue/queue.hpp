@@ -18,7 +18,7 @@ public:
   queue();
 // domain
   virtual void ready() override;
-  virtual void stop(const std::string&) override;
+  virtual void stop() override;
 
 // ijsonrpc
   virtual void perform_incoming(incoming_holder, io_id_t, rpc_outgoing_handler_t handler) override;

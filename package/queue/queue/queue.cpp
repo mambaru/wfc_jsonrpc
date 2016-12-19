@@ -15,7 +15,7 @@ void queue::ready()
     _callback_workflow = nullptr;
 }
 
-void queue::stop(const std::string&)
+void queue::stop()
 {
   _callback_workflow = nullptr;
 }
