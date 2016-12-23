@@ -29,11 +29,26 @@ void queue::perform_incoming(incoming_holder holder, io_id_t io_id, rpc_outgoing
   else
   {
     auto pholder = std::make_shared<incoming_holder>( std::move(holder) );
-    this->get_workflow()->post([pholder, io_id, handler, this]() mutable
-    {
-      auto t = this->get_target();
-      t.perform_incoming( std::move( *pholder ), io_id, this->make_handler_( std::move(handler) ) );
-    });
+    this->get_workflow()->post(
+      [pholder, io_id, handler, this]() mutable
+      {
+        auto t = this->get_target();
+        t.perform_incoming( std::move( *pholder ), io_id, this->make_handler_( std::move(handler) ) );
+      },
+      [handler]()
+      {
+        typedef jsonrpc::outgoing_error_json< jsonrpc::error_json > message_json;
+        jsonrpc::outgoing_error< jsonrpc::error > error_message;
+        error_message.error = std::make_unique<jsonrpc::error>( jsonrpc::error_codes::QueueOverflow );
+        auto id_range = holder.raw_id();
+        if ( id_range.first != id_range.second )
+          error_message.id = std::make_unique<data_type>( id_range.first, id_range.second );
+        if ( auto d = holder.detach() )
+          handler( std::move(d) );
+        // Опционально 
+        handler( nullptr );
+      }
+    );
   }
 }
   
@@ -46,15 +61,18 @@ void queue::perform_outgoing(outgoing_holder holder, io_id_t io_id)
   else 
   {
     auto pholder = std::make_shared<outgoing_holder>( std::move(holder) );
-    this->get_workflow()->post([pholder, io_id, this]()
-    {
-      auto t = this->get_target();
-      t.perform_outgoing( std::move( *pholder ), io_id );
-    });
+    this->get_workflow()->post(
+      [pholder, io_id, this]()
+      {
+        auto t = this->get_target();
+        t.perform_outgoing( std::move( *pholder ), io_id );
+      },
+      nullptr
+    );
   }
 }
 
-queue::rpc_outgoing_handler_t queue::make_handler_(rpc_outgoing_handler_t&& handler)
+queue::rpc_outgoing_handler_t queue::make_handler_(rpc_outgoing_handler_t handler)
 {
   if ( _callback_workflow == nullptr ) return std::move(handler);
   
@@ -63,10 +81,13 @@ queue::rpc_outgoing_handler_t queue::make_handler_(rpc_outgoing_handler_t&& hand
     if ( auto w = this->_callback_workflow )
     {
       auto pholder = std::make_shared<outgoing_holder>( std::move(holder) );
-      w->post([pholder, handler]()
-      {
-        handler( std::move( *pholder ) );
-      });
+      w->post(
+        [pholder, handler]()
+        {
+          handler( std::move( *pholder ) );
+        },
+        nullptr
+      );
     }
     else
     {
