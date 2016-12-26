@@ -35,18 +35,19 @@ void queue::perform_incoming(incoming_holder holder, io_id_t io_id, rpc_outgoing
         auto t = this->get_target();
         t.perform_incoming( std::move( *pholder ), io_id, this->make_handler_( std::move(handler) ) );
       },
-      [handler]()
+      [pholder, handler]()
       {
-        typedef jsonrpc::outgoing_error_json< jsonrpc::error_json > message_json;
+        //typedef jsonrpc::outgoing_error_json< jsonrpc::error_json > message_json;
         jsonrpc::outgoing_error< jsonrpc::error > error_message;
         error_message.error = std::make_unique<jsonrpc::error>( jsonrpc::error_codes::QueueOverflow );
-        auto id_range = holder.raw_id();
+        auto id_range = pholder->raw_id();
         if ( id_range.first != id_range.second )
           error_message.id = std::make_unique<data_type>( id_range.first, id_range.second );
-        if ( auto d = holder.detach() )
+#warning какуето херню делаем , а нужно отрпавит сообщение об ошибке. Сделать генератор сообщения в json в data_ptr
+        if ( auto d = pholder->detach() )
           handler( std::move(d) );
-        // Опционально 
-        handler( nullptr );
+        else
+          abort(); // 
       }
     );
   }

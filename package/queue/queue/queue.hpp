@@ -25,7 +25,7 @@ public:
   virtual void perform_outgoing(outgoing_holder, io_id_t) override;
   
 private:
-  rpc_outgoing_handler_t make_handler_(rpc_outgoing_handler_t&& handler);
+  rpc_outgoing_handler_t make_handler_(rpc_outgoing_handler_t handler);
 private:
   //workflow_ptr _incoming;
   workflow_ptr _callback_workflow;
