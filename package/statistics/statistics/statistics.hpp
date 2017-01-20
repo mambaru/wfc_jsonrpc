@@ -15,12 +15,14 @@ class statistics
   typedef composite_meter meter_type;
   typedef std::shared_ptr<meter_type> meter_ptr;
   typedef std::map< std::string, meter_ptr > meter_map;
+  class outgoing_statistics;
 
 public:
   virtual void configure() override;
   virtual void reconfigure() override;
   // ijsonrpc
   virtual void perform_incoming(incoming_holder, io_id_t, rpc_outgoing_handler_t handler) override;
+  virtual void perform_outgoing(outgoing_holder, io_id_t) override;
 
 private:
   meter_ptr request_meter_(std::string name, size_t size);
@@ -35,6 +37,7 @@ private:
   meter_map _ntf_meters;
   meter_ptr  _other;
   std::mutex _mutex;
+  std::shared_ptr<outgoing_statistics> _outgoing_statistics;
 };
 
 }}

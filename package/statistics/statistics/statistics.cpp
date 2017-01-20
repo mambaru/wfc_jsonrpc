@@ -5,6 +5,23 @@
 
 namespace wfc{ namespace jsonrpc{ 
 
+  /*
+class statistics::outgoing_statistics
+{
+public:
+  bool incoming(const incoming_holder& )
+  {
+    return false;
+  }
+  
+  void outgoing(const outgoing_holder& ) 
+  {
+    
+  }
+private:
+  std::mutex _mutex;
+};
+*/  
 void statistics::configure()
 {
   std::lock_guard<std::mutex> lk(_mutex);
@@ -19,6 +36,28 @@ void statistics::reconfigure()
   _req_meters.clear();
   _ntf_meters.clear();
 }
+
+
+
+static void static_error_meter(const std::string& method, statistics::data_ptr d, std::shared_ptr< wfc::statistics > stat)
+{
+  wfc::json::json_error e;
+  wfc::jsonrpc::outgoing_error<wfc::jsonrpc::error> err;
+  typedef wfc::jsonrpc::outgoing_error_json<wfc::jsonrpc::error_json> error_json;
+  error_json::serializer()(err, d->begin(), d->end(), &e);
+  if ( !e && err.error!=nullptr )
+  {
+    std::string message;
+    wfc::jsonrpc::error_codes_json::serializer()( err.error->code, std::back_inserter(message) );
+    if ( message.size() > 2 )
+      message = message.substr(1, message.size()-2 );
+    else
+      message="Unknown Error";
+    auto mproto = stat->create_value_prototype(method + ":" + message);
+    stat->create_meter(mproto, 0, 1);
+  }
+}
+
 
 void statistics::perform_incoming(incoming_holder holder, io_id_t io_id, rpc_outgoing_handler_t handler) 
 {
@@ -52,6 +91,8 @@ void statistics::perform_incoming(incoming_holder holder, io_id_t io_id, rpc_out
         if ( enable_write_size && meter)
           meter->set_write_size( d->size() );
         if ( enable_error_stat )
+          static_error_meter( method, std::move(d), stat);
+          /*
         {
           wfc::json::json_error e;
           wfc::jsonrpc::outgoing_error<wfc::jsonrpc::error> err;
@@ -65,16 +106,23 @@ void statistics::perform_incoming(incoming_holder holder, io_id_t io_id, rpc_out
               message = message.substr(1, message.size()-2 );
             else
               message="Error";
-            auto proto = stat->create_value_prototype("JSON-RPC:" + message);
-            stat->create_meter(proto, 0, 1);
             auto mproto = stat->create_value_prototype(method + ":" + message);
             stat->create_meter(mproto, 0, 1);
           }
-        }
+        }*/
       }
     }
     handler( std::move(outholder) );    
   } );
+}
+
+void statistics::perform_outgoing(outgoing_holder holder, io_id_t io_id)
+{
+  if ( this->suspended() )
+    return domain_proxy::perform_outgoing( std::move(holder), io_id);
+
+  // TODO:
+  domain_proxy::perform_outgoing( std::move(holder), io_id);
 }
 
 statistics::meter_ptr statistics::request_meter_(std::string name, size_t size)
