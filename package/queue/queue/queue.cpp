@@ -37,17 +37,15 @@ void queue::perform_incoming(incoming_holder holder, io_id_t io_id, rpc_outgoing
       },
       [pholder, handler]()
       {
-        //typedef jsonrpc::outgoing_error_json< jsonrpc::error_json > message_json;
-        jsonrpc::outgoing_error< jsonrpc::error > error_message;
-        error_message.error = std::make_unique<jsonrpc::error>( jsonrpc::error_codes::QueueOverflow );
-        auto id_range = pholder->raw_id();
-        if ( id_range.first != id_range.second )
-          error_message.id = std::make_unique<data_type>( id_range.first, id_range.second );
-#warning какуето херню делаем , а нужно отрпавит сообщение об ошибке. Сделать генератор сообщения в json в data_ptr
-        if ( auto d = pholder->detach() )
-          handler( std::move(d) );
-        else
-          abort(); // 
+        if ( handler != nullptr )
+        {
+          jsonrpc::outgoing_error< jsonrpc::error > error_message;
+          error_message.error = std::make_unique<jsonrpc::error>( jsonrpc::error_codes::QueueOverflow );
+          auto id_range = pholder->raw_id();
+          if ( id_range.first != id_range.second )
+            error_message.id = std::make_unique<data_type>( id_range.first, id_range.second );
+          handler( pholder->detach() );
+        }
       }
     );
   }
