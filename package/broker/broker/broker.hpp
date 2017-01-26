@@ -10,7 +10,7 @@
 namespace wfc{ namespace jsonrpc{ 
   
 class broker
-  : public ::wfc::jsonrpc::domain_proxy<broker_config>
+  : public ::wfc::jsonrpc::domain_proxy<broker_config, wfc::nostat>
 {
 public:
   // domain_proxy

@@ -11,7 +11,7 @@
 namespace wfc{ namespace jsonrpc{
   
 class hub
-  : public ::wfc::jsonrpc::domain_proxy<hub_config>
+  : public ::wfc::jsonrpc::domain_proxy<hub_config, ::wfc::nostat>
 {
 public:
 // ijsonrpc

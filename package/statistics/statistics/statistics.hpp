@@ -10,7 +10,7 @@
 namespace wfc{ namespace jsonrpc{ 
 
 class statistics
-  : public ::wfc::jsonrpc::domain_proxy< statistics_config >
+  : public ::wfc::jsonrpc::domain_proxy< statistics_config, ::wfc::defstat >
 {
   typedef composite_meter meter_type;
   typedef std::shared_ptr<meter_type> meter_ptr;

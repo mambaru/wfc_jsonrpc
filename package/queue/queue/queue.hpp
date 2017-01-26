@@ -11,7 +11,7 @@
 namespace wfc{ namespace jsonrpc{
   
 class queue
-  : public ::wfc::jsonrpc::domain_proxy<queue_config>
+  : public ::wfc::jsonrpc::domain_proxy<queue_config, ::wfc::nostat>
 {
   typedef std::shared_ptr< ::wfc::workflow > workflow_ptr;
 public:

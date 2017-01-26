@@ -9,7 +9,7 @@
 namespace wfc{ namespace jsonrpc{ 
 
 class repli
-  : public ::wfc::jsonrpc::domain_proxy< repli_config >
+  : public ::wfc::jsonrpc::domain_proxy< repli_config, ::wfc::nostat>
 {
 public:
   virtual void ready() override;
