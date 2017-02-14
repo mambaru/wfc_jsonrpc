@@ -92,24 +92,6 @@ void statistics::perform_incoming(incoming_holder holder, io_id_t io_id, rpc_out
           meter->set_write_size( d->size() );
         if ( enable_error_stat )
           static_error_meter( method, std::move(d), stat);
-          /*
-        {
-          wfc::json::json_error e;
-          wfc::jsonrpc::outgoing_error<wfc::jsonrpc::error> err;
-          typedef wfc::jsonrpc::outgoing_error_json<wfc::jsonrpc::error_json> error_json;
-          error_json::serializer()(err, d->begin(), d->end(), &e);
-          if ( !e && err.error!=nullptr )
-          {
-            std::string message;
-            wfc::jsonrpc::error_codes_json::serializer()( err.error->code, std::back_inserter(message) );
-            if ( message.size() > 2 )
-              message = message.substr(1, message.size()-2 );
-            else
-              message="Error";
-            auto mproto = stat->create_value_prototype(method + ":" + message);
-            stat->create_meter(mproto, 0, 1);
-          }
-        }*/
       }
     }
     handler( std::move(outholder) );    
