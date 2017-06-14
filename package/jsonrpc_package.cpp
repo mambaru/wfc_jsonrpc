@@ -14,8 +14,10 @@ class jsonrpc_package::impl: public ::wfc::module_list<
   jsonrpc_build_info,
   jsonrpc::queue_module,
   jsonrpc::broker_module,
-  jsonrpc::repli_module,
-  jsonrpc::statistics_module
+  jsonrpc::repli_module
+#ifdef WFC_ENABLE_STAT
+  ,jsonrpc::statistics_module
+#endif
 >
 {  
 };

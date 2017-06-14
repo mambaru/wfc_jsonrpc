@@ -20,8 +20,8 @@ namespace
     ::wfc::instance<statistics>,
     statistics_config_json,
       ::wfc::component_features::DisabledPriority
-    | ::wfc::component_features::DisabledWorkflow
-
+    | ::wfc::component_features::DisabledWorkflow,
+    defstat_json
   >
   {};
 }
