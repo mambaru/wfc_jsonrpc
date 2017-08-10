@@ -44,7 +44,7 @@ void queue::perform_incoming(incoming_holder holder, io_id_t io_id, rpc_outgoing
           auto id_range = pholder->raw_id();
           if ( id_range.first != id_range.second )
             error_message.id = std::make_unique<data_type>( id_range.first, id_range.second );
-          handler( pholder->detach() );
+          handler( outgoing_holder( pholder->detach() ) );
         }
       }
     );
