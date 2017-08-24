@@ -8,6 +8,10 @@ namespace wfc{ namespace jsonrpc{
 
 void broker::ready()
 {
+  _reject.clear();
+  _targets.clear();
+  _methods.clear();
+  
   const auto& opt = this->options();
   _reject.insert( opt.reject.begin(), opt.reject.end() );
 
