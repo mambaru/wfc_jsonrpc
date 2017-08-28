@@ -37,6 +37,7 @@ void queue::perform_incoming(incoming_holder holder, io_id_t io_id, rpc_outgoing
       },
       [pholder, handler]()
       {
+        
         if ( handler != nullptr )
         {
           jsonrpc::outgoing_error< jsonrpc::error > error_message;
@@ -44,7 +45,20 @@ void queue::perform_incoming(incoming_holder holder, io_id_t io_id, rpc_outgoing
           auto id_range = pholder->raw_id();
           if ( id_range.first != id_range.second )
             error_message.id = std::make_unique<data_type>( id_range.first, id_range.second );
-          handler( outgoing_holder( pholder->detach() ) );
+          auto d = pholder->detach();
+          if ( d == nullptr )
+            d = std::make_unique<data_type>();
+          d->clear();
+          d->reserve(80);
+          ::wfc::jsonrpc::outgoing_error_json< ::wfc::jsonrpc::error_json >::serializer()(error_message, std::inserter( *d, d->end() ));
+          handler( outgoing_holder(std::move(d)) );
+
+          /*auto d = pholder->detach();
+          if ( d == nullptr )
+            d = std::make_unique<data_type>();
+          d->clear();
+          */
+          //handler( outgoing_holder( pholder->detach() ) );
         }
       }
     );
