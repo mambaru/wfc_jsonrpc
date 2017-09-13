@@ -21,7 +21,17 @@ namespace {
     broker_config_json,
     component_features::DisabledWorkflow
   >
-  {};
+  {
+    virtual std::string interface_name() const override
+    {
+      return std::string("wfc::ijsonrpc");
+    }
+
+    virtual std::string description() const override
+    {
+      return "JSONRPC-messages broker";
+    }
+  };
 
 }
 

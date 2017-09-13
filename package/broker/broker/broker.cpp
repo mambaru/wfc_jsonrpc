@@ -6,6 +6,20 @@
 
 namespace wfc{ namespace jsonrpc{ 
 
+broker::config_type broker::generate(const std::string& val)
+{
+  config_type conf = super::generate(val);
+  if ( !val.empty() )
+  {
+    config_type::rule r;
+    r.target = "<<method-name>>";
+    r.methods.push_back("<<method-name>>");
+    conf.reject.push_back("<<method-name>>");
+    conf.rules.push_back(r);
+  }
+  return conf;
+}
+
 void broker::ready()
 {
   _reject.clear();
@@ -43,7 +57,7 @@ void broker::unreg_io(io_id_t io_id)
 }
 
 
-void broker::perform_incoming(incoming_holder holder, io_id_t io_id, rpc_outgoing_handler_t handler) 
+void broker::perform_incoming(incoming_holder holder, io_id_t io_id, outgoing_handler_t handler) 
 {
   if ( this->suspended() )
   {

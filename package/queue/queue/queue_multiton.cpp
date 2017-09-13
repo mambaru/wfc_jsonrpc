@@ -20,7 +20,17 @@ namespace
     queue_config_json/*,
     ::wfc::component_features::CommonWorkflow*/
   >
-  {};
+  {
+    virtual std::string interface_name() const override
+    {
+      return std::string("wfc::ijsonrpc");
+    }
+
+    virtual std::string description() const override
+    {
+      return "Queue for incoming/outgoing jsonrpc messages";
+    }
+  };
 }
 
 

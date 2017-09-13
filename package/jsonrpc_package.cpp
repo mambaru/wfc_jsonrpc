@@ -19,7 +19,11 @@ class jsonrpc_package::impl: public ::wfc::module_list<
   ,jsonrpc::statistics_module
 #endif
 >
-{  
+{
+  virtual std::string description() const override
+  {
+    return "Additional jsonrpc modules";
+  }
 };
 
 jsonrpc_package::jsonrpc_package()

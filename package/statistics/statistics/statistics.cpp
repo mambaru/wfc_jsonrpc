@@ -59,7 +59,7 @@ static void static_error_meter(const std::string& method, statistics::data_ptr d
 }
 
 
-void statistics::perform_incoming(incoming_holder holder, io_id_t io_id, rpc_outgoing_handler_t handler) 
+void statistics::perform_incoming(incoming_holder holder, io_id_t io_id, outgoing_handler_t handler) 
 {
   if ( this->suspended() )
     return domain_proxy::perform_incoming( std::move(holder), io_id, handler );

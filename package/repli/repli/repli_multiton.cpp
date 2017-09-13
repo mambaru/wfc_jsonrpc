@@ -20,7 +20,17 @@ namespace
     ::wfc::instance<repli>,
     repli_config_json
   >
-  {};
+  {
+    virtual std::string interface_name() const override
+    {
+      return std::string("wfc::ijsonrpc");
+    }
+
+    virtual std::string description() const override
+    {
+      return "JSONRPC-notify duplicator ";
+    }
+  };
 
 }
 

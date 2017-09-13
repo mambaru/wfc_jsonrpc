@@ -12,14 +12,18 @@ namespace wfc{ namespace jsonrpc{
 class broker
   : public ::wfc::jsonrpc::domain_proxy<broker_config, wfc::nostat>
 {
+  typedef ::wfc::jsonrpc::domain_proxy<broker_config, wfc::nostat> super;
 public:
+  typedef super::config_type config_type;
+  virtual config_type generate(const std::string&);
+
   // domain_proxy
   virtual void ready() override;
   virtual void reg_io(io_id_t io_id, std::weak_ptr<iinterface> itf) override;
   virtual void unreg_io(io_id_t io_id) override;
 
   // ijsonrpc
-  virtual void perform_incoming(incoming_holder, io_id_t, rpc_outgoing_handler_t handler) override;
+  virtual void perform_incoming(incoming_holder, io_id_t, outgoing_handler_t handler) override;
   virtual void perform_outgoing(outgoing_holder, io_id_t) override;
 
 private:

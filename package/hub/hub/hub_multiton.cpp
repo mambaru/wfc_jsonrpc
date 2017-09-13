@@ -20,7 +20,17 @@ namespace
     hub_config_json,
     ::wfc::component_features::DisabledWorkflow
   >
-  {};
+  {
+    virtual std::string interface_name() const override
+    {
+      return std::string("wfc::ijsonrpc");
+    }
+
+    virtual std::string description() const override
+    {
+      return "JSONRPC-notify hub";
+    }
+  };
 }
 
 

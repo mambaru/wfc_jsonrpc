@@ -20,7 +20,7 @@ void queue::stop()
   _callback_workflow = nullptr;
 }
 
-void queue::perform_incoming(incoming_holder holder, io_id_t io_id, rpc_outgoing_handler_t handler) 
+void queue::perform_incoming(incoming_holder holder, io_id_t io_id, outgoing_handler_t handler) 
 {
   if ( this->suspended()  )
   {
@@ -85,7 +85,7 @@ void queue::perform_outgoing(outgoing_holder holder, io_id_t io_id)
   }
 }
 
-queue::rpc_outgoing_handler_t queue::make_handler_(rpc_outgoing_handler_t handler)
+queue::outgoing_handler_t queue::make_handler_(outgoing_handler_t handler)
 {
   if ( _callback_workflow == nullptr ) return std::move(handler);
   

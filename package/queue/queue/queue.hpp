@@ -21,11 +21,11 @@ public:
   virtual void stop() override;
 
 // ijsonrpc
-  virtual void perform_incoming(incoming_holder, io_id_t, rpc_outgoing_handler_t handler) override;
+  virtual void perform_incoming(incoming_holder, io_id_t, outgoing_handler_t handler) override;
   virtual void perform_outgoing(outgoing_holder, io_id_t) override;
   
 private:
-  rpc_outgoing_handler_t make_handler_(rpc_outgoing_handler_t handler);
+  outgoing_handler_t make_handler_(outgoing_handler_t handler);
 private:
   //workflow_ptr _incoming;
   workflow_ptr _callback_workflow;
