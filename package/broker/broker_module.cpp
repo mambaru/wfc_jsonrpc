@@ -7,7 +7,7 @@ namespace wfc{ namespace jsonrpc{
   
 namespace
 {
-  WFC_NAME2(module_name, "broker")
+  WFC_NAME2(module_name, "jsonrpc-broker")
 
   class impl: public ::wfc::component_list<
     module_name,
