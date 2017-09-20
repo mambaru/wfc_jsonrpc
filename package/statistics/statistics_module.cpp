@@ -8,7 +8,7 @@ namespace wfc{ namespace jsonrpc{
   
 namespace
 {
-  WFC_NAME2(module_name, "statistics")
+  WFC_NAME2(module_name, "jsonrpc-statistics")
 
   class impl: public ::wfc::component_list
   <
