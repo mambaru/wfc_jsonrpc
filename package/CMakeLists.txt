@@ -20,11 +20,17 @@ SET(
   hub/hub_module.cpp
   hub/hub/hub_multiton.cpp
   hub/hub/hub.cpp
+)
 
+if (WFC_ENABLE_STAT)
+SET(
+  wfc_jsonrpc_source_list
+  ${wfc_jsonrpc_source_list}
   statistics/statistics_module.cpp
   statistics/statistics/statistics_multiton.cpp
   statistics/statistics/statistics.cpp
 )
+endif()
 
 include_directories(./include/)
 
