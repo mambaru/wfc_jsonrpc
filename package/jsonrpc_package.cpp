@@ -24,6 +24,11 @@ class jsonrpc_package::impl: public ::wfc::module_list<
   {
     return "Additional jsonrpc modules";
   }
+  
+  virtual int order() const override
+  {
+    return 2000;
+  }
 };
 
 jsonrpc_package::jsonrpc_package()
