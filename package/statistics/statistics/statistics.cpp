@@ -39,7 +39,8 @@ void statistics::reconfigure()
 
 
 
-static void static_error_meter(const std::string& method, statistics::data_ptr d, std::shared_ptr< wfc::statistics > stat)
+static void static_error_meter(const std::string& method, statistics::data_ptr d, 
+                               std::shared_ptr< wfc::statistics::statistics > stat)
 {
   wfc::json::json_error e;
   wfc::jsonrpc::outgoing_error<wfc::jsonrpc::error> err;
@@ -76,7 +77,7 @@ void statistics::perform_incoming(incoming_holder holder, io_id_t io_id, outgoin
 
   //meter->inc(0, size - 1);
 
-  std::weak_ptr< wfc::statistics > wstat;
+  std::weak_ptr< wfc::statistics::statistics > wstat;
   bool enable_write_size = this->_enable_write_size;
   bool enable_error_stat = this->_enable_error_stat;
   if ( enable_write_size || enable_error_stat)
