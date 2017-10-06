@@ -5,7 +5,8 @@
 #include "broker/broker_module.hpp"
 #include "queue/queue_module.hpp"
 #include "repli/repli_module.hpp"
-#include "batch/batch_module.hpp"
+#include "hub/hub_module.hpp"
+//#include "batch/batch_module.hpp"
 #include "statistics/statistics_module.hpp"
 #include <wfc/module/module_list.hpp>
 
@@ -16,7 +17,8 @@ class jsonrpc_package::impl: public ::wfc::module_list<
   jsonrpc::queue_module,
   jsonrpc::broker_module,
   jsonrpc::repli_module,
-  jsonrpc::batch_module
+  jsonrpc::hub_module
+  //jsonrpc::batch_module
 #ifdef WFC_ENABLE_STAT
   ,jsonrpc::statistics_module
 #endif
