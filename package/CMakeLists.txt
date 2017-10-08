@@ -17,9 +17,9 @@ SET(
   repli/repli/repli_multiton.cpp
   repli/repli/repli.cpp
 
-  #batch/batch_module.cpp
-  #batch/batch/batch_multiton.cpp
-  #batch/batch/batch.cpp
+  batch/batch_module.cpp
+  batch/batch/batch_multiton.cpp
+  batch/batch/batch.cpp
   
   hub/hub_module.cpp
   hub/hub/hub_multiton.cpp
