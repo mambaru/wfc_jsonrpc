@@ -42,30 +42,24 @@ struct incoming_json
 
 void hub::reg_io(io_id_t io_id, std::weak_ptr<iinterface> itf) 
 {
-  JSONRPC_LOG_WARNING("hub::reg_io " << this->name() << " " << io_id )
-  // domain_proxy::reg_io(io_id, itf);
   std::lock_guard<mutex_type> lk(_mutex);
   _map[io_id] = itf;
 }
 
 void hub::unreg_io(io_id_t io_id) 
 {
-  JSONRPC_LOG_WARNING("hub::unreg_io " << this->name() << " " << io_id )
-  //domain_proxy::unreg_io(io_id);
   std::lock_guard<mutex_type> lk(_mutex);
   _map.erase(io_id);
 }
 
 void hub::perform_incoming(incoming_holder holder, io_id_t io_id, outgoing_handler_t handler) 
 {
-  JSONRPC_LOG_WARNING("hub::perform_incoming " << this->name() << " " << io_id )
   this->perform_incoming_( holder, io_id);
   domain_proxy::perform_incoming( std::move(holder), io_id, handler);
 }
   
 void hub::perform_outgoing(outgoing_holder holder, io_id_t io_id)
 {
-  JSONRPC_LOG_WARNING("hub::perform_outgoing " << this->name() << " " << io_id )
   if ( holder.is_request() || holder.is_notify() )
   {
     outgoing_holder oholder = holder.clone();
