@@ -28,7 +28,7 @@ namespace
 
     virtual std::string description() const override
     {
-      return "JSONRPC-notify duplicator ";
+      return "JSONRPC batch support ";
     }
   };
 

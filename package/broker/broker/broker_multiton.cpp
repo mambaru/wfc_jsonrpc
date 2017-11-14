@@ -29,7 +29,7 @@ namespace {
 
     virtual std::string description() const override
     {
-      return "JSONRPC-messages broker";
+      return "JSONRPC broker of methods";
     }
   };
 

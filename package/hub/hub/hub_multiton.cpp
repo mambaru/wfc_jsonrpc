@@ -28,7 +28,7 @@ namespace
 
     virtual std::string description() const override
     {
-      return "JSONRPC-notify hub";
+      return "JSONRPC notify hub";
     }
   };
 }

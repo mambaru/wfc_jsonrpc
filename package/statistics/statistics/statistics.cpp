@@ -4,24 +4,7 @@
 #include <wfc/jsonrpc/target.hpp>
 
 namespace wfc{ namespace jsonrpc{ 
-
-  /*
-class statistics::outgoing_statistics
-{
-public:
-  bool incoming(const incoming_holder& )
-  {
-    return false;
-  }
   
-  void outgoing(const outgoing_holder& ) 
-  {
-    
-  }
-private:
-  std::mutex _mutex;
-};
-*/  
 void statistics::configure()
 {
   std::lock_guard<std::mutex> lk(_mutex);
@@ -36,8 +19,6 @@ void statistics::reconfigure()
   _req_meters.clear();
   _ntf_meters.clear();
 }
-
-
 
 static void static_error_meter(const std::string& method, statistics::data_ptr d, 
                                std::shared_ptr< wfc::statistics::statistics > stat)
@@ -75,28 +56,28 @@ void statistics::perform_incoming(incoming_holder holder, io_id_t io_id, outgoin
   else
     meter = this->other_meter_(size);
 
-  //meter->inc(0, size - 1);
-
   std::weak_ptr< wfc::statistics::statistics > wstat;
   bool enable_write_size = this->_enable_write_size;
   bool enable_error_stat = this->_enable_error_stat;
   if ( enable_write_size || enable_error_stat)
     wstat = this->get_statistics();
-  domain_proxy::perform_incoming( std::move(holder), io_id, [handler, meter, wstat, enable_write_size, enable_error_stat, method]( outgoing_holder outholder)
-  {
-    if ( auto stat = wstat.lock() )
+  domain_proxy::perform_incoming( std::move(holder), io_id, 
+    [handler, meter, wstat, enable_write_size, enable_error_stat, method]( outgoing_holder outholder)
     {
-      auto holder = outholder.clone();
-      if ( auto d = holder.detach() )
+      if ( auto stat = wstat.lock() )
       {
-        if ( enable_write_size && meter)
-          meter->set_write_size( d->size() );
-        if ( enable_error_stat )
-          static_error_meter( method, std::move(d), stat);
+        auto holder = outholder.clone();
+        if ( auto d = holder.detach() )
+        {
+          if ( enable_write_size && meter)
+            meter->set_write_size( d->size() );
+          if ( enable_error_stat )
+            static_error_meter( method, std::move(d), stat);
+        }
       }
-    }
-    handler( std::move(outholder) );    
-  } );
+      handler( std::move(outholder) );    
+    } 
+  );
 }
 
 void statistics::perform_outgoing(outgoing_holder holder, io_id_t io_id)
@@ -157,7 +138,13 @@ statistics::meter_ptr statistics::other_meter_(size_t size)
   auto opt = this->options();
   std::lock_guard<std::mutex> lk(_mutex);
   if ( _other == nullptr )
-    _other = stat->create_composite_prototype( opt.other_time, opt.other_read_size, this->_enable_write_size ? opt.other_write_size : "" );
+  {
+    _other = stat->create_composite_prototype( 
+      opt.other_time, 
+      opt.other_read_size, 
+      this->_enable_write_size ? opt.other_write_size : "" 
+    );
+  }
   return stat->create_meter( _other, size );
 }
 
