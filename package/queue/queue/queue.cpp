@@ -72,7 +72,7 @@ std::function<void()> queue::make_post_fun_(const std::shared_ptr<incoming_holde
       t.perform_incoming( std::move( *pholder ), io_id, this->make_outgoing_handler_( std::move(handler) ) );
     };
   
-  if ( !this->_connection_tracking )
+  if ( !( this->_connection_tracking && pholder->is_request() ) )
     return res_fun;
 
   return make_track_fun_(io_id, res_fun);
@@ -92,11 +92,15 @@ std::function<void()> queue::make_track_fun_(io_id_t io_id, std::function<void()
   {
     wc = _tracking_map.insert( std::make_pair(io_id, std::make_shared<size_t>(1)) ).first->second;
   }
-  return [fun, wc]()
+  return [fun, wc, this]()
   {
     if ( wc.lock()!=nullptr )
     {
       fun();
+    }
+    else
+    {
+      JSONRPC_LOG_WARNING("JSONRPC-QUEUE " << this->name() << ": request drop from queue")
     }
   };
 }
