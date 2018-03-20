@@ -11,24 +11,33 @@
 namespace wfc{ namespace jsonrpc{
   
 class queue
-  : public ::wfc::jsonrpc::domain_proxy<queue_config, ::wfc::nostat>
+  : public domain_proxy<queue_config, nostat>
 {
-  typedef std::shared_ptr< ::wfc::workflow > workflow_ptr;
+  typedef domain_proxy<queue_config, nostat> super;
+  typedef std::shared_ptr< workflow > workflow_ptr;
 public:
   queue();
 // domain
   virtual void ready() override;
   virtual void stop() override;
 
+//
+  virtual void unreg_io(io_id_t io_id) override;
 // ijsonrpc
   virtual void perform_incoming(incoming_holder, io_id_t, outgoing_handler_t handler) override;
   virtual void perform_outgoing(outgoing_holder, io_id_t) override;
   
 private:
-  outgoing_handler_t make_handler_(outgoing_handler_t handler);
+  std::function<void()> make_post_fun_(const std::shared_ptr<incoming_holder> pholder, io_id_t io_id, outgoing_handler_t handler);
+  std::function<void()> make_track_fun_(io_id_t io_id, std::function<void()> fun);
+  outgoing_handler_t make_outgoing_handler_(outgoing_handler_t handler);
+  void drop_handler_(std::shared_ptr<incoming_holder> pholder, outgoing_handler_t handler);
 private:
-  //workflow_ptr _incoming;
+  typedef std::mutex mutex_type;
   workflow_ptr _callback_workflow;
+  std::atomic<bool> _connection_tracking;
+  std::mutex _tracking_mutex;
+  std::map<io_id_t, std::shared_ptr<size_t> > _tracking_map;
 };
 
 }}
