@@ -100,7 +100,7 @@ std::function<void()> queue::make_track_fun_(io_id_t io_id, std::function<void()
     }
     else
     {
-      JSONRPC_LOG_WARNING("JSONRPC-QUEUE " << this->name() << ": request drop from queue")
+      JSONRPC_LOG_WARNING("JSONRPC-QUEUE " << this->name() << ": request drop from queue by connection tracking")
     }
   };
 }
@@ -149,6 +149,5 @@ void queue::drop_handler_(const std::shared_ptr<incoming_holder> pholder, outgoi
   outgoing_error_json<error_json >::serializer()(error_message, std::inserter( *d, d->end() ));
   handler( outgoing_holder(std::move(d)) );
 }
-
 
 }}
