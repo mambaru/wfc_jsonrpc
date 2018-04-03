@@ -72,10 +72,10 @@ std::function<void()> queue::make_post_fun_(const std::shared_ptr<incoming_holde
       t.perform_incoming( std::move( *pholder ), io_id, this->make_outgoing_handler_( std::move(handler) ) );
     };
   
-  if ( !( this->_connection_tracking && pholder->is_request() ) )
-    return res_fun;
-
-  return make_track_fun_(io_id, res_fun);
+  if ( this->_connection_tracking && pholder->is_request() )
+    return make_track_fun_(io_id, res_fun);
+  
+  return res_fun;
 }
 
 std::function<void()> queue::make_track_fun_(io_id_t io_id, std::function<void()> fun)
