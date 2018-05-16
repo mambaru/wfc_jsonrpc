@@ -12,9 +12,9 @@ namespace wfc{ namespace jsonrpc{
 class statistics
   : public ::wfc::jsonrpc::domain_proxy< statistics_config, ::wfc::defstat >
 {
-  typedef composite_meter meter_type;
-  typedef std::shared_ptr<meter_type> meter_ptr;
-  typedef std::map< std::string, meter_ptr > meter_map;
+  typedef composite_factory meter_type;
+  //typedef std::shared_ptr<meter_type> meter_ptr;
+  typedef std::map< std::string, meter_type > meter_map;
   class outgoing_statistics;
 
 public:
@@ -25,10 +25,10 @@ public:
   virtual void perform_outgoing(outgoing_holder, io_id_t) override;
 
 private:
-  meter_ptr request_meter_(std::string name, size_t size);
-  meter_ptr create_meter_(meter_map& meters, size_t size);
-  meter_ptr notify_meter_(std::string name, size_t size);
-  meter_ptr other_meter_(size_t size);
+  meter_type request_meter_(std::string name, size_t size);
+  meter_type create_meter_(meter_map& meters, size_t size);
+  meter_type notify_meter_(std::string name, size_t size);
+  meter_type other_meter_(size_t size);
   
 private:
   bool _enable_write_size = false;

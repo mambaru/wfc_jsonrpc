@@ -35,8 +35,8 @@ static void static_error_meter(const std::string& method, statistics::data_ptr d
       message = message.substr(1, message.size()-2 );
     else
       message="Unknown Error";
-    auto mproto = stat->create_value_prototype(method + ":" + message);
-    stat->create_meter(mproto, 0, 1);
+    auto mproto = stat->create_value_factory(method + ":" + message);
+    mproto.create(0, 1);
   }
 }
 
@@ -99,11 +99,12 @@ statistics::meter_ptr statistics::request_meter_(std::string name, size_t size)
   if (itr == _req_meters.end() )
   {
     auto opt = this->options();
-    auto prototype = stat->create_composite_prototype(
+    auto prototype = stat->create_composite_factory(
       !opt.time_suffix.empty()       ?  opt.request_prefix + name + opt.time_suffix : "",
       !opt.read_size_suffix.empty()  ?  opt.request_prefix + name + opt.read_size_suffix : "",
       !opt.write_size_suffix.empty()
-      && this->_enable_write_size    ?  opt.request_prefix + name + opt.write_size_suffix : ""
+      && this->_enable_write_size    ?  opt.request_prefix + name + opt.write_size_suffix : "",
+      true
     );
     itr = _req_meters.insert( std::make_pair(name, prototype) ).first;
   }
