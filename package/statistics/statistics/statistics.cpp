@@ -69,7 +69,7 @@ void statistics::perform_incoming(incoming_holder holder, io_id_t io_id, outgoin
         auto holder = outholder.clone();
         if ( auto d = holder.detach() )
         {
-          if ( enable_write_size && meter)
+          if ( enable_write_size )
             meter->set_write_size( d->size() );
           if ( enable_error_stat )
             static_error_meter( method, std::move(d), stat);
@@ -108,7 +108,7 @@ statistics::meter_ptr statistics::request_meter_(std::string name, size_t size)
     );
     itr = _req_meters.insert( std::make_pair(name, prototype) ).first;
   }
-  return stat->create_meter(itr->second, size);
+  return itr->second.create_shared(1, size, 0);
 }
 
 statistics::meter_ptr statistics::notify_meter_(std::string name, size_t size)
@@ -121,14 +121,15 @@ statistics::meter_ptr statistics::notify_meter_(std::string name, size_t size)
   auto itr = _ntf_meters.find(name);
   if (itr == _ntf_meters.end() )
   {
-    auto prototype = stat->create_composite_prototype(
+    auto prototype = stat->create_composite_factory(
       !opt.time_suffix.empty()       ?  opt.notify_prefix + name + opt.time_suffix : "",
       !opt.read_size_suffix.empty()  ?  opt.notify_prefix + name + opt.read_size_suffix : "",
-      ""
+      "",
+      true
     );
     itr = _ntf_meters.insert( std::make_pair(name, prototype) ).first;
   }
-  return stat->create_meter(itr->second, size);
+  return itr->second.create_shared(1, size, 0);
 }
 
 statistics::meter_ptr statistics::other_meter_(size_t size)
@@ -138,15 +139,16 @@ statistics::meter_ptr statistics::other_meter_(size_t size)
 
   auto opt = this->options();
   std::lock_guard<std::mutex> lk(_mutex);
-  if ( _other == nullptr )
+  if ( _other.size() == 0 )
   {
-    _other = stat->create_composite_prototype( 
+    _other = stat->create_composite_factory( 
       opt.other_time, 
       opt.other_read_size, 
-      this->_enable_write_size ? opt.other_write_size : "" 
+      this->_enable_write_size ? opt.other_write_size : "",
+      true
     );
   }
-  return stat->create_meter( _other, size );
+  return _other.create_shared(1, size, 0 );
 }
 
 }}
