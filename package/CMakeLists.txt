@@ -24,6 +24,10 @@ SET(
   hub/hub_module.cpp
   hub/hub/hub_multiton.cpp
   hub/hub/hub.cpp
+
+  backlog/backlog_module.cpp
+  backlog/backlog/backlog_multiton.cpp
+  backlog/backlog/backlog.cpp
 )
 
 if (WFC_ENABLE_STAT)
