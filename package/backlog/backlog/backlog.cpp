@@ -42,10 +42,14 @@ namespace
 
 }
 
-void backlog::initialize()
+void backlog::configure() 
 {
   this->set_target("backlog", this->name(), std::make_shared<backlog_proxy>(this) );
-  
+}
+
+void backlog::initialize()
+{
+  _filelog.open(this->options().path);
 }
   
 void backlog::perform_incoming(incoming_holder holder, io_id_t io_id, outgoing_handler_t handler) 

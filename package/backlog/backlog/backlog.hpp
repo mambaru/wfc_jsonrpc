@@ -15,6 +15,7 @@ class backlog
   : public ::wfc::jsonrpc::domain_proxy<backlog_config, ::wfc::nostat>
 {
 public:
+  virtual void configure() override;
   virtual void initialize() override;
 // ijsonrpc
   virtual void perform_incoming(incoming_holder, io_id_t, outgoing_handler_t handler) override;
