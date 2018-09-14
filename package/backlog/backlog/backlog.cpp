@@ -42,7 +42,7 @@ namespace
 
 }
 
-void backlog::start()
+void backlog::initialize()
 {
   this->set_target("backlog", this->name(), std::make_shared<backlog_proxy>(this) );
   
