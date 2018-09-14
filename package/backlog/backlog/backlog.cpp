@@ -44,11 +44,13 @@ namespace
 
 void backlog::configure() 
 {
+  domain_proxy::configure();
   this->set_target("backlog", this->name(), std::make_shared<backlog_proxy>(this) );
 }
 
 void backlog::initialize()
 {
+  domain_proxy::initialize();
   _filelog.open(this->options().path);
 }
   
