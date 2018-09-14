@@ -14,8 +14,8 @@ class broker
 {
   typedef ::wfc::jsonrpc::domain_proxy<broker_config, wfc::nostat> super;
 public:
-  typedef super::config_type config_type;
-  virtual config_type generate(const std::string&);
+  typedef super::domain_config domain_config;
+  virtual domain_config generate(const std::string&);
 
   // domain_proxy
   virtual void ready() override;

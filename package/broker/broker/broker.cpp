@@ -6,12 +6,12 @@
 
 namespace wfc{ namespace jsonrpc{ 
 
-broker::config_type broker::generate(const std::string& val)
+broker::domain_config broker::generate(const std::string& val)
 {
-  config_type conf = super::generate(val);
+  domain_config conf = super::generate(val);
   if ( !val.empty() )
   {
-    config_type::rule r;
+    domain_config::rule r;
     r.target = "<<method-name>>";
     r.methods.push_back("<<method-name>>");
     conf.reject.push_back("<<method-name>>");
