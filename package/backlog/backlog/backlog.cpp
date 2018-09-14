@@ -51,7 +51,7 @@ void backlog::configure()
 void backlog::initialize()
 {
   domain_proxy::initialize();
-  _filelog.open(this->options().path);
+  _filelog.open(this->options().path, std::ofstream::out | std::ofstream::app);
 }
   
 void backlog::perform_incoming(incoming_holder holder, io_id_t io_id, outgoing_handler_t handler) 
@@ -140,7 +140,7 @@ void backlog::rotate()
   auto opt = this->options();
   std::lock_guard<mutex_type> lk(_mutex);
   _filelog.close();
-  _filelog.open(opt.path);
+  _filelog.open(opt.path, std::ofstream::out | std::ofstream::trunc);
 }
 
 void backlog::restore()
