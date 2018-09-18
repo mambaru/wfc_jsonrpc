@@ -95,6 +95,14 @@ size_t backlog::apply_backlog_()
   size_t ready_count = 0;
   std::ifstream filelog(opt.path);
   
+  
+  target_adapter next = this->get_adapter(opt.restore_target, true);
+  if ( !next ) 
+  {
+    COMMON_LOG_WARNING("JSON-RPC backlog '" << this->name() << "' is using main target. "
+      << "You may set another target with 'restore_target' property " )
+  }
+    
   while ( filelog )
   {
     std::string json;
@@ -108,7 +116,10 @@ size_t backlog::apply_backlog_()
       holder.parse(&er);
       if ( !er )
       {
-        domain_proxy::perform_incoming( std::move(holder), this->get_id(), nullptr);
+        if ( next )
+          next.perform_incoming( std::move(holder), this->get_id(), nullptr);
+        else
+          domain_proxy::perform_incoming( std::move(holder), this->get_id(), nullptr);
         ++ready_count;
       }
       else
@@ -116,6 +127,10 @@ size_t backlog::apply_backlog_()
         COMMON_LOG_ERROR("Restore jsonrpc::backlog JSON error: " << json::strerror::message_trace(er, json.begin(), json.end() )  )
       }
         
+      if ( opt.restore_trace!=0 && ((ready_count%opt.restore_trace)==0) )
+      {
+        COMMON_LOG_PROGRESS("JSON-RPC backlog restored " << ready_count << " records. " )
+      }
     }
   }
   filelog.close();
