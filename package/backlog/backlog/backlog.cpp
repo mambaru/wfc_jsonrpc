@@ -113,7 +113,11 @@ size_t backlog::apply_backlog_()
       }
       else
       {
+<<<<<<< HEAD
         COMMON_LOG_ERROR("Restore jsonrpc::backlog JSON error: " << json::strerror::message_trace(er, json.begin(), json.end() )  )
+=======
+        COMMON_LOG_ERROR("Restore jsonrpc-backlog JSON error: " << json::strerror::message_trace(er, json.begin(), json.end() )  )
+>>>>>>> b5e80841a5f4ab700824be43ae5af1c5fe2a59ec
       }
         
     }
