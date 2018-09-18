@@ -24,12 +24,12 @@ public:
   bool lock();
   void rotate();
   bool unlock();
-  void restore();
+  size_t restore();
 
 
 private:
   void write_incoming_(const incoming_holder& holder);
-  void apply_backlog_();
+  size_t apply_backlog_();
 private:
   typedef std::mutex mutex_type;
   typedef std::weak_ptr<iinterface> witf;

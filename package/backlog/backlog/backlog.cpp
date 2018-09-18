@@ -32,9 +32,9 @@ namespace
       return _backlog->unlock();
     }
     
-    virtual void restore() override
+    virtual size_t restore() override
     {
-      _backlog->restore();
+      return _backlog->restore();
     }
   private:
     backlog* _backlog = nullptr;
@@ -86,12 +86,13 @@ void backlog::write_incoming_(const incoming_holder& holder)
   }
 }
 
-void backlog::apply_backlog_()
+size_t backlog::apply_backlog_()
 {
   auto opt = this->options();
   if ( !boost::filesystem::exists(opt.path) )
-    return;
+    return 0;
   
+  size_t ready_count = 0;
   std::ifstream filelog(opt.path);
   
   while ( filelog )
@@ -99,21 +100,26 @@ void backlog::apply_backlog_()
     std::string json;
     while ( std::getline(filelog, json) )
     {
+      if ( this->system_is_stopped() )
+        return ready_count;
+      
       incoming_holder holder( json );
       json::json_error er;
       holder.parse(&er);
       if ( !er )
       {
         domain_proxy::perform_incoming( std::move(holder), this->get_id(), nullptr);
+        ++ready_count;
       }
       else
       {
-        COMMON_LOG_ERROR("Restore backlog JSON error: " << json::strerror::message_trace(er, json.begin(), json.end() )  )
+        COMMON_LOG_ERROR("Restore jsonrpc::backlog JSON error: " << json::strerror::message_trace(er, json.begin(), json.end() )  )
       }
         
     }
   }
   filelog.close();
+  return ready_count;
 }
 
 
@@ -143,12 +149,12 @@ void backlog::rotate()
   _filelog.open(opt.path, std::ofstream::out | std::ofstream::trunc);
 }
 
-void backlog::restore()
+size_t backlog::restore()
 {
   std::lock_guard<mutex_type> lk(_mutex);
   _lock_flag = false;
   _filelog << _ss.str();
-  this->apply_backlog_();
+  return this->apply_backlog_();
 }
 
 }}

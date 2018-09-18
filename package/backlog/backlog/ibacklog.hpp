@@ -16,7 +16,7 @@ struct ibacklog: public iinterface
   virtual bool lock() = 0;
   virtual void rotate() = 0;
   virtual bool unlock() = 0;
-  virtual void restore() = 0;
+  virtual size_t restore() = 0;
 };
 
 }}
