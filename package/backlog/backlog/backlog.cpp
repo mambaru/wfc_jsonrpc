@@ -108,7 +108,7 @@ void backlog::apply_backlog_()
       }
       else
       {
-        COMMON_LOG_ERROR("Restore backlog JSON error: " << json::strerror::message_trace(er, json.begin(), json.end() )  )
+        COMMON_LOG_ERROR("Restore jsonrpc-backlog JSON error: " << json::strerror::message_trace(er, json.begin(), json.end() )  )
       }
         
     }
