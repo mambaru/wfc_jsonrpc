@@ -18,8 +18,7 @@ struct broker_config_json
     rule,
     ::wfc::json::member_list<
       ::wfc::json::member<n_target,  rule, std::string, &rule::target >,
-      ::wfc::json::member<n_methods, rule, std::vector<std::string>, &rule::methods, ::wfc::json::vector_of_strings<10>
-        /*::wfc::json::array< std::vector< ::wfc::json::value<std::string> >  >*/ >
+      ::wfc::json::member<n_methods, rule, std::set<std::string>, &rule::methods, json::set_of< json::string<>  > >
     >
   > rule_json;
 
