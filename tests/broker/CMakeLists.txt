@@ -13,8 +13,9 @@ add_executable(
 )
 
 add_dependencies(broker_test matchmaker)
-
-target_link_libraries(broker_test matchmaker)
+find_package(Boost COMPONENTS system regex REQUIRED)
+target_link_libraries(broker_test matchmaker ${Boost_LIBRARIES} )
+#target_link_libraries(broker_test matchmaker )
 
 add_test(broker_test broker_test)
 

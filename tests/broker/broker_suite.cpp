@@ -3,6 +3,7 @@
 #include <broker/matchmaker.hpp>
 #include <utility>
 #include <regex>
+#include <boost/regex.hpp>
 
 using namespace wfc::json::literals;
 using namespace wfc::jsonrpc;
@@ -22,17 +23,15 @@ namespace std
 
 static const std::string configs[]=
 {
-  "'hello'"_json,                     // 0
-  "'hell'"_json,                      // 1
-  "'\\\"hello\\\"'"_json,             // 2
-  "'\\\"hell\\\"'"_json,              // 3
+  "'hello'"_json,                 // 0
+  "'hell'"_json,                  // 1
+  "''hello''"_json,             // 2
+  "'\"hell\"'"_json,              // 3
   "'.*hello.*'"_json,                 // 4
   "'.*hell.*'"_json,                  // 5
   "['.hello.', '.hell.', '.hellx.']"_json, // 6 По сути это проверка целого слова, т.к. нужно учитывать кавычки
   "{'foo':'bar'}"_json,                // 7
-  "'\\\"\\\\\\\\w+\\\"'"_json,
-  "'\\\"(\\\\\\\\w+)(\\\\.|_)?(\\\\\\\\w*)@(\\\\\\\\w+)(\\\\\\\\.(\\\\\\\\w+))+\\\"'"_json,
-  "{'foo':'bar', 'baz':{'.*':'(\\w+)(\\.|_)?(\\w*)@(\\w+)(\\.(\\w+))+'}}"_json              // 9
+  "{'foo':'bar', 'baz':{'.*':'\"(\\w+)(\\.|_)?(\\w*)@(\\w+)(\\.(\\w+))+\"'}}"_json              // 9
 
 };
 
@@ -56,11 +55,11 @@ void match(T& t, int nconfig, const std::string& json, std::string fl)
   using namespace fas::testing;
   json_error err;
   auto mm = GET_REF(_matchmaker_);
-  t << message(configs[nconfig]) ;
+  t << message(configs[nconfig]) << " ws [" << json << "]";
   t << flush;
   bool res = mm->reconfigure( mode, configs[nconfig], err );
-  t << message("DONE!") ;
-  t << flush;
+  //t << message("DONE!") ;
+  //t << flush;
   t << is_false<assert>(err) << err << FAS_FL;
   t << is_true<assert>(res) << " reconfigure for "<< configs[nconfig] << FAS_FL;
   t << stop;
@@ -85,16 +84,15 @@ UNIT(match0, "")
   using namespace fas::testing;
   t << nothing ;
   
-  /*
   match<true,  match_mode::FullMatch>(t, 0, "'hello'"_json, FAS_FLS );
   match<false, match_mode::FullMatch>(t, 0, "'hell'"_json, FAS_FLS );
   match<false, match_mode::FullMatch>(t, 1, "'hello'"_json, FAS_FLS );
   match<true,  match_mode::FullMatch>(t, 1, "'hell'"_json, FAS_FLS );
   
   match<true,  match_mode::PrefixMatchValue>(t, 0, "'hello'"_json, FAS_FLS );
-  match<false, match_mode::PrefixMatchValue>(t, 0, "'hell'"_json, FAS_FLS );
+  match<true,  match_mode::PrefixMatchValue>(t, 0, "'hell'"_json,  FAS_FLS );
   match<true,  match_mode::PrefixMatchValue>(t, 1, "'hello'"_json, FAS_FLS );
-  match<true,  match_mode::PrefixMatchValue>(t, 1, "'hell'"_json, FAS_FLS );
+  match<true,  match_mode::PrefixMatchValue>(t, 1, "'hell'"_json,  FAS_FLS );
 
   match<false, match_mode::RegexMatchValue>(t, 0, "'hello'"_json, FAS_FLS );
   match<false, match_mode::RegexMatchValue>(t, 0, "'hell'"_json, FAS_FLS );
@@ -123,14 +121,14 @@ UNIT(match0, "")
   match<true,  match_mode::PrefixMatch>(t, 7, "{'foo':'bar'}"_json, FAS_FLS );
   match<true,  match_mode::PrefixMatch>(t, 7, "{'foo1':'bar', 'foo':'bar', 'foo':'bar1'}"_json, FAS_FLS );
   match<false, match_mode::PrefixMatch>(t, 7, "{'fo1':'bar', 'foo':'ba1'}"_json, FAS_FLS );
-  */
   
-  std::regex reg(".+");
-  bool res = std::regex_match("migashko", reg);
+  
+  /*boost::regex reg("\"(\\w+)(\\.|_)?(\\w*)@(\\w+)(\\.(\\w+))+\"");
+  bool res = boost::regex_match("\"migashko@gmail.com\"", reg);
   t << is_true<assert>(res) << FAS_FL;
-  //match<true,  match_mode::RegexMatch>(t, 8, "'migashko'"_json, FAS_FLS );
-  //match<true,  match_mode::RegexMatch>(t, 8, "'migashko@gmail.com'"_json, FAS_FLS );
-  //match<true,  match_mode::PrefixMatch>(t, 8, "{'foo':'bar', 'baz':{'email':'migashko@gmail.com'} }"_json, FAS_FLS );
+  match<true,  match_mode::RegexMatch>(t, 8, "'migashko'"_json, FAS_FLS );
+  match<true,  match_mode::RegexMatch>(t, 8, "'migashko@gmail.com'"_json, FAS_FLS );*/
+  match<true,  match_mode::PrefixMatch>(t, 8, "{'foo':'bar', 'baz':{'email':'migashko@gmail.com'}}"_json, FAS_FLS );
   
 }
 

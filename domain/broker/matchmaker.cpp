@@ -1,6 +1,6 @@
 
 #include "matchmaker.hpp"
-#include <regex>
+#include <boost/regex.hpp>
 #include <vector>
 #include <iostream>
 
@@ -9,11 +9,11 @@ namespace wfc{ namespace jsonrpc{
 struct matchmaker::regular
 {
   std::string prefix_value;
-  std::regex regex_value;
+  boost::regex regex_value;
   std::vector<std::string> prefix_list;
-  std::vector<std::regex> regex_list;
+  std::vector<boost::regex> regex_list;
   std::vector<std::pair<std::string, std::shared_ptr<matchmaker> > > prefix_maker_list;
-  std::vector<std::pair<std::regex, std::shared_ptr<matchmaker> > > regex_maker_list;
+  std::vector<std::pair<boost::regex, std::shared_ptr<matchmaker> > > regex_maker_list;
 };
 
 enum class matchmaker::regtype
@@ -38,7 +38,6 @@ std::string matchmaker::getstr_(std::string::const_iterator beg, std::string::co
 
 bool matchmaker::reconfigure_(int mode, std::string::const_iterator beg, std::string::const_iterator end, json::json_error& err)
 {
-  std::cout << "-0-" << std::endl;
   _mode = mode;
   _regular = std::make_shared<regular>();
   if ( json::parser::is_string(beg, end) )
@@ -51,15 +50,16 @@ bool matchmaker::reconfigure_(int mode, std::string::const_iterator beg, std::st
         auto str = this->getstr_(beg, end, err);
         if ( !err )
         {
-          std::cout << str << "=" << std::string(beg, end) << std::endl;
-          _regular->regex_value = std::regex(this->getstr_(beg, end, err) );
+          std::cout << std::endl;
+          std::cout << "reconfigure [" << str << "] = [" << std::string(beg, end) << "]" << std::endl;
+          _regular->regex_value = boost::regex(this->getstr_(beg, end, err) );
         }
         else
         {
           std::cout << json::strerror::message_trace(err, beg, end) << std::endl;
         }
       }
-      catch(std::regex_error& e)
+      catch(boost::regex_error& e)
       {
         std::cout << e.what() << std::endl;
         return false;
@@ -123,7 +123,7 @@ bool matchmaker::reconfigure_(int mode, std::string::const_iterator beg, std::st
       
       if ( mode&match_mode::RegexMatchName )
       {
-        _regular->regex_maker_list.push_back( std::make_pair(std::regex(p.first), pmatcher) );
+        _regular->regex_maker_list.push_back( std::make_pair(boost::regex(p.first), pmatcher) );
       }
       else
       {
@@ -170,7 +170,7 @@ namespace
     return value.compare( 0, str.size(), str ) == 0;
   }
   
-  bool s_regex_match(const std::regex& reg, const char* beg, const char* end)
+  bool s_regex_match(const boost::regex& reg, const char* beg, const char* end)
   {
     return regex_match(beg, end, reg );
   }
