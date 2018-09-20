@@ -23,16 +23,17 @@ namespace std
 
 static const std::string configs[]=
 {
-  "'hello'"_json,                 // 0
-  "'hell'"_json,                  // 1
-  "''hello''"_json,             // 2
-  "'\"hell\"'"_json,              // 3
+  "'hello'"_json,                // 0
+  "'hell'"_json,                 // 1
+  "''hello''"_json,              // 2
+  "'\"hell\"'"_json,             // 3
   "'.*hello.*'"_json,                 // 4
   "'.*hell.*'"_json,                  // 5
   "['.hello.', '.hell.', '.hellx.']"_json, // 6 По сути это проверка целого слова, т.к. нужно учитывать кавычки
   "{'foo':'bar'}"_json,                // 7
-  "{'foo':'bar', 'baz':{'.*':'\"(\\w+)(\\.|_)?(\\w*)@(\\w+)(\\.(\\w+))+\"'}}"_json              // 9
-
+  "{'foo':'bar', 'baz':{'.*':'.(\\\\w+)(\\\\.|_)?(\\\\w*)@(\\\\w+)(\\\\.(\\\\w+))+.'}}"_json              // 9
+  //"{'foo':'bar', 'baz':{'.*':'\\\"m.*'}}"_json              // 9
+  
 };
 
 /*
@@ -58,13 +59,11 @@ void match(T& t, int nconfig, const std::string& json, std::string fl)
   t << message(configs[nconfig]) << " ws [" << json << "]";
   t << flush;
   bool res = mm->reconfigure( mode, configs[nconfig], err );
-  //t << message("DONE!") ;
-  //t << flush;
-  t << is_false<assert>(err) << err << FAS_FL;
+  t << is_false<assert>(err) << err << FAS_FL << std::endl << " from:" << fl;
   t << is_true<assert>(res) << " reconfigure for "<< configs[nconfig] << FAS_FL;
   t << stop;
   bool match_result = mm->match( json, err );
-  t << is_false<assert>(err) << FAS_FL;
+  t << is_false<assert>(err) << FAS_FL<< std::endl << " from:" << fl;
   t << stop;
   t << equal<expect, bool>(match_result, Val) << fl;
 }
@@ -90,7 +89,7 @@ UNIT(match0, "")
   match<true,  match_mode::FullMatch>(t, 1, "'hell'"_json, FAS_FLS );
   
   match<true,  match_mode::PrefixMatchValue>(t, 0, "'hello'"_json, FAS_FLS );
-  match<true,  match_mode::PrefixMatchValue>(t, 0, "'hell'"_json,  FAS_FLS );
+  match<false, match_mode::PrefixMatchValue>(t, 0, "'hell'"_json,  FAS_FLS );
   match<true,  match_mode::PrefixMatchValue>(t, 1, "'hello'"_json, FAS_FLS );
   match<true,  match_mode::PrefixMatchValue>(t, 1, "'hell'"_json,  FAS_FLS );
 
@@ -99,10 +98,12 @@ UNIT(match0, "")
   match<false, match_mode::RegexMatchValue>(t, 1, "'hello'"_json, FAS_FLS );
   match<false, match_mode::RegexMatchValue>(t, 1, "'hell'"_json, FAS_FLS );
 
+/*
   match<true,  match_mode::RegexMatchValue>(t, 2, "'hello'"_json, FAS_FLS );
   match<false, match_mode::RegexMatchValue>(t, 2, "'hell'"_json, FAS_FLS );
   match<false, match_mode::RegexMatchValue>(t, 3, "'hello'"_json, FAS_FLS );
   match<true,  match_mode::RegexMatchValue>(t, 3, "'hell'"_json, FAS_FLS );
+*/
 
   match<true,  match_mode::RegexMatchValue>(t, 4, "'hello'"_json, FAS_FLS );
   match<false, match_mode::RegexMatchValue>(t, 4, "'hell'"_json, FAS_FLS );
@@ -128,7 +129,8 @@ UNIT(match0, "")
   t << is_true<assert>(res) << FAS_FL;
   match<true,  match_mode::RegexMatch>(t, 8, "'migashko'"_json, FAS_FLS );
   match<true,  match_mode::RegexMatch>(t, 8, "'migashko@gmail.com'"_json, FAS_FLS );*/
-  match<true,  match_mode::PrefixMatch>(t, 8, "{'foo':'bar', 'baz':{'email':'migashko@gmail.com'}}"_json, FAS_FLS );
+  // TODO: regex для строк отдельной веткой 
+  match<true,  match_mode::RegexMatch>(t, 8, "{'foo':'bar', 'baz':{'email':'migashko@gmail.com'}}"_json, FAS_FLS );
   
 }
 
