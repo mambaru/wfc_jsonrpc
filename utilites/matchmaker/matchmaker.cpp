@@ -234,7 +234,6 @@ bool matchmaker::match_(const char* beg, const char* end, json::json_error& err)
       if ( bval == end || *(bval++)!=':') return false;
       bval = json::parser::parse_space(bval, end, &err);
       if (err) return false;
-      auto eval = json::parser::parse_value(bval, end, &err);
       
       for ( const auto& p: _regular->prefix_maker_list )
       {
@@ -242,7 +241,7 @@ bool matchmaker::match_(const char* beg, const char* end, json::json_error& err)
         {
           if ( s_full_match(p.first, bname, ename) )
           {
-            if (p.second==nullptr || p.second->match(bval, eval, err))
+            if (p.second==nullptr || p.second->match(bval, end, err))
               return true;
           }
         }
@@ -250,7 +249,7 @@ bool matchmaker::match_(const char* beg, const char* end, json::json_error& err)
         {
           if ( s_prefix_match(p.first, bname, ename, err) )
           {
-            if (p.second==nullptr || p.second->match(bval, eval, err))
+            if (p.second==nullptr || p.second->match(bval, end, err))
             {
               return true;
             }
@@ -262,7 +261,7 @@ bool matchmaker::match_(const char* beg, const char* end, json::json_error& err)
       {
         if ( s_regex_match(p.first, bname, ename) )
         {
-          if (p.second==nullptr || p.second->match(bval, eval, err))
+          if (p.second==nullptr || p.second->match(bval, end, err))
             return true;
         }
       }

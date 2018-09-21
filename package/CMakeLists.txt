@@ -47,6 +47,7 @@ add_library(
   ${wfc_jsonrpc_source_list}
 )
 
+target_link_libraries(wfc_jsonrpc matchmaker)
 build_info(wfc_jsonrpc jsonrpc)
 
 install(TARGETS wfc_jsonrpc DESTINATION ${CMAKE_INSTALL_PREFIX})

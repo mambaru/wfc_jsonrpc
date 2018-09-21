@@ -1,6 +1,6 @@
 #include <fas/testing.hpp>
 #include <wfc/json.hpp>
-#include <broker/matchmaker.hpp>
+#include <matchmaker/matchmaker.hpp>
 #include <utility>
 #include <regex>
 #include <boost/regex.hpp>

@@ -1,73 +1,10 @@
 #include "broker.hpp"
-//#include "broker_impl.hpp"
 #include <wjrpc/incoming/send_error.hpp>
 #include <wfc/logger.hpp>
 
 
 namespace wfc{ namespace jsonrpc{ 
 
-bool broker::rule_target::match_params(const char* beg, const char* end, json::json_error& er)
-{
-  if (er) return false;
-  if ( params.empty() )
-    return true;
-  
-  beg = json::parser::parse_space(beg, end, &er);
-  if (er) return false;
-  if ( !json::parser::is_object(beg, end) )
-    return false;
-  if (*(beg++) == '{')
-    return false;
-    
-  // Перебираем все параметры метода (поле params)
-  for (;beg!=end;)
-  {
-    beg = json::parser::parse_space(beg, end, &er);
-    if (er) return false;
-    if ( !json::parser::is_string(beg, end) )
-      return false;
-    const char* endname = json::parser::parse_string(beg, end, &er);
-    if (er) return false;
-    
-    for (const auto& p : params )
-    {
-      if ( std::regex_match(beg, endname, std::regex(p.first) ) )
-      {
-        if ( p.second == nullptr )
-          return true;
-        const char* pbeg = json::parser::parse_space(endname, end, &er);
-        if (er) return false;
-        if (*(pbeg++) == ':') return false;
-        pbeg = json::parser::parse_space(endname, end, &er);
-        
-        if ( this->match_fields(*p.second, pbeg, end, er) )
-          return true;
-        if (er) return false;
-      }
-    }
-    beg = json::parser::parse_member(beg, end, &er);
-    if (er) return false;
-    beg = json::parser::parse_space(beg, end, &er);
-    if (er) return false;
-    if (*(beg++) == '}')
-      break;
-  }
-  return false;
-}
-
-bool broker::rule_target::match_fields(const std::string& rawjsonconf, const char* /*beg*/, const char* /*end*/, json::json_error& /*er*/)
-{
-  // rawjsonconf:
-  //   строка - то это регулярка
-  //   массив строк - то это список регулярок
-  //   объект - конфиг broker_config::param
-  if ( json::parser::is_string(rawjsonconf.begin(), rawjsonconf.end()) )
-  {
-    
-  }
-    
-  return false;
-}
 
 broker::domain_config broker::generate(const std::string& val)
 {
@@ -75,7 +12,7 @@ broker::domain_config broker::generate(const std::string& val)
   if ( !val.empty() )
   {
     domain_config::rule r;
-    r.target = "<<method-name>>";
+    r.target = std::make_shared<std::string>("<<target-name>>");
     r.methods.insert("<<method-name>>");
     conf.reject.push_back("<<method-name>>");
     conf.rules.push_back(r);
@@ -85,20 +22,42 @@ broker::domain_config broker::generate(const std::string& val)
 
 void broker::ready()
 {
-  _reject.clear();
-  _targets.clear();
-  //_methods.clear();
+  std::lock_guard<mutex_type> lk(_mutex);
   
   const auto& opt = this->options();
+  _reject.clear();
   _reject.insert( opt.reject.begin(), opt.reject.end() );
-
+  _targets.clear();
+  std::set<std::string> names;
   for (const auto& r: opt.rules)
   {
-    auto target = this->get_adapter(r.target);
-    _targets.push_back( target );
-    /*for (const auto& m: r.methods)
-      _methods[m] = target;*/
+    if ( r.target!=nullptr && !r.target->empty() )
+      names.insert(*r.target);
   }
+  
+  for (const auto& name: names)
+  {
+    auto target = this->get_adapter(name);
+    _targets.push_back( target );
+  }
+  
+  for (const auto& r: opt.rules)
+  {
+    _rules.push_back(rule_target());
+    _rules.back().methods = r.methods;
+    if ( r.target!=nullptr && !r.target->empty() )
+    {
+      _rules.back().target = std::make_shared<target_adapter>( this->get_adapter(*r.target) );
+    }
+    
+    if ( r.params!=nullptr && !r.params->empty() )
+    {
+      _rules.back().matcher = std::make_shared<matchmaker>();
+      json::json_error err;
+      _rules.back().matcher->reconfigure(r.mode, *r.params, err);
+    }
+  }
+  //_rules.assign(opt.rules.begin(), opt.rules.end());
 }
 
 void broker::reg_io(io_id_t io_id, std::weak_ptr<iinterface> itf) 
@@ -140,17 +99,38 @@ void broker::perform_incoming(incoming_holder holder, io_id_t io_id, outgoing_ha
   read_lock<mutex_type> lk(_mutex);
   if ( _reject.find( holder.method() ) != _reject.end() )
   {
-    ::wjrpc::aux::send_error(std::move(holder), std::make_unique< ::wjrpc::service_unavailable > (), std::move(handler));
+    this->send_error<service_unavailable>(std::move(holder), std::move(handler));
     return;
   }
   
-  /*
-  auto itr = _methods.find(holder.method());
-  if ( itr != _methods.end() )
+  for (const auto& r: _rules)
   {
-    itr->second.perform_incoming(std::move(holder), io_id, std::move(handler) );
-    return;
-  }*/
+    if ( 0 != r.methods.count(holder.method()) )
+    {
+      bool match = true;
+      if ( r.matcher!=nullptr)
+      {
+        json::json_error err;
+        const char *beg = &(*holder.get().params.first);
+        const char *end = &(*holder.get().params.second);
+        match = r.matcher->match(beg, end, err);
+        if ( err )
+        {
+          match = false;
+          JSONRPC_LOG_ERROR("broker match error: " << json::strerror::message_trace(err, beg, end) );
+        }
+      }
+      if (match)
+      {
+        if ( r.target!=nullptr )
+          r.target->perform_incoming(std::move(holder), io_id, std::move(handler) );
+        else
+          this->send_error<procedure_not_found>(std::move(holder), std::move(handler));
+
+        return;
+      }
+    }
+  }
     
   if ( this->get_target() ) 
   {
@@ -158,7 +138,7 @@ void broker::perform_incoming(incoming_holder holder, io_id_t io_id, outgoing_ha
     return;
   }
 
-  ::wjrpc::aux::send_error(std::move(holder),  std::make_unique< ::wjrpc::procedure_not_found > (), std::move(handler));
+  this->send_error<procedure_not_found>( std::move(holder), std::move(handler) );
 }
   
 void broker::perform_outgoing(outgoing_holder holder, io_id_t io_id)
