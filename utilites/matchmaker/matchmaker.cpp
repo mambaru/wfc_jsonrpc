@@ -50,13 +50,11 @@ bool matchmaker::reconfigure_(int mode, std::string::const_iterator beg, std::st
         auto str = this->getstr_(beg, end, err);
         if ( !err )
         {
-          std::cout << std::endl;
-          std::cout << "reconfigure [" << str << "] = [" << std::string(beg, end) << "]" << std::endl;
-          _regular->regex_value = boost::regex(this->getstr_(beg, end, err) );
+          _regular->regex_value = boost::regex(str);
         }
         else
         {
-          std::cout << json::strerror::message_trace(err, beg, end) << std::endl;
+          // TODO:
         }
       }
       catch(boost::regex_error& e)
@@ -101,7 +99,7 @@ bool matchmaker::reconfigure_(int mode, std::string::const_iterator beg, std::st
     _regtype = regtype::object;
     std::vector< std::pair<std::string, std::string> > dict;
     
-    if ( /*mode&match_mode::RegexMatchName ||*/ mode&match_mode::PrefixMatchName)
+    if ( mode&match_mode::PrefixMatchName)
     {
       json::dict_vector< json::raw_value<> >::serializer()(dict, beg, end, &err);
     }
@@ -179,19 +177,23 @@ namespace
 
 bool matchmaker::match_(const char* beg, const char* end, json::json_error& err)
 {
+  // end указывает на конец всего сообщения, чтобы в случае ошибки могли указать место 
+  const char* vend = json::parser::parse_value(beg, end, &err);
+  if (err) return false;
+
   if ( _regtype == regtype::value )
   {
     if ( _mode & match_mode::FullMatchValue )
     {
-      return s_full_match(_regular->prefix_value, beg, end);
+      return s_full_match(_regular->prefix_value, beg, vend);
     }
     else if ( _mode & match_mode::PrefixMatchValue )
     {
-      return s_prefix_match(_regular->prefix_value, beg, end, err);
+      return s_prefix_match(_regular->prefix_value, beg, vend, err);
     }
     else if ( _mode & match_mode::RegexMatchValue )
     {
-      return s_regex_match(_regular->regex_value, beg, end);
+      return s_regex_match(_regular->regex_value, beg, vend);
     }
   }
   else if ( _regtype == regtype::list)
@@ -200,16 +202,16 @@ bool matchmaker::match_(const char* beg, const char* end, json::json_error& err)
     {
       if ( _mode & match_mode::FullMatchValue )
       {
-        return s_full_match(p, beg, end);
+        return s_full_match(p, beg, vend);
       }
       else if ( _mode & match_mode::PrefixMatchValue )
       {
-        return s_prefix_match(p, beg, end, err);
+        return s_prefix_match(p, beg, vend, err);
       }
     }
     for (const auto& p : _regular->regex_list)
     {
-      if ( s_regex_match(p, beg, end))
+      if ( s_regex_match(p, beg, vend))
         return true;
     }
   }
@@ -222,7 +224,6 @@ bool matchmaker::match_(const char* beg, const char* end, json::json_error& err)
     
     while (beg!=end)
     {
-      
       beg = json::parser::parse_space(beg, end, &err);
       if ( !json::parser::is_string(beg, end) ) 
         break;

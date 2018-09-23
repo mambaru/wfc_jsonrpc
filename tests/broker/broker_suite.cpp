@@ -27,10 +27,10 @@ static const std::string configs[]=
   "'hell'"_json,                 // 1
   "''hello''"_json,              // 2
   "'\"hell\"'"_json,             // 3
-  "'.*hello.*'"_json,                 // 4
-  "'.*hell.*'"_json,                  // 5
+  "'.*hello.*'"_json,            // 4
+  "'.*hell.*'"_json,             // 5
   "['.hello.', '.hell.', '.hellx.']"_json, // 6 По сути это проверка целого слова, т.к. нужно учитывать кавычки
-  "{'foo':'bar'}"_json,                // 7
+  "{'foo':'bar'}"_json,          // 7
   "{'foo':'bar', 'baz':{'.*':'.(\\\\w+)(\\\\.|_)?(\\\\w*)@(\\\\w+)(\\\\.(\\\\w+))+.'}}"_json              // 9
   //"{'foo':'bar', 'baz':{'.*':'\\\"m.*'}}"_json              // 9
   
