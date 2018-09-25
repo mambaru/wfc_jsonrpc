@@ -32,7 +32,7 @@ private:
   size_t apply_backlog_();
 private:
   typedef std::mutex mutex_type;
-  typedef std::weak_ptr<iinterface> witf;
+  //typedef std::weak_ptr<iinterface> witf;
   mutex_type _mutex;
   std::string _log;
   bool _lock_flag = false;

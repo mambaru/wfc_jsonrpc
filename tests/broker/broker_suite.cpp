@@ -31,8 +31,9 @@ static const std::string configs[]=
   "'.*hell.*'"_json,             // 5
   "['.hello.', '.hell.', '.hellx.']"_json, // 6 По сути это проверка целого слова, т.к. нужно учитывать кавычки
   "{'foo':'bar'}"_json,          // 7
-  "{'foo':'bar', 'baz':{'.*':'.(\\\\w+)(\\\\.|_)?(\\\\w*)@(\\\\w+)(\\\\.(\\\\w+))+.'}}"_json,              // 9
-  "{'foo':'bar', 'baz':{'email':null}}"_json              // 9
+  "{'foo':'bar', 'baz':{'.*':'.(\\\\w+)(\\\\.|_)?(\\\\w*)@(\\\\w+)(\\\\.(\\\\w+))+.'}}"_json,              // 8
+  "{'foo':'bar', 'baz':{'email':null}}"_json,              // 9
+  "{'foo':'bar', 'baz':{'a':['b','c','d']}}"_json              // 10
   
 };
 
@@ -118,16 +119,22 @@ UNIT(match0, "")
   match<true, match_mode::RegexMatchValue>(t, 6, "'hellx'"_json, FAS_FLS );
   
   match<true,  match_mode::FullMatch>(t, 7, "{'foo':'bar'}"_json, FAS_FLS );
-  match<true,  match_mode::FullMatch>(t, 7, "{'foo1':'bar', 'foo':'bar', 'foo':'bar1'}"_json, FAS_FLS );
+  match<true,  match_mode::FullMatch>(t, 7, "{'foo1':'bar', 'foo':'bar', 'foo2':'bar1'}"_json, FAS_FLS );
   match<false, match_mode::FullMatch>(t, 7, "{'foo1':'bar', 'foo':'bar1'}"_json, FAS_FLS );
   
   match<true,  match_mode::PrefixMatch>(t, 7, "{'foo':'bar'}"_json, FAS_FLS );
-  match<true,  match_mode::PrefixMatch>(t, 7, "{'foo1':'bar', 'foo':'bar', 'foo':'bar1'}"_json, FAS_FLS );
+  match<true,  match_mode::PrefixMatch>(t, 7, "{'foo1':'bar', 'foo':'bar', 'foo2':'bar1'}"_json, FAS_FLS );
   match<false, match_mode::PrefixMatch>(t, 7, "{'fo1':'bar', 'foo':'ba1'}"_json, FAS_FLS );
   
   match<true,  match_mode::RegexMatch>(t, 8, "{'foo':'bar', 'baz':{'email':'migashko@gmail.com'}}"_json, FAS_FLS );
+  
   match<false, match_mode::RegexMatch>(t, 9, "{'foo':'bar', 'baz':{'email1':null}}"_json, FAS_FLS );
   match<true,  match_mode::RegexMatch>(t, 9, "{'foo':'bar', 'baz':{'email':null}}"_json, FAS_FLS );
+  
+  match<true,  match_mode::FullMatch>(t, 10, "{'foo':'bar', 'baz':{'a':'b'}}"_json, FAS_FLS );
+  match<true,  match_mode::FullMatch>(t, 10, "{'foo':'bar', 'baz':{'a':'c'}}"_json, FAS_FLS );
+  match<true,  match_mode::FullMatch>(t, 10, "{'foo':'bar', 'baz':{'a':'d'}}"_json, FAS_FLS );
+  match<false, match_mode::FullMatch>(t, 10, "{'foo':'bar', 'baz':{'a':'e'}}"_json, FAS_FLS );
   
 }
 
