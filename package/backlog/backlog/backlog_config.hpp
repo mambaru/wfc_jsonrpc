@@ -11,6 +11,7 @@ struct backlog_config
   std::string target;
   std::string restore_target;
   std::string path;
+  std::string log;
   size_t restore_trace = 0;
 };
 

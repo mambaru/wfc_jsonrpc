@@ -8,7 +8,3 @@ include_directories(utilites)
 add_subdirectory(utilites)
 add_subdirectory(tests)
 add_subdirectory(package)
-
-
-
-

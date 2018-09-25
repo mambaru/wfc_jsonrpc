@@ -11,6 +11,7 @@ struct backlog_config_json
   JSON_NAME(target)
   JSON_NAME(path)
   JSON_NAME(restore_trace)
+  JSON_NAME(log)
 
   typedef json::object<
     backlog_config,

@@ -18,6 +18,7 @@ struct matchmaker::regular
 
 enum class matchmaker::regtype
 {
+  null,
   value,
   list, 
   object
@@ -25,7 +26,6 @@ enum class matchmaker::regtype
 
 bool matchmaker::reconfigure(int mode, const std::string& jsonconfig, json::json_error& err)
 {
-  std::lock_guard<mutex_type> lk(_mutex);
   return this->reconfigure_(mode, jsonconfig.begin(), jsonconfig.end(), err);
 }
   
@@ -39,8 +39,14 @@ std::string matchmaker::getstr_(std::string::const_iterator beg, std::string::co
 bool matchmaker::reconfigure_(int mode, std::string::const_iterator beg, std::string::const_iterator end, json::json_error& err)
 {
   _mode = mode;
+  if ( _mode == match_mode::Ignore )
+    return true;
   _regular = std::make_shared<regular>();
-  if ( json::parser::is_string(beg, end) )
+  if ( json::parser::is_null(beg, end) )
+  {
+    _regtype = regtype::value;
+  }
+  else if ( json::parser::is_string(beg, end) )
   {
     _regtype = regtype::value;
     if ( mode&match_mode::RegexMatchValue )
@@ -144,7 +150,6 @@ bool matchmaker::match(const std::string& json, json::json_error& err)
 
 bool matchmaker::match(const char* beg, const char* end, json::json_error& err)
 {
-  read_lock<mutex_type> lk(_mutex);
   return this->match_(beg, end, err);
 }
 
@@ -177,11 +182,17 @@ namespace
 
 bool matchmaker::match_(const char* beg, const char* end, json::json_error& err)
 {
+  if ( _mode == match_mode::Ignore )
+    return true;
   // end указывает на конец всего сообщения, чтобы в случае ошибки могли указать место 
   const char* vend = json::parser::parse_value(beg, end, &err);
   if (err) return false;
 
-  if ( _regtype == regtype::value )
+  if ( _regtype == regtype::null )
+  {
+    return true;
+  }
+  else if ( _regtype == regtype::value )
   {
     if ( _mode & match_mode::FullMatchValue )
     {

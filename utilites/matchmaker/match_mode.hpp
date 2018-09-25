@@ -6,6 +6,7 @@ struct match_mode
 {
   enum
   {
+    Ignore           = 0,
     FullMatch        = 3,
     FullMatchName    = 1,
     FullMatchValue   = 2,

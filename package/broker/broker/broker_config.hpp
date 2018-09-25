@@ -15,7 +15,7 @@ struct broker_config
   {
     std::set<std::string> methods;
     std::shared_ptr<std::string> target;
-    int mode = match_mode::FullMatch;
+    int mode = match_mode::Ignore;
     std::shared_ptr<std::string> params;
   };
   

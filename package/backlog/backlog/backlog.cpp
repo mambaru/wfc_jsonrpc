@@ -7,6 +7,7 @@
 
 namespace wfc{ namespace jsonrpc{
 
+#define BACKLOG(NAME, X) WFC_LOG_MESSAGE(NAME, X)
 namespace
 {
   
@@ -45,6 +46,7 @@ namespace
 void backlog::configure() 
 {
   domain_proxy::configure();
+  _log = this->options().log;
   this->set_target("backlog", this->name(), std::make_shared<backlog_proxy>(this) );
 }
 
@@ -78,11 +80,15 @@ void backlog::write_incoming_(const incoming_holder& holder)
 {
   if ( !this->suspended() )
   {
+    std::string jsonmsg = holder.str();
     std::lock_guard<mutex_type> lk(_mutex);
+    
+    if ( !_log.empty() )  { BACKLOG(_log,jsonmsg) }
+    
     if ( _lock_flag )
-      _ss << holder.str() << std::endl;
+      _ss << jsonmsg << std::endl;
     else
-      _filelog << holder.str() << std::endl;
+      _filelog << jsonmsg << std::endl;
   }
 }
 

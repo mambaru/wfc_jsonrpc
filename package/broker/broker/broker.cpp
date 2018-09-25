@@ -11,10 +11,46 @@ broker::domain_config broker::generate(const std::string& val)
   domain_config conf = super::generate(val);
   if ( !val.empty() )
   {
+    using namespace wfc::json::literals;
+    conf.reject.push_back("<<reject-method-name>>");
+    
     domain_config::rule r;
     r.target = std::make_shared<std::string>("<<target-name>>");
     r.methods.insert("<<method-name>>");
-    conf.reject.push_back("<<method-name>>");
+    r.methods.insert(
+      "В этом массиве перечисляются все методы, которые будут перенаправлены объекту указанному в 'target'."
+      "Это строка комментарий вместо реального имени метода, ее нужно удалить!"
+    );
+    conf.rules.push_back(r);
+    
+    r.mode = match_mode::FullMatch;
+    r.methods.clear();
+    r.methods.insert("method1");
+    r.methods.insert("Это правило выполнится для 'method1' если в параметрах есть поле 'arg1' с любым значением");
+    r.params = std::make_shared<std::string>("{'arg1':null}_json");
+    conf.rules.push_back(r);
+
+    r.methods.clear();
+    r.methods.insert("method2");
+    r.methods.insert("Это правило выполнится для 'method2' если в параметрах есть поле 'arg2' со значением 'value2'");
+    r.params = std::make_shared<std::string>("{'arg2':'value2'}_json");
+    conf.rules.push_back(r);
+    
+    r.methods.clear();
+    r.methods.insert("method3");
+    r.methods.insert("В режиме PrefixMatch проверяется только первая часть значения или имени. В 'method3' примере  "
+      "подойдет любое поле которое начинается с 'arg' со значениями начинающиеся value"
+    );
+    r.mode = match_mode::PrefixMatch;
+    r.params = std::make_shared<std::string>("{'arg':'value'}"_json);
+
+    r.methods.clear();
+    r.methods.insert("method4");
+    r.methods.insert("Можно использовать регулярные выражение в режиме RegexMatch. Обратите внимание, что регулярное "
+    "выражение должно описывать json-в сыром виде, например строка будет с кавычками");
+    conf.rules.push_back(r);
+    r.mode = match_mode::RegexMatch;
+    r.params = std::make_shared<std::string>("{'.*':'.(\\\\w+)(\\\\.|_)?(\\\\w*)@(\\\\w+)(\\\\.(\\\\w+))+.'}"_json);
     conf.rules.push_back(r);
   }
   return conf;
@@ -57,7 +93,6 @@ void broker::ready()
       _rules.back().matcher->reconfigure(r.mode, *r.params, err);
     }
   }
-  //_rules.assign(opt.rules.begin(), opt.rules.end());
 }
 
 void broker::reg_io(io_id_t io_id, std::weak_ptr<iinterface> itf) 
@@ -105,7 +140,8 @@ void broker::perform_incoming(incoming_holder holder, io_id_t io_id, outgoing_ha
   
   for (const auto& r: _rules)
   {
-    if ( 0 != r.methods.count(holder.method()) )
+    bool all_methods = r.methods.empty() || r.methods.count("*")!=0;
+    if ( 0 != r.methods.count(holder.method()) || all_methods )
     {
       bool match = true;
       if ( r.matcher!=nullptr)

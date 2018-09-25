@@ -25,6 +25,7 @@ namespace wfc{  namespace jsonrpc{
  */
 struct broker_config_json
 {
+  JSON_NAME(Ignore)
   JSON_NAME(FullMatch)
   JSON_NAME(FullMatchName)
   JSON_NAME(FullMatchValue)
@@ -38,6 +39,7 @@ struct broker_config_json
   typedef json::flags<
     int,
     json::member_list<
+      json::enum_value<n_Ignore, int, match_mode::Ignore>,
       json::enum_value<n_FullMatch, int, match_mode::FullMatch>,
       json::enum_value<n_FullMatchName, int, match_mode::FullMatchName>,
       json::enum_value<n_FullMatchValue, int, match_mode::FullMatchValue>,
@@ -57,15 +59,16 @@ struct broker_config_json
   JSON_NAME(methods)
   JSON_NAME(target)
   JSON_NAME(params)
-  JSON_NAME(mode)
+  JSON_NAME(params_mode)
 
   typedef ::wfc::json::object<
     rule,
     json::member_list<
       json::member<n_methods, rule, std::set<std::string>, &rule::methods, json::set_of< json::string<> > >,
       json::member<n_target,  rule, string_ptr_t, &rule::target, string_ptr_json >,
-      json::member<n_params,  rule, string_ptr_t, &rule::params, string_ptr_json >,
-      json::member<n_mode,    rule, int, &rule::mode, match_mode_json >
+      json::member<n_params_mode,    rule, int, &rule::mode, match_mode_json >,
+      json::member<n_params,  rule, string_ptr_t, &rule::params, string_ptr_json >
+      
     >,
     json::strict_mode
   > rule_json;

@@ -31,8 +31,8 @@ static const std::string configs[]=
   "'.*hell.*'"_json,             // 5
   "['.hello.', '.hell.', '.hellx.']"_json, // 6 По сути это проверка целого слова, т.к. нужно учитывать кавычки
   "{'foo':'bar'}"_json,          // 7
-  "{'foo':'bar', 'baz':{'.*':'.(\\\\w+)(\\\\.|_)?(\\\\w*)@(\\\\w+)(\\\\.(\\\\w+))+.'}}"_json              // 9
-  //"{'foo':'bar', 'baz':{'.*':'\\\"m.*'}}"_json              // 9
+  "{'foo':'bar', 'baz':{'.*':'.(\\\\w+)(\\\\.|_)?(\\\\w*)@(\\\\w+)(\\\\.(\\\\w+))+.'}}"_json,              // 9
+  "{'foo':'bar', 'baz':{'email':null}}"_json              // 9
   
 };
 
@@ -59,11 +59,13 @@ void match(T& t, int nconfig, const std::string& json, std::string fl)
   t << message(configs[nconfig]) << " ws [" << json << "]";
   t << flush;
   bool res = mm->reconfigure( mode, configs[nconfig], err );
-  t << is_false<assert>(err) << err << FAS_FL << std::endl << " from:" << fl;
+  t << is_false<assert>(err) << wfc::json::strerror::message_trace(err, json.begin(), json.end() )
+    << FAS_FL << std::endl << " from:" << fl;
   t << is_true<assert>(res) << " reconfigure for "<< configs[nconfig] << FAS_FL;
   t << stop;
   bool match_result = mm->match( json, err );
-  t << is_false<assert>(err) << FAS_FL<< std::endl << " from:" << fl;
+  t << is_false<assert>(err) << wfc::json::strerror::message_trace(err, json.begin(), json.end() ) 
+    << FAS_FL<< std::endl << " from:" << fl;
   t << stop;
   t << equal<expect, bool>(match_result, Val) << fl;
 }
@@ -123,14 +125,9 @@ UNIT(match0, "")
   match<true,  match_mode::PrefixMatch>(t, 7, "{'foo1':'bar', 'foo':'bar', 'foo':'bar1'}"_json, FAS_FLS );
   match<false, match_mode::PrefixMatch>(t, 7, "{'fo1':'bar', 'foo':'ba1'}"_json, FAS_FLS );
   
-  
-  /*boost::regex reg("\"(\\w+)(\\.|_)?(\\w*)@(\\w+)(\\.(\\w+))+\"");
-  bool res = boost::regex_match("\"migashko@gmail.com\"", reg);
-  t << is_true<assert>(res) << FAS_FL;
-  match<true,  match_mode::RegexMatch>(t, 8, "'migashko'"_json, FAS_FLS );
-  match<true,  match_mode::RegexMatch>(t, 8, "'migashko@gmail.com'"_json, FAS_FLS );*/
-  // TODO: regex для строк отдельной веткой 
   match<true,  match_mode::RegexMatch>(t, 8, "{'foo':'bar', 'baz':{'email':'migashko@gmail.com'}}"_json, FAS_FLS );
+  match<false, match_mode::RegexMatch>(t, 9, "{'foo':'bar', 'baz':{'email1':null}}"_json, FAS_FLS );
+  match<true,  match_mode::RegexMatch>(t, 9, "{'foo':'bar', 'baz':{'email':null}}"_json, FAS_FLS );
   
 }
 
