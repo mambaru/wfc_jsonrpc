@@ -19,7 +19,8 @@ struct backlog_config_json
       json::member<n_target,   backlog_config, std::string, &backlog_config::target >,
       json::member<n_restore_target,   backlog_config, std::string, &backlog_config::restore_target >,
       json::member<n_path,   backlog_config, std::string, &backlog_config::path >,
-      json::member<n_restore_trace,   backlog_config, size_t, &backlog_config::restore_trace >
+      json::member<n_restore_trace,   backlog_config, size_t, &backlog_config::restore_trace >,
+      json::member<n_log,   backlog_config, std::string, &backlog_config::log >
     >
   > type;
   
