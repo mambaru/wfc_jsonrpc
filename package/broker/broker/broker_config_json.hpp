@@ -54,7 +54,7 @@ struct broker_config_json
   
   typedef broker_config::rule rule;
   typedef std::shared_ptr<std::string> string_ptr_t;
-  typedef json::pointer< string_ptr_t, json::string<> > string_ptr_json;
+  typedef json::pointer< string_ptr_t, json::raw_value<> > string_ptr_json;
 
   JSON_NAME(methods)
   JSON_NAME(target)
