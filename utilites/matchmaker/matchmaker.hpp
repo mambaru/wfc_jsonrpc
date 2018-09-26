@@ -6,6 +6,8 @@
 
 namespace wfc{ namespace jsonrpc{ 
   
+struct imatcher;
+
 class matchmaker
 {
   struct regular;
@@ -22,6 +24,8 @@ private:
   std::shared_ptr<regular> _regular;
   int _mode = match_mode::FullMatch;
   regtype _regtype;
+  
+  std::shared_ptr<imatcher> _matcher;
 };
 
 
