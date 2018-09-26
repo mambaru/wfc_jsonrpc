@@ -19,7 +19,7 @@ namespace {
     component_name,
     ::wfc::instance<broker>,
     broker_config_json,
-    component_features::DisabledWorkflow
+    component_features::DisabledWorkflow | component_features::DisabledPriority
   >
   {
     virtual std::string interface_name() const override

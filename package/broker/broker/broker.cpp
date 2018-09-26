@@ -27,13 +27,13 @@ broker::domain_config broker::generate(const std::string& val)
     r.methods.clear();
     r.methods.insert("method1");
     r.methods.insert("Это правило выполнится для 'method1' если в параметрах есть поле 'arg1' с любым значением");
-    r.params = std::make_shared<std::string>("{'arg1':null}_json");
+    r.params = std::make_shared<std::string>("{'arg1':null}"_json);
     conf.rules.push_back(r);
 
     r.methods.clear();
     r.methods.insert("method2");
     r.methods.insert("Это правило выполнится для 'method2' если в параметрах есть поле 'arg2' со значением 'value2'");
-    r.params = std::make_shared<std::string>("{'arg2':'value2'}_json");
+    r.params = std::make_shared<std::string>("{'arg2':'value2'}"_json);
     conf.rules.push_back(r);
     
     r.methods.clear();
@@ -41,7 +41,7 @@ broker::domain_config broker::generate(const std::string& val)
     r.methods.insert("В режиме PrefixMatch проверяется только первая часть значения или имени. В 'method3' примере  "
       "подойдет любое поле которое начинается с 'arg' со значениями начинающиеся value"
     );
-    r.mode = match_mode::PrefixMatch;
+    r.mode = match_mode::FullMatchName | match_mode::PrefixMatchValue;
     r.params = std::make_shared<std::string>("{'arg':'value'}"_json);
 
     r.methods.clear();
