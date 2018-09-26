@@ -34,9 +34,12 @@ static const std::string configs[]=
   "{'foo':'bar', 'baz':{'.*':'.(\\\\w+)(\\\\.|_)?(\\\\w*)@(\\\\w+)(\\\\.(\\\\w+))+.'}}"_json,              // 8
   "{'foo':'bar', 'baz':{'email':null}}"_json,              // 9
   "{'foo':'bar', 'baz':{'a':['b','c','d']}}"_json,              // 10
-  "{'foo':'bar', 'baz':{'a':[['b','c','d']]}}"_json,              // 11
-  "{'foo':'bar', 'baz':{'a':[['b',[['c']],'d']]}}"_json              // 12
-  
+  "{'foo':'bar', 'baz':{'a':[['b','c','d']]}}"_json,          // 11
+  "{'foo':'bar', 'baz':{'a':[['b',[['c']],'d']]}}"_json,      // 12
+  "{'foo':'bar', 'baz':{'a':'.{13,17}'}}"_json,       // 13
+  "{'baz':{'email':'.(\\\\w+)(\\\\.|_)?(\\\\w*)@(\\\\w+)(\\\\.(\\\\w+))+.', 'email':'.{17,19}'}, 'foo':'bar'}"_json, // 14
+  "{'baz':{'email':'.(\\\\w+)(\\\\.|_)?(\\\\w*)@(\\\\w+)(\\\\.(\\\\w+))+.', 'email':'.{17,19}', 'user':'migashko'}, 'foo':'bar'}"_json // 15
+  //"{'baz':{'email':'.{0,190}'}, 'foo':'bar'}"_json // 14
 };
 
 /*
@@ -147,6 +150,25 @@ UNIT(match0, "")
   match<true, match_mode::FullMatch>(t, 12, "{'foo':'bar', 'baz':{'a':[['c', 'e'],'b','d']}}"_json, FAS_FLS );
   match<false, match_mode::FullMatch>(t, 12, "{'foo':'bar', 'baz':{'a':[['c', 'e'],'b',]}}"_json, FAS_FLS );
   match<false, match_mode::FullMatch>(t, 12, "{'foo':'bar', 'baz':{'a':[['e'],'b','d']}}"_json, FAS_FLS );
+  
+  constexpr int mode1 = match_mode::RegexMatchValue | match_mode::FullMatchName;
+  match<true, mode1>(t, 13, "{'foo':'bar', 'baz':{'a':['b','d','c']}}"_json, FAS_FLS );
+  match<true, mode1>(t, 13, "{'foo':'bar', 'baz':{'a':['b','d','c','d']}}"_json, FAS_FLS );
+  match<false, mode1>(t, 13, "{'foo':'bar', 'baz':{'a':['b','d']}}"_json, FAS_FLS );
+  match<false, mode1>(t, 13, "{'foo':'bar', 'baz':{'a':['b','d','c','d','e']}}"_json, FAS_FLS );
+  
+  match<true, mode1>(t, 14, "{'foo':'bar','baz':{'email':'migashko@gmail.com'}}"_json, FAS_FLS );
+  match<false,mode1>(t, 14, "{'foo1':'bar', 'baz':{'email':'migashko@gmail.com'}}"_json, FAS_FLS );
+  match<false,mode1>(t, 14, "{'foo':'bar1', 'baz':{'email':'migashko@gmail.com'}}"_json, FAS_FLS );
+  match<false,mode1>(t, 14, "{'foo':'bar', 'baz':{'email':'mig@gmail.com'}}"_json, FAS_FLS );
+  match<false,mode1>(t, 14, "{'foo':'bar', 'baz':{'email':'migashko1111@gmail.com'}}"_json, FAS_FLS );
+  match<false, mode1>(t, 14, "{'foo':'bar', 'baz':{'emailX':'migashko@gmail.com'}}"_json, FAS_FLS );
+  
+  match<false, mode1>(t, 15, "{'foo':'bar', 'baz':{'emailX':'migashko@gmail.com', 'user':'migashko'}}"_json, FAS_FLS );
+  match<true, mode1>(t, 15, "{'foo':'bar', 'baz':{'email':'migashko@gmail.com', 'user':'migashko'}}"_json, FAS_FLS );
+  match<false, mode1>(t, 15, "{'foo':'bar', 'baz':{'email':'migashko@gmail.com', 'user':'migashko1'}}"_json, FAS_FLS );
+  match<true, mode1>(t, 15, "{'foo':'bar', 'baz':{'email':'migashko1@gmail.com', 'user':'migashko'}}"_json, FAS_FLS );
+  match<false, mode1>(t, 15, "{'foo':'bar', 'baz':{'email':'migashko1111@gmail.com', 'user':'migashko'}}"_json, FAS_FLS );
   
 }
 

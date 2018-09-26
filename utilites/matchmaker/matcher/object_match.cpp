@@ -28,13 +28,13 @@ bool object_match::configure(const char* beg, const char* end, json::json_error&
     const char* beg_name  = p.first.first;
     const char* beg_value = p.second.first;
     
-    auto name = _builder->build(beg_name, end, err);
+    auto name = _builder->build_name();
     if ( name==nullptr || err) return false;
     
     if ( !name->configure(beg_name, end, err) )
       return false;
     
-    auto val = _builder->build(beg_value, end, err);
+    auto val = _builder->build_value(beg_value, end, err);
     if ( val==nullptr || err) return false;
     if ( !val->configure(beg_value, end, err) )
       return false;

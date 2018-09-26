@@ -35,6 +35,7 @@ private:
     std::set<std::string> methods;
     std::shared_ptr<target_adapter> target;
     std::shared_ptr<matchmaker> matcher;
+    std::string rule_log;
   };
  
   typedef std::list<target_adapter> target_list;
@@ -46,6 +47,8 @@ private:
   target_list  _targets;
   rule_list    _rules;
   reject_list  _reject;
+  std::string _target_log;
+  std::string _reject_log;
 
   mutable mutex_type _mutex;
 

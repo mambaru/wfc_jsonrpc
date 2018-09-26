@@ -11,10 +11,11 @@ class builder
 {
 public:
   builder(int mode);
-  virtual std::shared_ptr<imatcher> build(const char* beg, const char* end, json::json_error& err) override;
-  virtual std::shared_ptr<imatcher> build_nv(const char* beg, const char* end, json::json_error& err) override;
+  virtual std::shared_ptr<imatcher> build_name() override;
+  virtual std::shared_ptr<imatcher> build_value(const char* beg, const char* end, json::json_error& err) override;
+  virtual std::shared_ptr<imatcher> build_value_nv(const char* beg, const char* end, json::json_error& err) override;
 private:
-  std::shared_ptr<imatcher> build_(const char* beg, const char* end, json::json_error& err, bool nv);
+  std::shared_ptr<imatcher> build_value_(const char* beg, const char* end, json::json_error& err, bool nv);
 private:
   match_factory _factory;
 };

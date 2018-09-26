@@ -11,17 +11,22 @@ builder::builder(int mode)
   : _factory(mode)
 {}
 
-std::shared_ptr<imatcher> builder::build(const char* beg, const char* end, json::json_error& err)
+std::shared_ptr<imatcher> builder::build_name()
 {
-  return this->build_(beg, end, err, false);
-}
-  
-std::shared_ptr<imatcher> builder::build_nv(const char* beg, const char* end, json::json_error& err)
-{
-  return this->build_(beg, end, err, true);
+  return _factory.create_name();
 }
 
-std::shared_ptr<imatcher> builder::build_(const char* beg, const char* end, json::json_error& err, bool nv) 
+std::shared_ptr<imatcher> builder::build_value(const char* beg, const char* end, json::json_error& err)
+{
+  return this->build_value_(beg, end, err, false);
+}
+  
+std::shared_ptr<imatcher> builder::build_value_nv(const char* beg, const char* end, json::json_error& err)
+{
+  return this->build_value_(beg, end, err, true);
+}
+
+std::shared_ptr<imatcher> builder::build_value_(const char* beg, const char* end, json::json_error& err, bool nv) 
 {
   beg = json::parser::parse_space(beg, end, &err);
   if (err || beg==end) return nullptr;
@@ -48,7 +53,7 @@ std::shared_ptr<imatcher> builder::build_(const char* beg, const char* end, json
   }
   else
   {
-    ptr = _factory.create();
+    ptr = _factory.create_value();
   }
   return ptr;
 }

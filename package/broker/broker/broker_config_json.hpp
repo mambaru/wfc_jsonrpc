@@ -61,13 +61,15 @@ struct broker_config_json
   JSON_NAME(target)
   JSON_NAME(params)
   JSON_NAME(params_mode)
+  JSON_NAME(rule_log)
 
   typedef ::wfc::json::object<
     rule,
     json::member_list<
       json::member<n_methods, rule, std::set<std::string>, &rule::methods, json::set_of< json::string<> > >,
-      json::member<n_target,  rule, string_ptr_t, &rule::target, string_ptr_json >,
-      json::member<n_params_mode,    rule, int, &rule::mode, match_mode_json >,
+      json::member<n_target,  rule, std::string, &rule::target, json::string<> >,
+      json::member<n_rule_log,  rule, std::string, &rule::rule_log, json::string<> >,
+      json::member<n_params_mode, rule, int, &rule::mode, match_mode_json >,
       json::member<n_params,  rule, string_ptr_t, &rule::params, rawstr_ptr_json >
       
     >,
@@ -77,13 +79,17 @@ struct broker_config_json
   typedef json::array< std::vector< rule_json > > array_rule_json;
   JSON_NAME(rules)
   JSON_NAME(reject)
+  JSON_NAME(target_log)
+  JSON_NAME(reject_log)
 
   
   typedef json::object<
     broker_config,
     json::member_list<
       json::member<n_target, broker_config, std::string, &broker_config::target >,
+      json::member<n_target_log, broker_config, std::string, &broker_config::target_log>,
       json::member<n_reject, broker_config, std::vector<std::string>, &broker_config::reject, json::vector_of_strings<> >,
+      json::member<n_reject_log, broker_config, std::string, &broker_config::reject_log>,
       json::member<n_rules, broker_config, std::vector<rule>, &broker_config::rules, array_rule_json >
     >,
     json::strict_mode
