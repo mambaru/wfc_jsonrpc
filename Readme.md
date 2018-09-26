@@ -1,4 +1,4 @@
-[JSONRPC-BROKER](#JSONRPC-BROKER) - брокер JSONRPC-сообщений по заданному набору правил распределяет их по целям
+[JSONRPC-BROKER](#jsonrpc-broker) - брокер JSONRPC-сообщений по заданному набору правил распределяет их по целям
 
 1
 
