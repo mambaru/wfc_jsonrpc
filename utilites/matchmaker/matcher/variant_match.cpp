@@ -23,7 +23,7 @@ bool variant_match::configure(const char* beg, const char* end, json::json_error
   for (auto p : pair_list)
   {
     // Передаем end, а не p.second, чтобы в случае ошибки получить правильное место где она 
-    auto m = _builder->build_nv(p.first, end, err);
+    auto m = _builder->build_value_nv(p.first, end, err);
     if ( m==nullptr || err )  return false;
     if (!m->configure(p.first, end, err))
       return false;

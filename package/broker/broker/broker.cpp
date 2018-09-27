@@ -2,6 +2,7 @@
 #include <wjrpc/incoming/send_error.hpp>
 #include <wfc/logger.hpp>
 
+#define BROKER_LOG(NAME, X) if (!NAME.empty()) { WFC_LOG_MESSAGE(NAME, X) }
 
 namespace wfc{ namespace jsonrpc{ 
 
@@ -15,7 +16,7 @@ broker::domain_config broker::generate(const std::string& val)
     conf.reject.push_back("<<reject-method-name>>");
     
     domain_config::rule r;
-    r.target = std::make_shared<std::string>("<<target-name>>");
+    r.target = "<<target-name>>";
     r.methods.insert("<<method-name>>");
     r.methods.insert(
       "В этом массиве перечисляются все методы, которые будут перенаправлены объекту указанному в 'target'."
@@ -75,27 +76,26 @@ void broker::ready()
   const auto& opt = this->options();
   reject.insert( opt.reject.begin(), opt.reject.end() );
   targets.clear();
+
   std::set<std::string> names;
-  for (const auto& r: opt.rules)
+  for (const broker_config::rule& r: opt.rules)
   {
-    if ( r.target!=nullptr && !r.target->empty() )
-      names.insert(*r.target);
+    if (  !r.target.empty() )
+      names.insert(r.target);
   }
   
-  for (const auto& name: names)
+  for (const std::string& name: names)
   {
-    auto target = this->get_adapter(name);
-    targets.push_back( target );
+    targets.push_back( this->get_adapter(name) );
   }
   
-  for (const auto& r: opt.rules)
+  for (const broker_config::rule& r: opt.rules)
   {
+
     rules.push_back(rule_target());
     rules.back().methods = r.methods;
-    if ( r.target!=nullptr && !r.target->empty() )
-    {
-      rules.back().target = std::make_shared<target_adapter>( this->get_adapter(*r.target) );
-    }
+    rules.back().target = this->get_adapter(r.target);
+    rules.back().rule_log = r.rule_log;
     
     if ( r.params!=nullptr && !r.params->empty() )
     {
@@ -120,6 +120,8 @@ void broker::ready()
   _targets = targets;
   _reject = reject;
   _rules = rules;
+  _target_log = opt.target_log;
+  _reject_log = opt.reject_log;
 }
 
 void broker::reg_io(io_id_t io_id, std::weak_ptr<iinterface> itf) 
@@ -161,11 +163,12 @@ void broker::perform_incoming(incoming_holder holder, io_id_t io_id, outgoing_ha
   read_lock<mutex_type> lk(_mutex);
   if ( _reject.find( holder.method() ) != _reject.end() )
   {
-    this->send_error<service_unavailable>(std::move(holder), std::move(handler));
+    BROKER_LOG(_reject_log, holder.str())
+    this->send_error<procedure_not_found>(std::move(holder), std::move(handler));
     return;
   }
   
-  for (const auto& r: _rules)
+  for (const rule_target& r: _rules)
   {
     bool all_methods = r.methods.empty() || r.methods.count("*")!=0;
     if ( 0 != r.methods.count(holder.method()) || all_methods )
@@ -185,23 +188,15 @@ void broker::perform_incoming(incoming_holder holder, io_id_t io_id, outgoing_ha
       }
       if (match)
       {
-        if ( r.target!=nullptr )
-          r.target->perform_incoming(std::move(holder), io_id, std::move(handler) );
-        else
-          this->send_error<procedure_not_found>(std::move(holder), std::move(handler));
-
+        BROKER_LOG(r.rule_log, holder.str())
+        r.target.perform_incoming(std::move(holder), io_id, std::move(handler) );
         return;
       }
     }
   }
     
-  if ( this->get_target() ) 
-  {
-    domain_proxy::perform_incoming(std::move(holder), io_id, std::move(handler) );
-    return;
-  }
-
-  this->send_error<procedure_not_found>( std::move(holder), std::move(handler) );
+  BROKER_LOG(_target_log, holder.str())
+  domain_proxy::perform_incoming(std::move(holder), io_id, std::move(handler) );
 }
   
 void broker::perform_outgoing(outgoing_holder holder, io_id_t io_id)
@@ -221,11 +216,20 @@ void broker::perform_outgoing(outgoing_holder holder, io_id_t io_id)
   read_lock<mutex_type> lk(_mutex);
   if ( _reject.find( holder.name() ) != _reject.end() )
   {
-    if ( auto rh = holder.result_handler() )
-      rh( incoming_holder( data_ptr() ) );
+    auto handler = holder.result_handler();
+    incoming_holder inholder(holder.detach());
+    BROKER_LOG(_reject_log, inholder.str())
+    if ( handler!=nullptr )
+    {
+      
+      
+      this->send_error<procedure_not_found>( std::move(handler), std::move(handler));
+    }
+
     return;
   }
     
+  // TODO:
     /*
   auto itr = _methods.find(holder.name());
   if ( itr != _methods.end() )

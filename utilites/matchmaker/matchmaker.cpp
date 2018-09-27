@@ -13,7 +13,7 @@ bool matchmaker::reconfigure(int mode, const std::string& jsonconfig, json::json
   auto bldr = std::make_shared<builder>(mode);
   const char* beg = jsonconfig.c_str();
   const char* end = beg + jsonconfig.size();
-  _matcher = bldr->build(beg, end, err);
+  _matcher = bldr->build_value(beg, end, err);
   if (err || _matcher == nullptr)
     return false;
   return _matcher->configure(beg, end, err);

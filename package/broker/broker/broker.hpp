@@ -35,20 +35,24 @@ private:
   struct rule_target
   {
     std::set<std::string> methods;
-    std::shared_ptr<target_adapter> target;
+    mutable target_adapter target;
     std::shared_ptr<matchmaker> matcher;
+    std::string rule_log;
   };
  
   typedef std::list<target_adapter> target_list;
   
   typedef std::set<std::string> reject_list;
-  typedef rwlock<std::mutex> mutex_type;
+  typedef rwlock<std::recursive_mutex> mutex_type;
   typedef std::vector<rule_target> rule_list;
 
   target_list  _targets;
   reject_list  _reject;
   rule_list    _rules;
   
+  std::string _target_log;
+  std::string _reject_log;
+
 
   mutable mutex_type _mutex;
   bool _reconf_flag = false;
