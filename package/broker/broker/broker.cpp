@@ -122,6 +122,7 @@ void broker::ready()
   _rules = rules;
   _target_log = opt.target_log;
   _reject_log = opt.reject_log;
+  _reject_all = _reject.count("*");
 }
 
 void broker::reg_io(io_id_t io_id, std::weak_ptr<iinterface> itf) 
@@ -161,11 +162,14 @@ void broker::perform_incoming(incoming_holder holder, io_id_t io_id, outgoing_ha
   }
   
   read_lock<mutex_type> lk(_mutex);
-  if ( _reject.find( holder.method() ) != _reject.end() )
+  if ( !_reject.empty() )
   {
-    BROKER_LOG(_reject_log, holder.str())
-    this->send_error<procedure_not_found>(std::move(holder), std::move(handler));
-    return;
+    if ( _reject_all || _reject.count( holder.method() ) != 0 )
+    {
+      BROKER_LOG(_reject_log, holder.str())
+      this->send_error<procedure_not_found>(std::move(holder), std::move(handler));
+      return;
+    }
   }
   
   for (const rule_target& r: _rules)

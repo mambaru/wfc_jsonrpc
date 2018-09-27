@@ -56,7 +56,7 @@ private:
 
   mutable mutex_type _mutex;
   bool _reconf_flag = false;
-
+  bool _reject_all = false;
 };
 
 }}
