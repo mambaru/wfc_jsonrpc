@@ -201,6 +201,7 @@ void broker::perform_incoming(incoming_holder holder, io_id_t io_id, outgoing_ha
   
 void broker::perform_outgoing(outgoing_holder holder, io_id_t io_id)
 {
+  /*
   if ( this->suspended() )
   {
     domain_proxy::perform_outgoing( std::move(holder), io_id );
@@ -221,22 +222,20 @@ void broker::perform_outgoing(outgoing_holder holder, io_id_t io_id)
     BROKER_LOG(_reject_log, inholder.str())
     if ( handler!=nullptr )
     {
-      
-      
-      this->send_error<procedure_not_found>( std::move(handler), std::move(handler));
+      this->send_error<procedure_not_found>( std::move(inholder), std::move(handler));
     }
 
     return;
   }
+  */
     
   // TODO:
-    /*
-  auto itr = _methods.find(holder.name());
-  if ( itr != _methods.end() )
-  {
-    itr->second.perform_outgoing(std::move(holder), io_id );
-    return;
-  }*/
+  //auto itr = _methods.find(holder.name());
+  //if ( itr != _methods.end() )
+  //{
+  //  itr->second.perform_outgoing(std::move(holder), io_id );
+  //return;
+  //}
     
   domain_proxy::perform_outgoing(std::move(holder), io_id );
 }
