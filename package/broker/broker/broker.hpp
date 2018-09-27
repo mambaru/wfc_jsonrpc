@@ -19,6 +19,8 @@ public:
   typedef super::domain_config domain_config;
   virtual domain_config generate(const std::string&);
 
+  virtual void configure() override;
+  virtual void reconfigure() override;
   // domain_proxy
   virtual void ready() override;
   virtual void reg_io(io_id_t io_id, std::weak_ptr<iinterface> itf) override;
@@ -44,10 +46,12 @@ private:
   typedef std::vector<rule_target> rule_list;
 
   target_list  _targets;
-  rule_list    _rules;
   reject_list  _reject;
+  rule_list    _rules;
+  
 
   mutable mutex_type _mutex;
+  bool _reconf_flag = false;
 
 };
 

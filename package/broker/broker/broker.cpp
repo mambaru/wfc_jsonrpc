@@ -56,14 +56,25 @@ broker::domain_config broker::generate(const std::string& val)
   return conf;
 }
 
+void broker::configure() 
+{
+  _reconf_flag = false;
+}
+
+void broker::reconfigure()
+{
+  _reconf_flag = true;
+}
+
 void broker::ready()
 {
-  std::lock_guard<mutex_type> lk(_mutex);
-  
+  target_list  targets;
+  reject_list  reject;
+  rule_list    rules;
+
   const auto& opt = this->options();
-  _reject.clear();
-  _reject.insert( opt.reject.begin(), opt.reject.end() );
-  _targets.clear();
+  reject.insert( opt.reject.begin(), opt.reject.end() );
+  targets.clear();
   std::set<std::string> names;
   for (const auto& r: opt.rules)
   {
@@ -74,25 +85,41 @@ void broker::ready()
   for (const auto& name: names)
   {
     auto target = this->get_adapter(name);
-    _targets.push_back( target );
+    targets.push_back( target );
   }
   
   for (const auto& r: opt.rules)
   {
-    _rules.push_back(rule_target());
-    _rules.back().methods = r.methods;
+    rules.push_back(rule_target());
+    rules.back().methods = r.methods;
     if ( r.target!=nullptr && !r.target->empty() )
     {
-      _rules.back().target = std::make_shared<target_adapter>( this->get_adapter(*r.target) );
+      rules.back().target = std::make_shared<target_adapter>( this->get_adapter(*r.target) );
     }
     
     if ( r.params!=nullptr && !r.params->empty() )
     {
-      _rules.back().matcher = std::make_shared<matchmaker>();
+      rules.back().matcher = std::make_shared<matchmaker>();
       json::json_error err;
-      _rules.back().matcher->reconfigure(r.mode, *r.params, err);
+      if ( !rules.back().matcher->reconfigure(r.mode, *r.params, err) )
+      {
+        if ( _reconf_flag ) 
+        {
+          COMMON_LOG_ERROR( "jsonrpc-broker configuration error: " <<  json::strerror::message_trace(err, r.params->begin(), r.params->end()) )
+        }
+        else
+        {
+          COMMON_LOG_FATAL( "jsonrpc-broker configuration error: " <<  json::strerror::message_trace(err, r.params->begin(), r.params->end()) )
+        }
+        return;
+      }
     }
   }
+  
+  std::lock_guard<mutex_type> lk(_mutex);
+  _targets = targets;
+  _reject = reject;
+  _rules = rules;
 }
 
 void broker::reg_io(io_id_t io_id, std::weak_ptr<iinterface> itf) 
