@@ -22,7 +22,7 @@ public:
   virtual void configure() override;
   virtual void reconfigure() override;
   // domain_proxy
-  virtual void ready() override;
+  virtual void restart() override;
   virtual void reg_io(io_id_t io_id, std::weak_ptr<iinterface> itf) override;
   virtual void unreg_io(io_id_t io_id) override;
 

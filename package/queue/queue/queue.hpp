@@ -18,7 +18,7 @@ class queue
 public:
   queue();
 // domain
-  virtual void ready() override;
+  virtual void restart() override;
   virtual void stop() override;
 
 //

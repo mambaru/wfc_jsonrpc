@@ -7,7 +7,7 @@ namespace wfc{ namespace jsonrpc{
 queue::queue()
 {}
 
-void queue::ready()
+void queue::restart()
 {
   const auto& opt = super::options();
   if ( opt.callback_queue == true )

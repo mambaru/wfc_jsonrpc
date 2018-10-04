@@ -5,7 +5,7 @@
 
 namespace wfc{ namespace jsonrpc{ 
 
-void repli::ready()
+void repli::restart()
 {
   _targets.clear();
   for ( auto name : this->options().reply_targets )

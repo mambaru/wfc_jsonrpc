@@ -67,7 +67,7 @@ void broker::reconfigure()
   _reconf_flag = true;
 }
 
-void broker::ready()
+void broker::restart()
 {
   target_list  targets;
   reject_list  reject;

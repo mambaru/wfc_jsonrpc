@@ -12,7 +12,7 @@ class repli
   : public ::wfc::jsonrpc::domain_proxy< repli_config, ::wfc::nostat>
 {
 public:
-  virtual void ready() override;
+  virtual void restart() override;
 
   // ijsonrpc
 
