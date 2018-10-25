@@ -4,6 +4,8 @@
 
 namespace wfc{ namespace jsonrpc{
 
+// TODO: переделать под трекер в domain_object
+
 queue::queue()
 {}
 
