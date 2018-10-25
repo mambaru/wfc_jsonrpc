@@ -6,5 +6,8 @@ include_directories(package)
 include_directories(utilites)
 
 add_subdirectory(utilites)
-add_subdirectory(tests)
 add_subdirectory(package)
+
+if (BUILD_TESTING)
+  add_subdirectory(tests)
+endif()
