@@ -35,7 +35,7 @@ static void static_error_meter(const std::string& method, statistics::data_ptr d
       message = message.substr(1, message.size()-2 );
     else
       message="Unknown Error";
-    auto mproto = stat->create_value_factory(method + ":" + message);
+    auto mproto = stat->create_value_meter(method + ":" + message);
     mproto.create(0, 1);
   }
 }
@@ -99,7 +99,7 @@ statistics::meter_ptr statistics::request_meter_(std::string name, size_t size)
   if (itr == _req_meters.end() )
   {
     auto opt = this->options();
-    auto prototype = stat->create_composite_factory(
+    auto prototype = stat->create_composite_meter(
       !opt.time_suffix.empty()       ?  opt.request_prefix + name + opt.time_suffix : "",
       !opt.read_size_suffix.empty()  ?  opt.request_prefix + name + opt.read_size_suffix : "",
       !opt.write_size_suffix.empty()
@@ -121,7 +121,7 @@ statistics::meter_ptr statistics::notify_meter_(std::string name, size_t size)
   auto itr = _ntf_meters.find(name);
   if (itr == _ntf_meters.end() )
   {
-    auto prototype = stat->create_composite_factory(
+    auto prototype = stat->create_composite_meter(
       !opt.time_suffix.empty()       ?  opt.notify_prefix + name + opt.time_suffix : "",
       !opt.read_size_suffix.empty()  ?  opt.notify_prefix + name + opt.read_size_suffix : "",
       "",
@@ -141,7 +141,7 @@ statistics::meter_ptr statistics::other_meter_(size_t size)
   std::lock_guard<std::mutex> lk(_mutex);
   if ( _other.size() == 0 )
   {
-    _other = stat->create_composite_factory( 
+    _other = stat->create_composite_meter( 
       opt.other_time, 
       opt.other_read_size, 
       this->_enable_write_size ? opt.other_write_size : "",

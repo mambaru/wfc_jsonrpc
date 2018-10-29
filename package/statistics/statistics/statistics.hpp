@@ -12,9 +12,9 @@ namespace wfc{ namespace jsonrpc{
 class statistics
   : public ::wfc::jsonrpc::domain_proxy< statistics_config, ::wfc::defstat >
 {
-  typedef composite_meter meter_type;
+  typedef composite_point meter_type;
   typedef std::shared_ptr<meter_type> meter_ptr;
-  typedef std::map< std::string, composite_factory > meter_map;
+  typedef std::map< std::string, composite_meter > meter_map;
   class outgoing_statistics;
 
 public:
@@ -35,7 +35,7 @@ private:
   bool _enable_error_stat = false;
   meter_map _req_meters;
   meter_map _ntf_meters;
-  composite_factory  _other;
+  composite_meter  _other;
   std::mutex _mutex;
   std::shared_ptr<outgoing_statistics> _outgoing_statistics;
 };
