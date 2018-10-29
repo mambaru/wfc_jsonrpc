@@ -13,7 +13,6 @@ class regex_match
   std::string  _str;
 public:
   virtual bool configure(const char* beg, const char* end, json::json_error& err) override;
-  
   virtual bool match(const char* beg, const char* end, json::json_error& err) override;
 };
 
