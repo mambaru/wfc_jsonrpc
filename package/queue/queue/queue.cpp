@@ -121,7 +121,8 @@ std::function<void()> queue::make_track_fun_(io_id_t io_id, std::function<void()
 
 queue::outgoing_handler_t queue::make_outgoing_handler_(outgoing_handler_t handler)
 {
-  if ( _callback_workflow == nullptr ) return std::move(handler);
+  if ( _callback_workflow == nullptr ) 
+    return handler;
   
   outgoing_handler_t fun = [handler, this](outgoing_holder holder)
   {
@@ -142,7 +143,7 @@ queue::outgoing_handler_t queue::make_outgoing_handler_(outgoing_handler_t handl
       handler( std::move( holder ) );
     }
   };
-  return std::move(fun);
+  return fun;
 }
 
 void queue::drop_handler_(const std::shared_ptr<incoming_holder> pholder, outgoing_handler_t handler)

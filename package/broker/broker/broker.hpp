@@ -17,7 +17,7 @@ class broker
   
 public:
   typedef super::domain_config domain_config;
-  virtual domain_config generate(const std::string&);
+  virtual domain_config generate(const std::string&) override;
 
   virtual void configure() override;
   virtual void reconfigure() override;
