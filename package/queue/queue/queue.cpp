@@ -87,10 +87,10 @@ std::function<void()> queue::make_track_fun_(io_id_t io_id, std::function<void()
   std::weak_ptr<queue> wthis = this->shared_from_this();;
   return this->tracking(io_id, std::move(fun), [wthis]()
     {
-      std::string name;
+      std::string tname;
       if ( auto pthis = wthis.lock() )
-        name = pthis->name();
-      JSONRPC_LOG_WARNING("Tracking jsonrpc-queue '" << name << "': request drop by tracking.")
+        tname = pthis->name();
+      JSONRPC_LOG_WARNING("Tracking jsonrpc-queue '" << tname << "': request drop by tracking.")
     }
   );
   /*
