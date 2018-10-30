@@ -57,7 +57,7 @@ UNIT(create, "")
 
 
 template<bool Val, int mode, typename T>
-void match(T& t, int nconfig, const std::string& json, std::string fl)
+void match(T& t, int nconfig, const std::string& json, const std::string& fl)
 {
   using namespace fas::testing;
   json_error err;
