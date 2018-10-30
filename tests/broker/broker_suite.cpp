@@ -11,7 +11,7 @@ using json_error = wfc::json::json_error;
 using strerr = wfc::json::strerror;
 
 struct _matchmaker_;
-
+/*
 namespace std
 {
   std::ostream& operator << (std::ostream& os, const json_error& e)
@@ -19,7 +19,7 @@ namespace std
     os << wfc::json::strerror::message(e);
     return os;
   }
-}
+}*/
 
 static const std::string configs[]=
 {

@@ -26,24 +26,25 @@ void batch::perform_io(data_ptr d, io_id_t io_id, output_handler_t handler)
     >
   > > batch_json;
   typedef std::vector< data_ptr > batch_type;
-  batch_type batch;
-  batch.reserve( d->size()/128 );
+  batch_type batch1;
+  batch1.reserve( d->size()/128 );
   json::json_error e;
-  batch_json::serializer()(batch, d->begin(), d->end(), &e );
+  batch_json::serializer()(batch1, d->begin(), d->end(), &e );
   if ( e )
     return aux::send_error_raw( incoming_holder(), std::make_unique<parse_error>(), handler);
-  if ( batch.empty() )
+  if ( batch1.empty() )
     return aux::send_error_raw( incoming_holder(), std::make_unique<invalid_request>(), handler);
 
   auto pcount = std::make_shared< std::atomic<size_t> >();
   
   auto pbatch_res = std::make_shared<batch_type>();
-  pbatch_res->reserve( batch.size() );
+  pbatch_res->reserve( batch1.size() );
   std::vector< std::pair<incoming_holder, outgoing_handler_t> > holder_handler_list;
-  for ( auto& bd : batch )
+  for ( auto& bd : batch1 )
   {
     incoming_holder holder( std::move(bd));
-    json::json_error e;
+    //json::json_error e;
+    e.reset();
     holder.parse(&e);
     if ( e )
     {

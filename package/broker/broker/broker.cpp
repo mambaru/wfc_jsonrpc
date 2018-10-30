@@ -84,9 +84,9 @@ void broker::restart()
       names.insert(r.target);
   }
   
-  for (const std::string& name: names)
+  for (const std::string& n: names)
   {
-    targets.push_back( this->get_adapter(name) );
+    targets.push_back( this->get_adapter(n) );
   }
   
   for (const broker_config::rule& r: opt.rules)

@@ -8,9 +8,9 @@ namespace wfc{ namespace jsonrpc{
 void repli::restart()
 {
   _targets.clear();
-  for ( auto name : this->options().reply_targets )
+  for ( auto rname : this->options().reply_targets )
   {
-    _targets.push_back(  this->get_adapter(name) );
+    _targets.push_back(  this->get_adapter(rname) );
   }
 }
 
