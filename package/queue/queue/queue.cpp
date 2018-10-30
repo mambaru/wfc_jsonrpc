@@ -16,7 +16,8 @@ void queue::restart()
     _callback_workflow = super::get_workflow( opt.callback_workflow );
   else
     _callback_workflow = nullptr;
-  _connection_tracking = opt.connection_tracking;
+  
+  //_connection_tracking = opt.connection_tracking;
 }
 
 void queue::stop()
@@ -24,6 +25,7 @@ void queue::stop()
   _callback_workflow = nullptr;
 }
 
+/*
 void queue::unreg_io(io_id_t io_id) 
 {
   if ( _connection_tracking )
@@ -31,7 +33,7 @@ void queue::unreg_io(io_id_t io_id)
     std::lock_guard<mutex_type> lk(_tracking_mutex);
     _tracking_map.erase(io_id);
   }
-}
+}*/
 
 void queue::perform_incoming(incoming_holder holder, io_id_t io_id, outgoing_handler_t handler) 
 {
@@ -39,7 +41,7 @@ void queue::perform_incoming(incoming_holder holder, io_id_t io_id, outgoing_han
     return super::get_target().perform_incoming( std::move( holder ), io_id, std::move(handler) );
 
   auto pholder = std::make_shared<incoming_holder>( std::move(holder) );
-  super::get_workflow()->post(
+  this->get_workflow()->post(
     this->make_post_fun_(pholder, io_id, handler),
     std::bind(&queue::drop_handler_, this, pholder, handler )
   );
@@ -74,14 +76,24 @@ std::function<void()> queue::make_post_fun_(const std::shared_ptr<incoming_holde
       t.perform_incoming( std::move( *pholder ), io_id, this->make_outgoing_handler_( std::move(handler) ) );
     };
   
-  if ( this->_connection_tracking && pholder->is_request() )
-    return make_track_fun_(io_id, res_fun);
+  if ( /*this->_connection_tracking &&*/ pholder->is_request() )
+    return make_track_fun_(io_id, std::move(res_fun) );
   
   return res_fun;
 }
 
 std::function<void()> queue::make_track_fun_(io_id_t io_id, std::function<void()> fun)
 {
+  std::weak_ptr<queue> wthis = this->shared_from_this();;
+  return this->tracking(io_id, std::move(fun), [wthis]()
+    {
+      std::string name;
+      if ( auto pthis = wthis.lock() )
+        name = pthis->name();
+      JSONRPC_LOG_WARNING("Tracking jsonrpc-queue '" << name << "': request drop by tracking.")
+    }
+  );
+  /*
   std::weak_ptr<size_t> wc;
   std::lock_guard<mutex_type> lk(_tracking_mutex);
   auto itr = _tracking_map.find(io_id);
@@ -104,7 +116,7 @@ std::function<void()> queue::make_track_fun_(io_id_t io_id, std::function<void()
     {
       JSONRPC_LOG_WARNING("JSONRPC-QUEUE " << this->name() << ": request drop from queue by connection tracking")
     }
-  };
+  };*/
 }
 
 queue::outgoing_handler_t queue::make_outgoing_handler_(outgoing_handler_t handler)

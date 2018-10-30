@@ -12,6 +12,7 @@ namespace wfc{ namespace jsonrpc{
   
 class queue
   : public domain_proxy<queue_config, nostat>
+  , public std::enable_shared_from_this<queue>
 {
   typedef domain_proxy<queue_config, nostat> super;
   typedef std::shared_ptr< workflow > workflow_ptr;
@@ -22,7 +23,7 @@ public:
   virtual void stop() override;
 
 //
-  virtual void unreg_io(io_id_t io_id) override;
+  //virtual void unreg_io(io_id_t io_id) override;
 // ijsonrpc
   virtual void perform_incoming(incoming_holder, io_id_t, outgoing_handler_t handler) override;
   virtual void perform_outgoing(outgoing_holder, io_id_t) override;
@@ -35,9 +36,9 @@ private:
 private:
   typedef std::mutex mutex_type;
   workflow_ptr _callback_workflow;
-  std::atomic<bool> _connection_tracking;
-  std::mutex _tracking_mutex;
-  std::map<io_id_t, std::shared_ptr<size_t> > _tracking_map;
+  //std::atomic<bool> _connection_tracking;
+  //std::mutex _tracking_mutex;
+  //std::map<io_id_t, std::shared_ptr<size_t> > _tracking_map;
 };
 
 }}
