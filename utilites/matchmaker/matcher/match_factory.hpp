@@ -9,7 +9,7 @@ struct imatcher;
 class match_factory
 {
 public:
-  match_factory(int mode);
+  explicit match_factory(int mode);
   std::shared_ptr<imatcher> create_name();
   std::shared_ptr<imatcher> create_value();
 private:

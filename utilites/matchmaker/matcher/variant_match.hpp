@@ -11,7 +11,7 @@ class variant_match
   : public imatcher
 {
 public:
-  variant_match( std::shared_ptr<ibuilder> builder );
+  explicit variant_match( const std::shared_ptr<ibuilder>& builder );
   virtual bool configure(const char* beg, const char* end, json::json_error& err) override;
   virtual bool match(const char* beg, const char* end, json::json_error& err) override;
 private:

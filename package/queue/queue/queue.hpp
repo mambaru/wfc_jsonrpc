@@ -21,15 +21,12 @@ public:
 // domain
   virtual void restart() override;
   virtual void stop() override;
-
-//
-  //virtual void unreg_io(io_id_t io_id) override;
 // ijsonrpc
   virtual void perform_incoming(incoming_holder, io_id_t, outgoing_handler_t handler) override;
   virtual void perform_outgoing(outgoing_holder, io_id_t) override;
   
 private:
-  std::function<void()> make_post_fun_(const std::shared_ptr<incoming_holder> pholder, io_id_t io_id, outgoing_handler_t handler);
+  std::function<void()> make_post_fun_(const std::shared_ptr<incoming_holder>& pholder, io_id_t io_id, outgoing_handler_t handler);
   std::function<void()> make_track_fun_(io_id_t io_id, std::function<void()> fun);
   outgoing_handler_t make_outgoing_handler_(outgoing_handler_t handler);
   void drop_handler_(std::shared_ptr<incoming_holder> pholder, outgoing_handler_t handler);

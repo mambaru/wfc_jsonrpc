@@ -13,7 +13,7 @@ class array_match
   typedef std::shared_ptr<imatcher> matcher_ptr;
   typedef std::list<matcher_ptr> matcher_list;
 public:
-  array_match( std::shared_ptr<ibuilder> builder );
+  explicit array_match( const std::shared_ptr<ibuilder>& builder );
   
   virtual bool configure(const char* beg, const char* end, json::json_error& err) override;
   

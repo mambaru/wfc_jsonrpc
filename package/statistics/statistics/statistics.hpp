@@ -25,9 +25,9 @@ public:
   virtual void perform_outgoing(outgoing_holder, io_id_t) override;
 
 private:
-  meter_ptr request_meter_(std::string name, size_t size);
+  meter_ptr request_meter_(std::string meter_name, size_t size);
   meter_ptr create_meter_(meter_map& meters, size_t size);
-  meter_ptr notify_meter_(std::string name, size_t size);
+  meter_ptr notify_meter_(std::string meter_name, size_t size);
   meter_ptr other_meter_(size_t size);
   
 private:

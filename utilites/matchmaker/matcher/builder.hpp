@@ -10,7 +10,7 @@ class builder
   , public std::enable_shared_from_this<builder>
 {
 public:
-  builder(int mode);
+  explicit builder(int mode);
   virtual std::shared_ptr<imatcher> build_name() override;
   virtual std::shared_ptr<imatcher> build_value(const char* beg, const char* end, json::json_error& err) override;
   virtual std::shared_ptr<imatcher> build_value_nv(const char* beg, const char* end, json::json_error& err) override;

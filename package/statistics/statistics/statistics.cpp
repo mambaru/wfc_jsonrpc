@@ -36,7 +36,7 @@ static void static_error_meter(const std::string& method, statistics::data_ptr d
     else
       message="Unknown Error";
     auto mproto = stat->create_value_meter(method + ":" + message);
-    mproto.create(0, 1);
+    mproto.create( static_cast<wrtstat::value_type>(0), static_cast<wrtstat::size_type>(1) );
   }
 }
 
@@ -66,11 +66,11 @@ void statistics::perform_incoming(incoming_holder holder, io_id_t io_id, outgoin
     {
       if ( auto stat = wstat.lock() )
       {
-        auto holder = outholder.clone();
-        if ( auto d = holder.detach() )
+        auto oholder = outholder.clone();
+        if ( auto d = oholder.detach() )
         {
           if ( enable_write_size )
-            meter->set_write_size( d->size() );
+            meter->set_write_size( static_cast<wrtstat::value_type>( d->size() ) );
           if ( enable_error_stat )
             static_error_meter( method, std::move(d), stat);
         }
@@ -89,47 +89,56 @@ void statistics::perform_outgoing(outgoing_holder holder, io_id_t io_id)
   domain_proxy::perform_outgoing( std::move(holder), io_id);
 }
 
-statistics::meter_ptr statistics::request_meter_(std::string name, size_t size)
+statistics::meter_ptr statistics::request_meter_(std::string meter_name, size_t size)
 {
   auto stat = this->get_statistics();
   if ( stat == nullptr ) return nullptr;
 
   std::lock_guard<std::mutex> lk(_mutex);
-  auto itr = _req_meters.find(name);
+  auto itr = _req_meters.find(meter_name);
   if (itr == _req_meters.end() )
   {
     auto opt = this->options();
     auto prototype = stat->create_composite_meter(
-      !opt.time_suffix.empty()       ?  opt.request_prefix + name + opt.time_suffix : "",
-      !opt.read_size_suffix.empty()  ?  opt.request_prefix + name + opt.read_size_suffix : "",
+      !opt.time_suffix.empty()       ?  opt.request_prefix + meter_name + opt.time_suffix : "",
+      !opt.read_size_suffix.empty()  ?  opt.request_prefix + meter_name + opt.read_size_suffix : "",
       !opt.write_size_suffix.empty()
-      && this->_enable_write_size    ?  opt.request_prefix + name + opt.write_size_suffix : "",
+      && this->_enable_write_size    ?  opt.request_prefix + meter_name + opt.write_size_suffix : "",
       true
     );
-    itr = _req_meters.insert( std::make_pair(name, prototype) ).first;
+    itr = _req_meters.insert( std::make_pair(meter_name, prototype) ).first;
   }
-  return itr->second.create_shared(1, size, 0);
+  return itr->second.create_shared(
+    static_cast<wrtstat::size_type>(1), 
+    static_cast<wrtstat::value_type>(size), 
+    static_cast<wrtstat::value_type>(0)
+  );
 }
 
-statistics::meter_ptr statistics::notify_meter_(std::string name, size_t size)
+statistics::meter_ptr statistics::notify_meter_(std::string meter_name, size_t size)
 {
   auto stat = this->get_statistics();
   if ( stat == nullptr ) return nullptr;
 
   auto opt = this->options();
   std::lock_guard<std::mutex> lk(_mutex);
-  auto itr = _ntf_meters.find(name);
+  auto itr = _ntf_meters.find(meter_name);
   if (itr == _ntf_meters.end() )
   {
     auto prototype = stat->create_composite_meter(
-      !opt.time_suffix.empty()       ?  opt.notify_prefix + name + opt.time_suffix : "",
-      !opt.read_size_suffix.empty()  ?  opt.notify_prefix + name + opt.read_size_suffix : "",
+      !opt.time_suffix.empty()       ?  opt.notify_prefix + meter_name + opt.time_suffix : "",
+      !opt.read_size_suffix.empty()  ?  opt.notify_prefix + meter_name + opt.read_size_suffix : "",
       "",
       true
     );
-    itr = _ntf_meters.insert( std::make_pair(name, prototype) ).first;
+    itr = _ntf_meters.insert( std::make_pair(meter_name, prototype) ).first;
   }
-  return itr->second.create_shared(1, size, 0);
+  return itr->second.create_shared(
+    static_cast<wrtstat::size_type>(1), 
+    static_cast<wrtstat::value_type>(size), 
+    static_cast<wrtstat::value_type>(0)
+  );
+
 }
 
 statistics::meter_ptr statistics::other_meter_(size_t size)
@@ -148,7 +157,11 @@ statistics::meter_ptr statistics::other_meter_(size_t size)
       true
     );
   }
-  return _other.create_shared(1, size, 0 );
+  return _other.create_shared(
+    static_cast<wrtstat::size_type>(1), 
+    static_cast<wrtstat::value_type>(size), 
+    static_cast<wrtstat::value_type>(0)
+  );
 }
 
 }}

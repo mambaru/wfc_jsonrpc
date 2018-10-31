@@ -4,8 +4,8 @@
 
 namespace wfc{ namespace jsonrpc{ 
 
-array_match::array_match( std::shared_ptr<ibuilder> builder )
-  : _builder(builder)
+array_match::array_match( const std::shared_ptr<ibuilder>& builder )
+  : _builder( builder )
 {
 }
   

@@ -67,7 +67,7 @@ void queue::perform_outgoing(outgoing_holder holder, io_id_t io_id)
   }
 }
 
-std::function<void()> queue::make_post_fun_(const std::shared_ptr<incoming_holder> pholder, io_id_t io_id, outgoing_handler_t handler)
+std::function<void()> queue::make_post_fun_(const std::shared_ptr<incoming_holder>& pholder, io_id_t io_id, outgoing_handler_t handler)
 {
   auto res_fun = 
     [pholder, io_id, handler, this]()

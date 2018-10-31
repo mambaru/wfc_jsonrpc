@@ -1,0 +1,2 @@
+unusedFunction:
+unusedStructMember:./package/hub/hub/hub.cpp:12
