@@ -30,6 +30,4 @@ bool matchmaker::match(const char* beg, const char* end, json::json_error& err)
   return _matcher->match(beg, end, err);
 }
 
-
-
 }}
