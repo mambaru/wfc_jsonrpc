@@ -33,9 +33,6 @@ private:
 private:
   typedef std::mutex mutex_type;
   workflow_ptr _callback_workflow;
-  //std::atomic<bool> _connection_tracking;
-  //std::mutex _tracking_mutex;
-  //std::map<io_id_t, std::shared_ptr<size_t> > _tracking_map;
 };
 
 }}

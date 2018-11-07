@@ -1,4 +1,31 @@
-[JSONRPC-BROKER](#jsonrpc-broker) - брокер JSONRPC-сообщений по заданному набору правил распределяет их по целям
+[JSONRPC-QUEUE](#JSONRPC-QUEUE) - 
+[JSONRPC-BROKER](#JSONRPC-BROKER) - брокер JSONRPC-сообщений по заданному набору правил распределяет их по целям
+[JSONRPC-REPLI](#JSONRPC-REPLI) -
+[JSONRPC-HUB](#JSONRPC-HUB) -
+[JSONRPC-BATCH](#JSONRPC-BATCH) -
+[JSONRPC-BACKLOG](#JSONRPC-BACKLOG) -
+[JSONRPC-STATISTICS](#JSONRPC-STATISTICS) - 
+
+
+
+
+# JSONRPC-QUEUE
+{
+  "jsonrpc-queue": [
+    {
+      "name": "jsonrpc-queue1",
+      "enabled": true,
+      "suspend": false,
+      "tracking": false,
+      "startup_priority": 0,
+      "shutdown_priority": 0,
+      "workflow": "",
+      "target": "",
+      "callback_queue": false,
+      "callback_workflow": ""
+    }
+  ]
+}
 
 # JSONRPC-BROKER
 
@@ -66,3 +93,89 @@
   }
 }
 ```
+
+# JSONRPC-REPLI
+{
+  "jsonrpc-repli": [
+    {
+      "name": "jsonrpc-repli1",
+      "target": "",
+      "reply_targets": []
+    }
+  ]
+}
+
+# JSONRPC-HUB
+{
+  "jsonrpc-hub": [
+    {
+      "name": "jsonrpc-hub1",
+      "enabled": true,
+      "suspend": false,
+      "startup_priority": 0,
+      "shutdown_priority": 0,
+      "target": ""
+    }
+  ]
+}
+
+# JSONRPC-BATCH
+
+{
+  "jsonrpc-batch": [
+    {
+      "name": "jsonrpc-batch1",
+      "enabled": true,
+      "suspend": false,
+      "startup_priority": 0,
+      "shutdown_priority": 0,
+      "workflow": "",
+      "target": ""
+    }
+  ]
+}
+
+# JSONRPC-BACKLOG
+{
+  "jsonrpc-backlog": [
+    {
+      "name": "jsonrpc-backlog1",
+      "enabled": true,
+      "suspend": false,
+      "startup_priority": 0,
+      "shutdown_priority": 0,
+      "target": "",
+      "restore_target": "",
+      "path": "",
+      "restore_trace": 0,
+      "log": ""
+    }
+  ]
+}
+
+# JSONRPC-STATISTICS
+
+{
+  "jsonrpc-statistics": [
+    {
+      "name": "jsonrpc-statistics1",
+      "enabled": true,
+      "suspend": false,
+      "statistics": {
+        "disabled": true,
+        "target": ""
+      },
+      "target": "",
+      "enable_write_size": true,
+      "enable_error_stat": true,
+      "time_suffix": ".time",
+      "read_size_suffix": ".rsize",
+      "write_size_suffix": ".wsize",
+      "request_prefix": "req:",
+      "notify_prefix": "ntf:",
+      "other_time": "other.time",
+      "other_read_size": "other.rsize",
+      "other_write_size": "other.wsize"
+    }
+  ]
+}

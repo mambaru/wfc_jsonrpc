@@ -15,8 +15,8 @@ namespace wfc{
   
 class jsonrpc_package::impl: public ::wfc::module_list<
   jsonrpc_build_info,
-  jsonrpc::queue_module,
   jsonrpc::broker_module,
+  jsonrpc::queue_module,
   jsonrpc::repli_module,
   jsonrpc::hub_module,
   jsonrpc::batch_module,
