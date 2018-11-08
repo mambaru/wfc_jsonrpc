@@ -3,6 +3,7 @@
 #include "repli_config.hpp"
 #include <wfc/jsonrpc/domain_proxy.hpp>
 #include <wfc/jsonrpc/ijsonrpc.hpp>
+#include <wfc/mutex.hpp>
 #include <string>
 #include <memory>
 
@@ -22,7 +23,9 @@ public:
 
 private:
   typedef std::vector< target_adapter > target_list;
+  typedef rwlock<std::mutex> mutex_type;
   target_list _targets;
+  mutex_type _mutex;
 };
 
 }}

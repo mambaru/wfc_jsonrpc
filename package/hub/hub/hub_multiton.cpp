@@ -16,9 +16,10 @@ namespace
 
   class impl: public ::wfc::multiton<
     multiton_name,
-    ::wfc::instance<hub>,
+    instance<hub>,
     hub_config_json,
-    ::wfc::component_features::DisabledWorkflow
+    component_features::DisabledWorkflow
+    | component_features::DisabledPriority
   >
   {
     virtual std::string interface_name() const override

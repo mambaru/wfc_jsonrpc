@@ -4,20 +4,16 @@
 
 namespace wfc{ namespace jsonrpc{
 
-// TODO: переделать под трекер в domain_object
-
 queue::queue()
 {}
 
 void queue::restart()
 {
-  const auto& opt = super::options();
+  const auto& opt = this->options();
   if ( opt.callback_queue == true )
-    _callback_workflow = super::get_workflow( opt.callback_workflow );
+    _callback_workflow = this->get_workflow( opt.callback_workflow );
   else
     _callback_workflow = nullptr;
-  
-  //_connection_tracking = opt.connection_tracking;
 }
 
 void queue::stop()
@@ -25,20 +21,10 @@ void queue::stop()
   _callback_workflow = nullptr;
 }
 
-/*
-void queue::unreg_io(io_id_t io_id) 
-{
-  if ( _connection_tracking )
-  {
-    std::lock_guard<mutex_type> lk(_tracking_mutex);
-    _tracking_map.erase(io_id);
-  }
-}*/
-
 void queue::perform_incoming(incoming_holder holder, io_id_t io_id, outgoing_handler_t handler) 
 {
   if ( this->suspended()  )
-    return super::get_target().perform_incoming( std::move( holder ), io_id, std::move(handler) );
+    return this->get_target().perform_incoming( std::move( holder ), io_id, std::move(handler) );
 
   auto pholder = std::make_shared<incoming_holder>( std::move(holder) );
   this->get_workflow()->post(
@@ -76,7 +62,7 @@ std::function<void()> queue::make_post_fun_(const std::shared_ptr<incoming_holde
       t.perform_incoming( std::move( *pholder ), io_id, this->make_outgoing_handler_( std::move(handler) ) );
     };
   
-  if ( /*this->_connection_tracking &&*/ pholder->is_request() )
+  if ( pholder->is_request() )
     return make_track_fun_(io_id, std::move(res_fun) );
   
   return res_fun;
@@ -93,30 +79,6 @@ std::function<void()> queue::make_track_fun_(io_id_t io_id, std::function<void()
       JSONRPC_LOG_WARNING("Tracking jsonrpc-queue '" << tname << "': request drop by tracking.")
     }
   );
-  /*
-  std::weak_ptr<size_t> wc;
-  std::lock_guard<mutex_type> lk(_tracking_mutex);
-  auto itr = _tracking_map.find(io_id);
-  if ( itr!=_tracking_map.end() )
-  {
-    ++*(itr->second);
-    wc=itr->second;
-  }
-  else
-  {
-    wc = _tracking_map.insert( std::make_pair(io_id, std::make_shared<size_t>(1)) ).first->second;
-  }
-  return [fun, wc, this]()
-  {
-    if ( wc.lock()!=nullptr )
-    {
-      fun();
-    }
-    else
-    {
-      JSONRPC_LOG_WARNING("JSONRPC-QUEUE " << this->name() << ": request drop from queue by connection tracking")
-    }
-  };*/
 }
 
 queue::outgoing_handler_t queue::make_outgoing_handler_(outgoing_handler_t handler)

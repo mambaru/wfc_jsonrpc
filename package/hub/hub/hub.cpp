@@ -71,10 +71,11 @@ void hub::perform_outgoing(outgoing_holder holder, io_id_t io_id)
   domain_proxy::perform_outgoing( std::move(holder), io_id);
 }
 
-
-
 void hub::perform_incoming_(const incoming_holder& holder, io_id_t io_id)
 {
+  if ( this->suspended() )
+    return;
+  
   if ( holder.is_request() || holder.is_notify() )
   {
     std::vector<witf> cli;

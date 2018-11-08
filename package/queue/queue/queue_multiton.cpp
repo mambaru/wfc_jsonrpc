@@ -14,11 +14,12 @@ namespace
 { 
   WFC_NAME2(multiton_name, "jsonrpc-queue") 
 
-  class impl: public ::wfc::multiton<
+  class impl: public multiton<
     multiton_name,
-    ::wfc::instance<queue>,
+    instance<queue>,
     queue_config_json,
-    ::wfc::component_features::EnableTracking
+      component_features::EnableTracking
+    | component_features::DisabledPriority
   >
   {
     virtual std::string interface_name() const override

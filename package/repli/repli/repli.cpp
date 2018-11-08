@@ -7,6 +7,7 @@ namespace wfc{ namespace jsonrpc{
 
 void repli::restart()
 {
+  std::lock_guard<mutex_type> lk(_mutex);
   _targets.clear();
   for ( auto rname : this->options().reply_targets )
   {
@@ -16,15 +17,20 @@ void repli::restart()
 
 void repli::perform_incoming(incoming_holder holder, io_id_t io_id, outgoing_handler_t handler) 
 {
-  for ( auto& r : _targets )
-    r.perform_incoming( holder.clone(), io_id, nullptr);
+  if ( !this->suspended() )
+  {
+    read_lock<mutex_type> lk(_mutex);
+    for ( auto& r : _targets )
+      r.perform_incoming( holder.clone(), io_id, nullptr);
+  }
   domain_proxy::perform_incoming( std::move(holder), io_id, handler );
 }
 
 void repli::perform_outgoing(outgoing_holder holder, io_id_t io_id)
 {
-  if ( holder.is_notify() )
+  if ( !this->suspended() && holder.is_notify() )
   {
+    read_lock<mutex_type> lk(_mutex);
     for ( auto& r : _targets )
       r.perform_outgoing( holder.clone() , io_id);
   }
