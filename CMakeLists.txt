@@ -18,5 +18,6 @@ add_subdirectory(utilites)
 add_subdirectory(package)
 
 if ( BUILD_TESTING AND STANDALONE )
+  enable_testing()
   add_subdirectory(tests)
 endif()
