@@ -11,6 +11,7 @@ void statistics::configure()
   _enable_write_size = this->options().enable_write_size;
   _enable_error_stat = this->options().enable_error_stat;
 }
+
 void statistics::reconfigure()
 {
   std::lock_guard<std::mutex> lk(_mutex);
@@ -40,7 +41,6 @@ static void static_error_meter(const std::string& method, statistics::data_ptr d
   }
 }
 
-
 void statistics::perform_incoming(incoming_holder holder, io_id_t io_id, outgoing_handler_t handler) 
 {
   if ( this->suspended() )
@@ -60,32 +60,38 @@ void statistics::perform_incoming(incoming_holder holder, io_id_t io_id, outgoin
   bool enable_write_size = this->_enable_write_size;
   bool enable_error_stat = this->_enable_error_stat;
   if ( enable_write_size || enable_error_stat)
+  {
     wstat = this->get_statistics();
-  domain_proxy::perform_incoming( std::move(holder), io_id, 
-    [handler, meter, wstat, enable_write_size, enable_error_stat, method]( outgoing_holder outholder)
-    {
-      if ( auto stat = wstat.lock() )
+    domain_proxy::perform_incoming( std::move(holder), io_id, 
+      [handler, meter, wstat, enable_write_size, enable_error_stat, method]( outgoing_holder outholder)
       {
-        auto oholder = outholder.clone();
-        if ( auto d = oholder.detach() )
+        if ( auto stat = wstat.lock() )
         {
-          if ( enable_write_size )
-            meter->set_write_size( static_cast<wrtstat::value_type>( d->size() ) );
-          if ( enable_error_stat )
-            static_error_meter( method, std::move(d), stat);
+          auto oholder = outholder.clone();
+          if ( auto d = oholder.detach() )
+          {
+            if ( enable_write_size )
+              meter->set_write_size( static_cast<wrtstat::value_type>( d->size() ) );
+            if ( enable_error_stat )
+              static_error_meter( method, std::move(d), stat);
+          }
         }
-      }
-      handler( std::move(outholder) );    
-    } 
-  );
+        handler( std::move(outholder) );    
+      } 
+    );
+  }
+  else
+  {
+    domain_proxy::perform_incoming( std::move(holder), io_id, std::move(handler) );
+  }
+    
 }
 
 void statistics::perform_outgoing(outgoing_holder holder, io_id_t io_id)
 {
   if ( this->suspended() )
     return domain_proxy::perform_outgoing( std::move(holder), io_id);
-
-  // TODO:
+  // TODO: для исходящих стата тоже может быть нужна
   domain_proxy::perform_outgoing( std::move(holder), io_id);
 }
 
@@ -98,7 +104,7 @@ statistics::meter_ptr statistics::request_meter_(std::string meter_name, size_t 
   auto itr = _req_meters.find(meter_name);
   if (itr == _req_meters.end() )
   {
-    auto opt = this->options();
+    auto opt = this->statistics_options();
     auto prototype = stat->create_composite_meter(
       !opt.time_suffix.empty()       ?  opt.request_prefix + meter_name + opt.time_suffix : "",
       !opt.read_size_suffix.empty()  ?  opt.request_prefix + meter_name + opt.read_size_suffix : "",
@@ -120,7 +126,7 @@ statistics::meter_ptr statistics::notify_meter_(std::string meter_name, size_t s
   auto stat = this->get_statistics();
   if ( stat == nullptr ) return nullptr;
 
-  auto opt = this->options();
+  auto opt = this->statistics_options();
   std::lock_guard<std::mutex> lk(_mutex);
   auto itr = _ntf_meters.find(meter_name);
   if (itr == _ntf_meters.end() )
@@ -146,7 +152,7 @@ statistics::meter_ptr statistics::other_meter_(size_t size)
   auto stat = this->get_statistics();
   if ( stat == nullptr ) return nullptr;
 
-  auto opt = this->options();
+  auto opt = this->statistics_options();
   std::lock_guard<std::mutex> lk(_mutex);
   if ( _other.size() == 0 )
   {

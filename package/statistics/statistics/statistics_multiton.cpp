@@ -15,19 +15,19 @@ namespace
 { 
   WFC_NAME2(multiton_name, "jsonrpc-statistics") 
 
-  class impl: public ::wfc::multiton<
+  class impl: public multiton<
     multiton_name,
-    ::wfc::instance<statistics>,
+    instance<statistics>,
     statistics_config_json,
-      ::wfc::component_features::DisabledPriority
-    | ::wfc::component_features::DisabledWorkflow,
-    defstat_json
+      component_features::DisabledPriority
+    | component_features::DisabledWorkflow,
+    statistics_stat_json
   >
   {};
 }
 
 statistics_multiton::statistics_multiton()
-  : ::wfc::component( std::make_shared<impl>() )
+  : component( std::make_shared<impl>() )
 {}
 
 }}

@@ -15,10 +15,12 @@ namespace
 { 
   WFC_NAME2(multiton_name, "jsonrpc-batch") 
 
-  class impl: public ::wfc::multiton<
+  class impl: public multiton<
     multiton_name,
-    ::wfc::instance<batch>,
-    batch_config_json
+    instance<batch>,
+    batch_config_json,
+    component_features::DisabledWorkflow
+    | component_features::DisabledPriority
   >
   {
     virtual std::string interface_name() const override

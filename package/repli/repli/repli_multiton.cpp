@@ -20,7 +20,6 @@ namespace
     ::wfc::instance<repli>,
     repli_config_json,
     component_features::DisabledWorkflow
-    | component_features::DisabledEnabled
     | component_features::DisabledPriority
   >
   {

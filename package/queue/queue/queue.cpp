@@ -9,9 +9,9 @@ queue::queue()
 
 void queue::restart()
 {
-  const auto& opt = super::options();
+  const auto& opt = this->options();
   if ( opt.callback_queue == true )
-    _callback_workflow = super::get_workflow( opt.callback_workflow );
+    _callback_workflow = this->get_workflow( opt.callback_workflow );
   else
     _callback_workflow = nullptr;
 }
@@ -24,7 +24,7 @@ void queue::stop()
 void queue::perform_incoming(incoming_holder holder, io_id_t io_id, outgoing_handler_t handler) 
 {
   if ( this->suspended()  )
-    return super::get_target().perform_incoming( std::move( holder ), io_id, std::move(handler) );
+    return this->get_target().perform_incoming( std::move( holder ), io_id, std::move(handler) );
 
   auto pholder = std::make_shared<incoming_holder>( std::move(holder) );
   this->get_workflow()->post(
