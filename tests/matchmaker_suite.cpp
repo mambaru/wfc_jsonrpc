@@ -10,17 +10,9 @@ using namespace wfc::jsonrpc;
 using json_error = wfc::json::json_error;
 using strerr = wfc::json::strerror;
 
-struct _matchmaker_;
-/*
-namespace std
-{
-  std::ostream& operator << (std::ostream& os, const json_error& e)
-  {
-    os << wfc::json::strerror::message(e);
-    return os;
-  }
-}*/
+namespace {
 
+struct _matchmaker_;
 static const std::string configs[]=
 {
   "'hello'"_json,                // 0
@@ -42,13 +34,6 @@ static const std::string configs[]=
   //"{'baz':{'email':'.{0,190}'}, 'foo':'bar'}"_json // 14
 };
 
-/*
-static const std::string params[]=
-{
-  "'hello'"_json, 
-  "'hell'"_json
-};
-*/
 UNIT(create, "")
 {
   using namespace fas::testing;
@@ -169,12 +154,13 @@ UNIT(match0, "")
   match<false, mode1>(t, 15, "{'foo':'bar', 'baz':{'email':'migashko@gmail.com', 'user':'migashko1'}}"_json, FAS_FLS );
   match<true, mode1>(t, 15, "{'foo':'bar', 'baz':{'email':'migashko1@gmail.com', 'user':'migashko'}}"_json, FAS_FLS );
   match<false, mode1>(t, 15, "{'foo':'bar', 'baz':{'email':'migashko1111@gmail.com', 'user':'migashko'}}"_json, FAS_FLS );
-  
 }
 
-BEGIN_SUITE(broker_suite, "")
+} // namespace
+
+BEGIN_SUITE(matchmaker_suite, "")
   ADD_VALUE(_matchmaker_, std::shared_ptr<matchmaker> )
   ADD_UNIT( create )
   ADD_UNIT( match0 )
   ADD_UNIT( match0 )
-END_SUITE(broker_suite)
+END_SUITE(matchmaker_suite)

@@ -1,2 +1,17 @@
+
+add_executable(
+  package_test
+    matchmaker_suite.cpp
+    package_suite.cpp
+    package_test.cpp
+    ${FAS_TESTING_CPP}
+)
+
+add_dependencies(package_test matchmaker)
+find_package(Boost COMPONENTS system regex REQUIRED)
+target_link_libraries(package_test ${wfc_liblist} )
+
 enable_testing()
-add_subdirectory(broker)
+add_test(package_test package_test)
+
+
