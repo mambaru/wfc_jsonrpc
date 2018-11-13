@@ -47,7 +47,7 @@ void backlog::configure()
 {
   domain_proxy::configure();
   _log = this->options().log;
-  this->set_target("backlog", this->name(), std::make_shared<backlog_proxy>(this) );
+  this->reg_object("backlog", this->name(), std::make_shared<backlog_proxy>(this) );
 }
 
 void backlog::initialize()
