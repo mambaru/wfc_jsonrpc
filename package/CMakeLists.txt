@@ -48,6 +48,23 @@ add_library(
 )
 
 target_link_libraries(wfc_jsonrpc matchmaker)
+
+if ( STANDALONE )
+  include(FindThreads)
+  find_package(Boost COMPONENTS system program_options filesystem date_time REQUIRED)
+
+  target_link_libraries(
+    wfc_jsonrpc
+      wfc
+      wrtstat
+      wlog
+      wflow
+      wjrpc
+      ${Boost_LIBRARIES} 
+      ${CMAKE_THREAD_LIBS_INIT}
+  )
+endif()
+
 build_info(wfc_jsonrpc jsonrpc)
 
 install(TARGETS wfc_jsonrpc DESTINATION ${CMAKE_INSTALL_PREFIX})
