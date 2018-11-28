@@ -47,6 +47,8 @@ add_library(
   ${wfc_jsonrpc_source_list}
 )
 
+target_link_libraries(wfc_jsonrpc matchmaker)
+
 if ( STANDALONE )
   include(FindThreads)
   find_package(Boost COMPONENTS system program_options filesystem date_time regex REQUIRED)
@@ -62,7 +64,7 @@ if ( STANDALONE )
       ${CMAKE_THREAD_LIBS_INIT}
   )
 endif()
-target_link_libraries(wfc_jsonrpc matchmaker)
+
 
 build_info(wfc_jsonrpc jsonrpc)
 
