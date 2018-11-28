@@ -27,7 +27,7 @@ UNIT(backlog, "")
   using namespace fas::testing;
   std::shared_ptr<wfc::wfcglobal> g = GET_REF(_global_);
   t << is_true<assert>(g!=nullptr) << FAS_FL;
-  auto m = g->registry.template get<wfc::imodule>("module","jsonrpc-backlog", false);
+  auto m = g->registry.template get_object<wfc::imodule>("module","jsonrpc-backlog", false);
   t << is_true<assert>(m!=nullptr) << FAS_FL;
 }
 

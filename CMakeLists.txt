@@ -10,7 +10,6 @@ if ( STANDALONE )
   list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/external/wfc/cmake)
 endif()
 
-include_directories(.)
 include_directories(utilites)
 
 add_subdirectory(utilites)
@@ -18,5 +17,6 @@ add_subdirectory(package)
 
 if ( BUILD_TESTING AND STANDALONE )
   enable_testing()
+  include_directories(package)
   add_subdirectory(tests)
 endif()
