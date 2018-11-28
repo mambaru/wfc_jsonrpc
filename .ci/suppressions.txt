@@ -1,5 +1,5 @@
+syntaxError:
 unusedFunction:
 unusedStructMember:./package/hub/hub/hub.cpp:12
-
 missingInclude:./package/jsonrpc_package.cpp:2
 unmatchedSuppression:./package/jsonrpc_package.cpp:2
