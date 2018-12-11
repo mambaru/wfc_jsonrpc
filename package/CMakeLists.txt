@@ -57,6 +57,7 @@ if ( STANDALONE )
     wfc_jsonrpc
       wfc
       wrtstat
+      iow
       wlog
       wflow
       wjrpc
