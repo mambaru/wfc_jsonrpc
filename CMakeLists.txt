@@ -16,6 +16,7 @@ add_subdirectory(utilites)
 add_subdirectory(package)
 
 if ( BUILD_TESTING AND STANDALONE )
+  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${UNIT_TEST_BIN_OUTPUT_DIR})                                                                                                                  
   enable_testing()
   include_directories(package)
   add_subdirectory(tests)
