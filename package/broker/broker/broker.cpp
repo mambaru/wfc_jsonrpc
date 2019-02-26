@@ -167,7 +167,7 @@ void broker::perform_incoming(incoming_holder holder, io_id_t io_id, outgoing_ha
     if ( _reject_all || _reject.count( holder.method() ) != 0 )
     {
       BROKER_LOG(_reject_log, holder.str())
-      this->send_error<procedure_not_found>(std::move(holder), std::move(handler));
+      this->send_error< wjrpc::procedure_not_found >(std::move(holder), std::move(handler));
       return;
     }
   }

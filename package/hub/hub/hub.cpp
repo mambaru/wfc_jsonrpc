@@ -7,7 +7,7 @@ namespace detail {
   
 struct incoming
 {
-  typedef data_type::iterator iterator;
+  typedef wjrpc::data_type::iterator iterator;
   typedef std::pair<iterator, iterator> pair_type;
   char version[4] = "2.0";
   pair_type method;
@@ -92,7 +92,7 @@ void hub::perform_incoming_(const incoming_holder& holder, io_id_t io_id)
     }
     if ( !cli.empty() )
     {
-      const jsonrpc::incoming& incom = holder.get();
+      const wjrpc::incoming& incom = holder.get();
       detail::incoming ntf;
       ntf.method = incom.method;
       ntf.params = incom.params;

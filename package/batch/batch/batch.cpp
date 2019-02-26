@@ -31,9 +31,9 @@ void batch::perform_io(data_ptr d, io_id_t io_id, output_handler_t handler)
   json::json_error e;
   batch_json::serializer()(batch1, d->begin(), d->end(), &e );
   if ( e )
-    return aux::send_error_raw( incoming_holder(), std::make_unique<parse_error>(), handler);
+    return wjrpc::aux::send_error_raw( incoming_holder(), std::make_unique< wjrpc::parse_error >(), handler);
   if ( batch1.empty() )
-    return aux::send_error_raw( incoming_holder(), std::make_unique<invalid_request>(), handler);
+    return wjrpc::aux::send_error_raw( incoming_holder(), std::make_unique< wjrpc::invalid_request >(), handler);
 
   auto pcount = std::make_shared< std::atomic<size_t> >();
   
@@ -48,7 +48,7 @@ void batch::perform_io(data_ptr d, io_id_t io_id, output_handler_t handler)
     holder.parse(&e);
     if ( e )
     {
-      aux::send_error_raw( std::move(holder), std::make_unique<invalid_request>(), [&pbatch_res](data_ptr de){
+      wjrpc::aux::send_error_raw( std::move(holder), std::make_unique<wjrpc::invalid_request>(), [&pbatch_res](data_ptr de){
         pbatch_res->push_back(std::move(de));
       });
     }
@@ -84,7 +84,7 @@ void batch::perform_io(data_ptr d, io_id_t io_id, output_handler_t handler)
     }
     else
     {
-      aux::send_error_raw( std::move(holder), std::make_unique<invalid_request>(), [&pbatch_res](data_ptr de){
+      wjrpc::aux::send_error_raw( std::move(holder), std::make_unique<wjrpc::invalid_request>(), [&pbatch_res](data_ptr de){
         pbatch_res->push_back(std::move(de));
       });
       

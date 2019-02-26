@@ -113,8 +113,8 @@ void queue::drop_handler_(const std::shared_ptr<incoming_holder> pholder, outgoi
   if ( handler == nullptr )
     return;
   
-  jsonrpc::outgoing_error< jsonrpc::error > error_message;
-  error_message.error = std::make_unique<jsonrpc::error>( jsonrpc::error_codes::QueueOverflow );
+  wjrpc::outgoing_error< wjrpc::error > error_message;
+  error_message.error = std::make_unique<wjrpc::error>( wjrpc::error_codes::QueueOverflow );
   auto id_range = pholder->raw_id();
   if ( id_range.first != id_range.second )
     error_message.id = std::make_unique<data_type>( id_range.first, id_range.second );
@@ -123,7 +123,7 @@ void queue::drop_handler_(const std::shared_ptr<incoming_holder> pholder, outgoi
     d = std::make_unique<data_type>();
   d->clear();
   d->reserve(80);
-  outgoing_error_json<error_json >::serializer()(error_message, std::inserter( *d, d->end() ));
+  wjrpc::outgoing_error_json< wjrpc::error_json >::serializer()(error_message, std::inserter( *d, d->end() ));
   handler( outgoing_holder(std::move(d)) );
 }
 
