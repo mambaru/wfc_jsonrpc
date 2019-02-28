@@ -30,7 +30,7 @@ SET(
   backlog/backlog/backlog.cpp
 )
 
-if (WFC_ENABLE_STAT)
+if ( WFC_ENABLE_STAT OR STANDALONE )
 SET(
   wfc_jsonrpc_source_list
   ${wfc_jsonrpc_source_list}
@@ -47,25 +47,7 @@ add_library(
   ${wfc_jsonrpc_source_list}
 )
 
-target_link_libraries(wfc_jsonrpc matchmaker)
-
-if ( STANDALONE )
-  include(FindThreads)
-  find_package(Boost COMPONENTS system program_options filesystem date_time regex REQUIRED)
-
-  target_link_libraries(
-    wfc_jsonrpc
-      wfc
-      wrtstat
-      iow
-      wlog
-      wflow
-      wjrpc
-      ${Boost_LIBRARIES} 
-      ${CMAKE_THREAD_LIBS_INIT}
-  )
-endif()
-
+target_link_libraries(wfc_jsonrpc matchmaker ${WFC_LIBRARIES})
 
 build_info(wfc_jsonrpc jsonrpc)
 
