@@ -8,11 +8,8 @@ add_executable(
     ${FAS_TESTING_CPP}
 )
 
-add_dependencies(package_test matchmaker)
-find_package(Boost COMPONENTS system regex REQUIRED)
 target_link_libraries(package_test wfc_jsonrpc)
-
-enable_testing()
+add_dependencies(package_test matchmaker)
 add_test(NAME package_test COMMAND package_test)
 
 

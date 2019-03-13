@@ -40,8 +40,6 @@ SET(
 )
 endif()
 
-include_directories(./)
-
 add_library(
   wfc_jsonrpc
   ${wfc_jsonrpc_source_list}

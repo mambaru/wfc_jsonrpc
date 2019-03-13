@@ -1,3 +1,13 @@
+[![pipeline status](http://github.lan/cpp/wfc_jsonrpc/badges/wip-devel/pipeline.svg)](http://github.lan/cpp/wfc_jsonrpc/commits/wip-devel)
+[![coverage report](http://github.lan/cpp/wfc_jsonrpc/badges/wip-devel/coverage.svg)](http://github.lan/cpp/wfc_jsonrpc/commits/wip-devel)
+
+
+* Репозитарий на [github.com](https://github.com/mambaru/wfc_jsonrpc).
+* Документация [doxygen](https://mambaru.github.io/wfc_jsonrpc/index.html).
+* Отчет [coverage](https://mambaru.github.io/wfc_jsonrpc/cov-report/index.html)
+
+# wfc_jsonrpc: Пает модулей для работы с JSON-RPC 2.0
+
 [JSONRPC-QUEUE](#JSONRPC-QUEUE) - 
 [JSONRPC-BROKER](#JSONRPC-BROKER) 
 [JSONRPC-REPLI](#JSONRPC-REPLI) -
@@ -6,8 +16,6 @@
 [JSONRPC-BACKLOG](#JSONRPC-BACKLOG) -
 [JSONRPC-STATISTICS](#JSONRPC-STATISTICS) - 
 
-
-# JSONRPC-QUEUE
 
 Отправляет входящие запросы в очередь "workflow", а исходящие в "callback_workflow". Если **workflow** не заданны, то входящие
 отправляются напрямую в "target" без очереди. Если указан **tracking**==true то включается режим отслеживания входящих подключений, 
@@ -48,7 +56,6 @@
 ```
 
 
-# JSONRPC-QUEUE
 {
   "jsonrpc-queue": [
     {
@@ -66,7 +73,7 @@
   ]
 }
 
-# JSONRPC-BROKER
+## JSONRPC-BROKER
 
 Позволяет управлять входящим потоком сообщений jsonrpc-сообщений распределяя их по целям в соответствии с заданными правилами. Например можно вызов конкретного 
 метода отправить в отдельную очередь или же запретить его. Правило можно задать для нескольких методов с учетом входящих параметров запроса в том числе и с 
@@ -102,7 +109,7 @@
 * *reject* - все вызовы методов из этого списка блокируются, правила не проверяются, клиент получает JSONRPC-ошибку, что процедура не найдена. 
 * *rules* - список правил (см. следующий раздел)
 
-## Правила для методов
+### Правила для методов
 
 Правила применяются последовательно, в тоже последовательности, как и задано в конфигурации, до тех пор пока не выполнится 
 ```cpp
@@ -115,7 +122,7 @@
 }
 ```
 
-## Правила для параметров
+### Правила для параметров
 
 ```cpp
  {
@@ -142,7 +149,7 @@
 └─────────────┘                        └───────────────┘
                                
 
-# JSONRPC-REPLI
+## JSONRPC-REPLI
 Дублирует входящие запросы и уведомления по целям перечисленных в "reply_targets", при этом уведомления копируются как есть, 
 а запросы преобразуются в уведомления. 
 
@@ -169,7 +176,7 @@
 └─────────────┘                       └────────────┘
 
 
-# JSONRPC-HUB
+## JSONRPC-HUB
 Дублирует входящие запросы и уведомления по всем зарегистрированным объектам (которые вызвали reg_io) 
 
 {
@@ -202,7 +209,7 @@
    telnet
 ```
 
-# JSONRPC-BATCH
+## JSONRPC-BATCH
 
 Включает поддержку JSONRPC пакетов (batch https://www.jsonrpc.org/specification#batch). Этот объект должен быть настроен 
 первым в цепочке обработке jsonrpc (другие компоненты batch не поддерживают). Этот объект разбивает входящий массив на 
@@ -222,7 +229,7 @@ JSONRPC сообщения и отправляет их в "target", далее 
 }
 ```
 
-# JSONRPC-BACKLOG
+## JSONRPC-BACKLOG
 
 Записывает входящий поток в файл или лог. Запись в файл ("path") производиться для последующего восстановления с помощью объектов 
 которые умеют это делать (см. документацию этих объектов). Если вам нужен дамп потока, то пишите его в лог "log", который настройте 
@@ -252,7 +259,7 @@ JSONRPC сообщения и отправляет их в "target", далее 
   ]
 }
 
-# JSONRPC-STATISTICS
+## JSONRPC-STATISTICS
 
 {
   "jsonrpc-statistics": [
