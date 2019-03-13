@@ -23,33 +23,5 @@
       "14":true,
       "17":false
     }
-  },
-  
-  "deploy": 
-  {
-    "standard":11,
-    "compiler":"g++",
-    
-    "Release":{
-      "static":false,
-      "shared":false,
-      
-      "production":false,
-      "devel":false
-    },
-    "RelWithDebInfo":{
-      "static":false,
-      "shared":false,
-      
-      "production":false,
-      "devel":false
-    },
-    "Debug":{
-      "static":false,
-      "shared":false,
-      
-      "production":false,
-      "devel":false
-    }
   }
 }
