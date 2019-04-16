@@ -103,8 +103,6 @@ void hub::perform_incoming_(const incoming_holder& holder, io_id_t io_id)
       {
         if ( auto c = wc.lock() )
         {
-          JSONRPC_LOG_WARNING("hub::perform_outgoing_ send from  " << this->name() 
-              << " io_id" << io_id << " this->get_id()=" << this->get_id() )
           auto dd = std::make_unique<data_type>(d);
           c->perform_io( std::move(dd), this->get_id(), [](data_ptr d2)
           {
