@@ -65,7 +65,10 @@ void hub::perform_outgoing(outgoing_holder holder, io_id_t io_id)
   {
     COMMON_LOG_MESSAGE("perform_outgoing -2-")
     outgoing_holder oholder = holder.clone();
+    COMMON_LOG_MESSAGE("perform_outgoing -2.1-")
     incoming_holder iholder( oholder.detach() );
+    COMMON_LOG_MESSAGE("JSON: " << iholder.str())
+    COMMON_LOG_MESSAGE("perform_outgoing -2.2-")
     iholder.parse(nullptr);
     COMMON_LOG_MESSAGE("perform_outgoing -3-")
     this->perform_incoming_( iholder, io_id);
