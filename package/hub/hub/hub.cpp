@@ -60,15 +60,20 @@ void hub::perform_incoming(incoming_holder holder, io_id_t io_id, outgoing_handl
   
 void hub::perform_outgoing(outgoing_holder holder, io_id_t io_id)
 {
+  COMMON_LOG_MESSAGE("perform_outgoing -1-")
   if ( holder.is_request() || holder.is_notify() )
   {
+    COMMON_LOG_MESSAGE("perform_outgoing -2-")
     outgoing_holder oholder = holder.clone();
     incoming_holder iholder( oholder.detach() );
     iholder.parse(nullptr);
+    COMMON_LOG_MESSAGE("perform_outgoing -3-")
     this->perform_incoming_( iholder, io_id);
+    COMMON_LOG_MESSAGE("perform_outgoing -4-")
   }
-  
+  COMMON_LOG_MESSAGE("perform_outgoing -5-")
   domain_proxy::perform_outgoing( std::move(holder), io_id);
+  COMMON_LOG_MESSAGE("perform_outgoing -6-")
 }
 
 void hub::perform_incoming_(const incoming_holder& holder, io_id_t io_id)
