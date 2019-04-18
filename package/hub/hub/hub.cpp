@@ -14,8 +14,6 @@ struct incoming
   pair_type params;
 };
 
-//const char* incoming::version = "2.0";
-
 struct incoming_json
 {
   typedef incoming::pair_type pair_type;
@@ -90,6 +88,7 @@ void hub::perform_incoming_(const incoming_holder& holder, io_id_t io_id)
         }
       }
     }
+
     if ( !cli.empty() )
     {
       const wjrpc::incoming& incom = holder.get();
@@ -111,7 +110,7 @@ void hub::perform_incoming_(const incoming_holder& holder, io_id_t io_id)
         }
       }
     }
-  }  
+  }
 }
 
 }}
