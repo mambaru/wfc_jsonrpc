@@ -14,8 +14,6 @@ struct incoming
   pair_type params;
 };
 
-//const char* incoming::version = "2.0";
-
 struct incoming_json
 {
   typedef incoming::pair_type pair_type;
@@ -63,11 +61,11 @@ void hub::perform_outgoing(outgoing_holder holder, io_id_t io_id)
   if ( holder.is_request() || holder.is_notify() )
   {
     outgoing_holder oholder = holder.clone();
-    incoming_holder iholder( oholder.detach() );
+    auto d = oholder.detach();
+    incoming_holder iholder( std::move(d) );
     iholder.parse(nullptr);
     this->perform_incoming_( iholder, io_id);
   }
-  
   domain_proxy::perform_outgoing( std::move(holder), io_id);
 }
 
@@ -90,6 +88,7 @@ void hub::perform_incoming_(const incoming_holder& holder, io_id_t io_id)
         }
       }
     }
+
     if ( !cli.empty() )
     {
       const wjrpc::incoming& incom = holder.get();
@@ -103,8 +102,6 @@ void hub::perform_incoming_(const incoming_holder& holder, io_id_t io_id)
       {
         if ( auto c = wc.lock() )
         {
-          JSONRPC_LOG_WARNING("hub::perform_outgoing_ send from  " << this->name() 
-              << " io_id" << io_id << " this->get_id()=" << this->get_id() )
           auto dd = std::make_unique<data_type>(d);
           c->perform_io( std::move(dd), this->get_id(), [](data_ptr d2)
           {
@@ -113,7 +110,7 @@ void hub::perform_incoming_(const incoming_holder& holder, io_id_t io_id)
         }
       }
     }
-  }  
+  }
 }
 
 }}
