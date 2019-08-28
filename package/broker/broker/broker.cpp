@@ -4,7 +4,7 @@
 
 #define BROKER_LOG(NAME, X) if (!NAME.empty()) { WFC_LOG_MESSAGE(NAME, X) }
 
-namespace wfc{ namespace jsonrpc{ 
+namespace wfc{ namespace jsonrpc{
 
 
 broker::domain_config broker::generate(const std::string& val)
@@ -14,7 +14,7 @@ broker::domain_config broker::generate(const std::string& val)
   {
     using namespace wfc::json::literals;
     conf.reject.push_back("<<reject-method-name>>");
-    
+
     domain_config::rule r;
     r.target = "<<target-name>>";
     r.methods.insert("<<method-name>>");
@@ -23,7 +23,7 @@ broker::domain_config broker::generate(const std::string& val)
       "Это строка комментарий вместо реального имени метода, ее нужно удалить!"
     );
     conf.rules.push_back(r);
-    
+
     r.mode = match_mode::FullMatch;
     r.methods.clear();
     r.methods.insert("method1");
@@ -36,7 +36,7 @@ broker::domain_config broker::generate(const std::string& val)
     r.methods.insert("Это правило выполнится для 'method2' если в параметрах есть поле 'arg2' со значением 'value2'");
     r.params = std::make_shared<std::string>("{'arg2':'value2'}"_json);
     conf.rules.push_back(r);
-    
+
     r.methods.clear();
     r.methods.insert("method3");
     r.methods.insert("В режиме PrefixMatch проверяется только первая часть значения или имени. В 'method3' примере  "
@@ -57,7 +57,7 @@ broker::domain_config broker::generate(const std::string& val)
   return conf;
 }
 
-void broker::configure() 
+void broker::configure()
 {
   _reconf_flag = false;
 }
@@ -83,12 +83,14 @@ void broker::restart()
     if (  !r.target.empty() )
       names.insert(r.target);
   }
-  
-  for (const std::string& n: names)
+
+  std::transform(std::begin(names), std::end(names), std::back_inserter(targets),
+                 std::bind<target_adapter>(&super::get_adapter, this, std::placeholders::_1, false));
+  /*for (const std::string& n: names)
   {
     targets.push_back( this->get_adapter(n) );
-  }
-  
+  }*/
+
   for (const broker_config::rule& r: opt.rules)
   {
 
@@ -96,14 +98,14 @@ void broker::restart()
     rules.back().methods = r.methods;
     rules.back().target = this->get_adapter(r.target);
     rules.back().rule_log = r.rule_log;
-    
+
     if ( r.params!=nullptr && !r.params->empty() )
     {
       rules.back().matcher = std::make_shared<matchmaker>();
       json::json_error err;
       if ( !rules.back().matcher->reconfigure(r.mode, *r.params, err) )
       {
-        if ( _reconf_flag ) 
+        if ( _reconf_flag )
         {
           COMMON_LOG_ERROR( "jsonrpc-broker configuration error: " <<  json::strerror::message_trace(err, r.params->begin(), r.params->end()) )
         }
@@ -115,7 +117,7 @@ void broker::restart()
       }
     }
   }
-  
+
   std::lock_guard<mutex_type> lk(_mutex);
   _targets = targets;
   _reject = reject;
@@ -125,7 +127,7 @@ void broker::restart()
   _reject_all = _reject.count("*");
 }
 
-void broker::reg_io(io_id_t io_id, std::weak_ptr<iinterface> itf) 
+void broker::reg_io(io_id_t io_id, std::weak_ptr<iinterface> itf)
 {
   domain_proxy::reg_io(io_id, itf);
   read_lock<mutex_type> lk(_mutex);
@@ -135,10 +137,10 @@ void broker::reg_io(io_id_t io_id, std::weak_ptr<iinterface> itf)
   }
 }
 
-void broker::unreg_io(io_id_t io_id) 
+void broker::unreg_io(io_id_t io_id)
 {
   domain_proxy::unreg_io(io_id);
-  
+
   read_lock<mutex_type> lk(_mutex);
   for (auto& t : _targets )
   {
@@ -147,20 +149,20 @@ void broker::unreg_io(io_id_t io_id)
 }
 
 
-void broker::perform_incoming(incoming_holder holder, io_id_t io_id, outgoing_handler_t handler) 
+void broker::perform_incoming(incoming_holder holder, io_id_t io_id, outgoing_handler_t handler)
 {
   if ( this->suspended() )
   {
     domain_proxy::perform_incoming(std::move(holder), io_id, std::move(handler) );
     return;
   }
-  
+
   if ( !holder.has_method() )
   {
     domain_proxy::perform_incoming(std::move(holder), io_id, std::move(handler) );
     return;
   }
-  
+
   read_lock<mutex_type> lk(_mutex);
   if ( !_reject.empty() )
   {
@@ -171,7 +173,7 @@ void broker::perform_incoming(incoming_holder holder, io_id_t io_id, outgoing_ha
       return;
     }
   }
-  
+
   for (const rule_target& r: _rules)
   {
     bool all_methods = r.methods.empty() || r.methods.count("*")!=0;
@@ -198,11 +200,11 @@ void broker::perform_incoming(incoming_holder holder, io_id_t io_id, outgoing_ha
       }
     }
   }
-    
+
   BROKER_LOG(_target_log, holder.str())
   domain_proxy::perform_incoming(std::move(holder), io_id, std::move(handler) );
 }
-  
+
 void broker::perform_outgoing(outgoing_holder holder, io_id_t io_id)
 {
   domain_proxy::perform_outgoing(std::move(holder), io_id );

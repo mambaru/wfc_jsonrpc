@@ -3,19 +3,24 @@
 #include <wfc/asio.hpp>
 #include <wfc/jsonrpc/target.hpp>
 
-namespace wfc{ namespace jsonrpc{ 
+namespace wfc{ namespace jsonrpc{
 
 void repli::restart()
 {
   std::lock_guard<mutex_type> lk(_mutex);
   _targets.clear();
-  for ( auto rname : this->options().reply_targets )
+
+  auto names = this->options().reply_targets;
+  std::transform(std::begin(names), std::end(names), std::back_inserter(_targets),
+                 std::bind<target_adapter>(&super::get_adapter, this, std::placeholders::_1, false));
+
+  /*for ( auto rname : this->options().reply_targets )
   {
     _targets.push_back(  this->get_adapter(rname) );
-  }
+  }*/
 }
 
-void repli::perform_incoming(incoming_holder holder, io_id_t io_id, outgoing_handler_t handler) 
+void repli::perform_incoming(incoming_holder holder, io_id_t io_id, outgoing_handler_t handler)
 {
   if ( !this->suspended() )
   {
