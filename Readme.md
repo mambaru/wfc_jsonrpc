@@ -1,5 +1,3 @@
-[![pipeline status](http://github.lan/cpp/wfc_jsonrpc/badges/wip-devel/pipeline.svg)](http://github.lan/cpp/wfc_jsonrpc/commits/wip-devel)
-[![coverage report](http://github.lan/cpp/wfc_jsonrpc/badges/wip-devel/coverage.svg)](http://github.lan/cpp/wfc_jsonrpc/commits/wip-devel)
 
 
 * Репозитарий на [github.com](https://github.com/mambaru/wfc_jsonrpc).
