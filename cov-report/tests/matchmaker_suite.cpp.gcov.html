@@ -1,0 +1,242 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - wfc_jsonrpc-coverage.info - tests/matchmaker_suite.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">tests</a> - matchmaker_suite.cpp<span style="font-size: 80%;"> (source / <a href="matchmaker_suite.cpp.func.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">wfc_jsonrpc-coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">86</td>
+            <td class="headerCovTableEntry">86</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-09-12</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">32</td>
+            <td class="headerCovTableEntry">33</td>
+            <td class="headerCovTableEntryHi">97.0 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : #include &lt;fas/testing.hpp&gt;</a>
+<span class="lineNum">       2 </span>            : #include &lt;wfc/json.hpp&gt;
+<span class="lineNum">       3 </span>            : #include &lt;matchmaker/matchmaker.hpp&gt;
+<span class="lineNum">       4 </span>            : #include &lt;utility&gt;
+<span class="lineNum">       5 </span>            : #include &lt;regex&gt;
+<span class="lineNum">       6 </span>            : #include &lt;boost/regex.hpp&gt;
+<span class="lineNum">       7 </span>            : 
+<span class="lineNum">       8 </span>            : using namespace wfc::json::literals;
+<span class="lineNum">       9 </span>            : using namespace wfc::jsonrpc;
+<span class="lineNum">      10 </span>            : using json_error = wfc::json::json_error;
+<span class="lineNum">      11 </span>            : using strerr = wfc::json::strerror;
+<span class="lineNum">      12 </span>            : 
+<span class="lineNum">      13 </span>            : namespace {
+<a name="14"><span class="lineNum">      14 </span>            : </a>
+<span class="lineNum">      15 </span>            : struct _matchmaker_;
+<span class="lineNum">      16 </span><span class="lineCov">          1 : static const std::string configs[]=</span>
+<span class="lineNum">      17 </span>            : {
+<span class="lineNum">      18 </span>            :   &quot;'hello'&quot;_json,                // 0
+<span class="lineNum">      19 </span>            :   &quot;'hell'&quot;_json,                 // 1
+<span class="lineNum">      20 </span>            :   &quot;'hello'&quot;_json,              // 2
+<span class="lineNum">      21 </span>            :   &quot;'hell'&quot;_json,             // 3
+<span class="lineNum">      22 </span>            :   &quot;'.*hello.*'&quot;_json,            // 4
+<span class="lineNum">      23 </span>            :   &quot;'.*hell.*'&quot;_json,             // 5
+<span class="lineNum">      24 </span>            :   &quot;['hello', 'hell', 'hellx']&quot;_json, // 6 По сути это проверка целого слова, т.к. нужно учитывать кавычки
+<span class="lineNum">      25 </span>            :   &quot;{'foo':'bar'}&quot;_json,          // 7
+<span class="lineNum">      26 </span>            :   &quot;{'foo':'bar', 'baz':{'.*':'.(\\\\w+)(\\\\.|_)?(\\\\w*)@(\\\\w+)(\\\\.(\\\\w+))+.'}}&quot;_json,              // 8
+<span class="lineNum">      27 </span>            :   &quot;{'foo':'bar', 'baz':{'email':null}}&quot;_json,              // 9
+<span class="lineNum">      28 </span>            :   &quot;{'foo':'bar', 'baz':{'a':['b','c','d']}}&quot;_json,              // 10
+<span class="lineNum">      29 </span>            :   &quot;{'foo':'bar', 'baz':{'a':[['b','c','d']]}}&quot;_json,          // 11
+<span class="lineNum">      30 </span>            :   &quot;{'foo':'bar', 'baz':{'a':[['b',[['c']],'d']]}}&quot;_json,      // 12
+<span class="lineNum">      31 </span>            :   &quot;{'foo':'bar', 'baz':{'a':'.{13,17}'}}&quot;_json,       // 13
+<span class="lineNum">      32 </span>            :   &quot;{'baz':{'email':'.(\\\\w+)(\\\\.|_)?(\\\\w*)@(\\\\w+)(\\\\.(\\\\w+))+.', 'email':'.{17,19}'}, 'foo':'bar'}&quot;_json, // 14
+<span class="lineNum">      33 </span>            :   &quot;{'baz':{'email':'.(\\\\w+)(\\\\.|_)?(\\\\w*)@(\\\\w+)(\\\\.(\\\\w+))+.', 'email':'.{17,19}', 'user':'migashko'}, 'foo':'bar'}&quot;_json // 15
+<span class="lineNum">      34 </span>            :   //&quot;{'baz':{'email':'.{0,190}'}, 'foo':'bar'}&quot;_json // 14
+<a name="35"><span class="lineNum">      35 </span><span class="lineCov">          1 : };</span></a>
+<span class="lineNum">      36 </span>            : 
+<span class="lineNum">      37 </span><span class="lineCov">          3 : UNIT(create, &quot;&quot;)</span>
+<span class="lineNum">      38 </span>            : {
+<span class="lineNum">      39 </span>            :   using namespace fas::testing;
+<span class="lineNum">      40 </span><span class="lineCov">          1 :   GET_REF(_matchmaker_) = std::make_shared&lt;matchmaker&gt;();</span>
+<span class="lineNum">      41 </span><span class="lineCov">          1 : }</span>
+<span class="lineNum">      42 </span>            : 
+<a name="43"><span class="lineNum">      43 </span>            : </a>
+<span class="lineNum">      44 </span>            : template&lt;bool Val, int mode, typename T&gt;
+<span class="lineNum">      45 </span><span class="lineCov">         56 : void match(T&amp; t, int nconfig, const std::string&amp; json, const std::string&amp; fl)</span>
+<span class="lineNum">      46 </span>            : {
+<span class="lineNum">      47 </span>            :   using namespace fas::testing;
+<span class="lineNum">      48 </span><span class="lineCov">         56 :   json_error err;</span>
+<span class="lineNum">      49 </span><span class="lineCov">         56 :   auto mm = GET_REF(_matchmaker_);</span>
+<span class="lineNum">      50 </span><span class="lineCov">         56 :   t &lt;&lt; message(configs[nconfig]) &lt;&lt; &quot; ws &quot; &lt;&lt; json;</span>
+<span class="lineNum">      51 </span><span class="lineCov">         56 :   t &lt;&lt; flush;</span>
+<span class="lineNum">      52 </span><span class="lineCov">         56 :   bool res = mm-&gt;reconfigure( mode, configs[nconfig], err );</span>
+<span class="lineNum">      53 </span><span class="lineCov">        112 :   t &lt;&lt; is_false&lt;assert&gt;(err) &lt;&lt; wfc::json::strerror::message_trace(err, json.begin(), json.end() )</span>
+<span class="lineNum">      54 </span><span class="lineCov">         56 :     &lt;&lt; FAS_FL &lt;&lt; std::endl &lt;&lt; &quot; from:&quot; &lt;&lt; fl;</span>
+<span class="lineNum">      55 </span><span class="lineCov">         56 :   t &lt;&lt; is_true&lt;assert&gt;(res) &lt;&lt; &quot; reconfigure for &quot;&lt;&lt; configs[nconfig] &lt;&lt; FAS_FL;</span>
+<span class="lineNum">      56 </span><span class="lineCov">         56 :   t &lt;&lt; stop;</span>
+<span class="lineNum">      57 </span><span class="lineCov">         56 :   bool match_result = mm-&gt;match( json, err );</span>
+<span class="lineNum">      58 </span><span class="lineCov">        112 :   t &lt;&lt; is_false&lt;assert&gt;(err) &lt;&lt; wfc::json::strerror::message_trace(err, json.begin(), json.end() ) </span>
+<span class="lineNum">      59 </span><span class="lineCov">         56 :     &lt;&lt; FAS_FL&lt;&lt; std::endl &lt;&lt; &quot; from:&quot; &lt;&lt; fl;</span>
+<span class="lineNum">      60 </span><span class="lineCov">         56 :   t &lt;&lt; stop;</span>
+<span class="lineNum">      61 </span><span class="lineCov">         56 :   t &lt;&lt; equal&lt;expect, bool&gt;(match_result, Val) &lt;&lt; fl;</span>
+<a name="62"><span class="lineNum">      62 </span><span class="lineCov">         56 : }</span></a>
+<span class="lineNum">      63 </span>            : 
+<span class="lineNum">      64 </span><span class="lineCov">        112 : struct get_fl</span>
+<span class="lineNum">      65 </span>            : {
+<a name="66"><span class="lineNum">      66 </span>            :   std::stringstream ss;</a>
+<a name="67"><span class="lineNum">      67 </span>            :   template&lt;typename V&gt;</a>
+<span class="lineNum">      68 </span><span class="lineCov">        224 :   get_fl&amp; operator &lt;&lt; (const V&amp; val) {ss &lt;&lt; val; return *this; }</span>
+<span class="lineNum">      69 </span><span class="lineCov">         56 :   operator std::string () const { return ss.str();}</span>
+<span class="lineNum">      70 </span>            : };
+<span class="lineNum">      71 </span>            : 
+<a name="72"><span class="lineNum">      72 </span>            : #define FAS_FLS std::string(get_fl() &lt;&lt; FAS_FL)</a>
+<span class="lineNum">      73 </span>            : 
+<span class="lineNum">      74 </span><span class="lineCov">          3 : UNIT(match0, &quot;&quot;)</span>
+<span class="lineNum">      75 </span>            : {
+<span class="lineNum">      76 </span>            :   using namespace fas::testing;
+<span class="lineNum">      77 </span><span class="lineCov">          1 :   t &lt;&lt; nothing ;</span>
+<span class="lineNum">      78 </span>            :   
+<span class="lineNum">      79 </span><span class="lineCov">          1 :   match&lt;true,  match_mode::FullMatch&gt;(t, 0, &quot;'hello'&quot;_json, FAS_FLS );</span>
+<span class="lineNum">      80 </span><span class="lineCov">          1 :   match&lt;false, match_mode::FullMatch&gt;(t, 0, &quot;'hell'&quot;_json, FAS_FLS );</span>
+<span class="lineNum">      81 </span><span class="lineCov">          1 :   match&lt;false, match_mode::FullMatch&gt;(t, 1, &quot;'hello'&quot;_json, FAS_FLS );</span>
+<span class="lineNum">      82 </span><span class="lineCov">          1 :   match&lt;true,  match_mode::FullMatch&gt;(t, 1, &quot;'hell'&quot;_json, FAS_FLS );</span>
+<span class="lineNum">      83 </span>            :   
+<span class="lineNum">      84 </span><span class="lineCov">          1 :   match&lt;true,  match_mode::PrefixMatchValue&gt;(t, 0, &quot;'hello'&quot;_json, FAS_FLS );</span>
+<span class="lineNum">      85 </span><span class="lineCov">          1 :   match&lt;false, match_mode::PrefixMatchValue&gt;(t, 0, &quot;'hell'&quot;_json,  FAS_FLS );</span>
+<span class="lineNum">      86 </span><span class="lineCov">          1 :   match&lt;true,  match_mode::PrefixMatchValue&gt;(t, 1, &quot;'hello'&quot;_json, FAS_FLS );</span>
+<span class="lineNum">      87 </span><span class="lineCov">          1 :   match&lt;true,  match_mode::PrefixMatchValue&gt;(t, 1, &quot;'hell'&quot;_json,  FAS_FLS );</span>
+<span class="lineNum">      88 </span>            : 
+<span class="lineNum">      89 </span><span class="lineCov">          1 :   match&lt;true, match_mode::RegexMatchValue&gt;(t, 0, &quot;'hello'&quot;_json, FAS_FLS );</span>
+<span class="lineNum">      90 </span><span class="lineCov">          1 :   match&lt;false, match_mode::RegexMatchValue&gt;(t, 0, &quot;'hell'&quot;_json, FAS_FLS );</span>
+<span class="lineNum">      91 </span><span class="lineCov">          1 :   match&lt;false, match_mode::RegexMatchValue&gt;(t, 1, &quot;'hello'&quot;_json, FAS_FLS );</span>
+<span class="lineNum">      92 </span><span class="lineCov">          1 :   match&lt;true, match_mode::RegexMatchValue&gt;(t, 1, &quot;'hell'&quot;_json, FAS_FLS );</span>
+<span class="lineNum">      93 </span>            : 
+<span class="lineNum">      94 </span>            : /*
+<span class="lineNum">      95 </span>            :   match&lt;true,  match_mode::RegexMatchValue&gt;(t, 2, &quot;'hello'&quot;_json, FAS_FLS );
+<span class="lineNum">      96 </span>            :   match&lt;false, match_mode::RegexMatchValue&gt;(t, 2, &quot;'hell'&quot;_json, FAS_FLS );
+<span class="lineNum">      97 </span>            :   match&lt;false, match_mode::RegexMatchValue&gt;(t, 3, &quot;'hello'&quot;_json, FAS_FLS );
+<span class="lineNum">      98 </span>            :   match&lt;true,  match_mode::RegexMatchValue&gt;(t, 3, &quot;'hell'&quot;_json, FAS_FLS );
+<span class="lineNum">      99 </span>            : */
+<span class="lineNum">     100 </span>            : 
+<span class="lineNum">     101 </span><span class="lineCov">          1 :   match&lt;true,  match_mode::RegexMatchValue&gt;(t, 4, &quot;'hello'&quot;_json, FAS_FLS );</span>
+<span class="lineNum">     102 </span><span class="lineCov">          1 :   match&lt;false, match_mode::RegexMatchValue&gt;(t, 4, &quot;'hell'&quot;_json, FAS_FLS );</span>
+<span class="lineNum">     103 </span><span class="lineCov">          1 :   match&lt;true,  match_mode::RegexMatchValue&gt;(t,  5, &quot;'hello'&quot;_json, FAS_FLS );</span>
+<span class="lineNum">     104 </span><span class="lineCov">          1 :   match&lt;true,  match_mode::RegexMatchValue&gt;(t, 5, &quot;'hell'&quot;_json, FAS_FLS );</span>
+<span class="lineNum">     105 </span><span class="lineCov">          1 :   match&lt;true,  match_mode::RegexMatchValue&gt;(t, 5, &quot;'hellx'&quot;_json, FAS_FLS );</span>
+<span class="lineNum">     106 </span>            :   
+<span class="lineNum">     107 </span><span class="lineCov">          1 :   match&lt;true, match_mode::RegexMatchValue&gt;(t, 6, &quot;'hello'&quot;_json, FAS_FLS );</span>
+<span class="lineNum">     108 </span><span class="lineCov">          1 :   match&lt;true, match_mode::RegexMatchValue&gt;(t, 6, &quot;'hell'&quot;_json, FAS_FLS );</span>
+<span class="lineNum">     109 </span><span class="lineCov">          1 :   match&lt;true, match_mode::RegexMatchValue&gt;(t, 6, &quot;'hellx'&quot;_json, FAS_FLS );</span>
+<span class="lineNum">     110 </span>            :   
+<span class="lineNum">     111 </span><span class="lineCov">          1 :   match&lt;true,  match_mode::FullMatch&gt;(t, 7, &quot;{'foo':'bar'}&quot;_json, FAS_FLS );</span>
+<span class="lineNum">     112 </span><span class="lineCov">          1 :   match&lt;true,  match_mode::FullMatch&gt;(t, 7, &quot;{'foo1':'bar', 'foo':'bar', 'foo2':'bar1'}&quot;_json, FAS_FLS );</span>
+<span class="lineNum">     113 </span><span class="lineCov">          1 :   match&lt;false, match_mode::FullMatch&gt;(t, 7, &quot;{'foo1':'bar', 'foo':'bar1'}&quot;_json, FAS_FLS );</span>
+<span class="lineNum">     114 </span>            :   
+<span class="lineNum">     115 </span><span class="lineCov">          1 :   match&lt;true,  match_mode::PrefixMatch&gt;(t, 7, &quot;{'foo':'bar'}&quot;_json, FAS_FLS );</span>
+<span class="lineNum">     116 </span><span class="lineCov">          1 :   match&lt;true,  match_mode::PrefixMatch&gt;(t, 7, &quot;{'foo1':'bar', 'foo':'bar', 'foo2':'bar1'}&quot;_json, FAS_FLS );</span>
+<span class="lineNum">     117 </span><span class="lineCov">          1 :   match&lt;false, match_mode::PrefixMatch&gt;(t, 7, &quot;{'fo1':'bar', 'foo':'ba1'}&quot;_json, FAS_FLS );</span>
+<span class="lineNum">     118 </span>            :   
+<span class="lineNum">     119 </span><span class="lineCov">          1 :   match&lt;true,  match_mode::RegexMatch&gt;(t, 8, &quot;{'foo':'bar', 'baz':{'email':'migashko@gmail.com'}}&quot;_json, FAS_FLS );</span>
+<span class="lineNum">     120 </span>            :   
+<span class="lineNum">     121 </span><span class="lineCov">          1 :   match&lt;false, match_mode::RegexMatch&gt;(t, 9, &quot;{'foo':'bar', 'baz':{'email1':null}}&quot;_json, FAS_FLS );</span>
+<span class="lineNum">     122 </span><span class="lineCov">          1 :   match&lt;true,  match_mode::RegexMatch&gt;(t, 9, &quot;{'foo':'bar', 'baz':{'email':null}}&quot;_json, FAS_FLS );</span>
+<span class="lineNum">     123 </span><span class="lineCov">          1 :   match&lt;true,  match_mode::RegexMatch&gt;(t, 9, &quot;{'foo':'bar', 'baz':{'email':'anystring'}}&quot;_json, FAS_FLS );</span>
+<span class="lineNum">     124 </span>            :   
+<span class="lineNum">     125 </span><span class="lineCov">          1 :   match&lt;true,  match_mode::FullMatch&gt;(t, 10, &quot;{'foo':'bar', 'baz':{'a':'b'}}&quot;_json, FAS_FLS );</span>
+<span class="lineNum">     126 </span><span class="lineCov">          1 :   match&lt;true,  match_mode::FullMatch&gt;(t, 10, &quot;{'foo':'bar', 'baz':{'a':'c'}}&quot;_json, FAS_FLS );</span>
+<span class="lineNum">     127 </span><span class="lineCov">          1 :   match&lt;true,  match_mode::FullMatch&gt;(t, 10, &quot;{'foo':'bar', 'baz':{'a':'d'}}&quot;_json, FAS_FLS );</span>
+<span class="lineNum">     128 </span><span class="lineCov">          1 :   match&lt;false, match_mode::FullMatch&gt;(t, 10, &quot;{'foo':'bar', 'baz':{'a':'e'}}&quot;_json, FAS_FLS );</span>
+<span class="lineNum">     129 </span>            :   
+<span class="lineNum">     130 </span><span class="lineCov">          1 :   match&lt;true, match_mode::FullMatch&gt;(t, 11, &quot;{'foo':'bar', 'baz':{'a':['b','d','c']}}&quot;_json, FAS_FLS );</span>
+<span class="lineNum">     131 </span><span class="lineCov">          1 :   match&lt;true, match_mode::FullMatch&gt;(t, 11, &quot;{'foo':'bar', 'baz':{'a':['b','d','c', 1]}}&quot;_json, FAS_FLS );</span>
+<span class="lineNum">     132 </span><span class="lineCov">          1 :   match&lt;false, match_mode::FullMatch&gt;(t, 11, &quot;{'foo':'bar', 'baz':{'a':['b','d']}}&quot;_json, FAS_FLS );</span>
+<span class="lineNum">     133 </span>            :   
+<span class="lineNum">     134 </span><span class="lineCov">          1 :   match&lt;true, match_mode::FullMatch&gt;(t, 12, &quot;{'foo':'bar', 'baz':{'a':['b','d',['c']]}}&quot;_json, FAS_FLS );</span>
+<span class="lineNum">     135 </span><span class="lineCov">          1 :   match&lt;true, match_mode::FullMatch&gt;(t, 12, &quot;{'foo':'bar', 'baz':{'a':[['c', 'e'],'b','d']}}&quot;_json, FAS_FLS );</span>
+<span class="lineNum">     136 </span><span class="lineCov">          1 :   match&lt;false, match_mode::FullMatch&gt;(t, 12, &quot;{'foo':'bar', 'baz':{'a':[['c', 'e'],'b',]}}&quot;_json, FAS_FLS );</span>
+<span class="lineNum">     137 </span><span class="lineCov">          1 :   match&lt;false, match_mode::FullMatch&gt;(t, 12, &quot;{'foo':'bar', 'baz':{'a':[['e'],'b','d']}}&quot;_json, FAS_FLS );</span>
+<span class="lineNum">     138 </span>            :   
+<span class="lineNum">     139 </span><span class="lineCov">          1 :   constexpr int mode1 = match_mode::RegexMatchValue | match_mode::FullMatchName;</span>
+<span class="lineNum">     140 </span><span class="lineCov">          1 :   match&lt;true, mode1&gt;(t, 13, &quot;{'foo':'bar', 'baz':{'a':['b','d','c']}}&quot;_json, FAS_FLS );</span>
+<span class="lineNum">     141 </span><span class="lineCov">          1 :   match&lt;true, mode1&gt;(t, 13, &quot;{'foo':'bar', 'baz':{'a':['b','d','c','d']}}&quot;_json, FAS_FLS );</span>
+<span class="lineNum">     142 </span><span class="lineCov">          1 :   match&lt;false, mode1&gt;(t, 13, &quot;{'foo':'bar', 'baz':{'a':['b','d']}}&quot;_json, FAS_FLS );</span>
+<span class="lineNum">     143 </span><span class="lineCov">          1 :   match&lt;false, mode1&gt;(t, 13, &quot;{'foo':'bar', 'baz':{'a':['b','d','c','d','e']}}&quot;_json, FAS_FLS );</span>
+<span class="lineNum">     144 </span>            :   
+<span class="lineNum">     145 </span><span class="lineCov">          1 :   match&lt;true, mode1&gt;(t, 14, &quot;{'foo':'bar','baz':{'email':'migashko@gmail.com'}}&quot;_json, FAS_FLS );</span>
+<span class="lineNum">     146 </span><span class="lineCov">          1 :   match&lt;false,mode1&gt;(t, 14, &quot;{'foo1':'bar', 'baz':{'email':'migashko@gmail.com'}}&quot;_json, FAS_FLS );</span>
+<span class="lineNum">     147 </span><span class="lineCov">          1 :   match&lt;false,mode1&gt;(t, 14, &quot;{'foo':'bar1', 'baz':{'email':'migashko@gmail.com'}}&quot;_json, FAS_FLS );</span>
+<span class="lineNum">     148 </span><span class="lineCov">          1 :   match&lt;false,mode1&gt;(t, 14, &quot;{'foo':'bar', 'baz':{'email':'mig@gmail.com'}}&quot;_json, FAS_FLS );</span>
+<span class="lineNum">     149 </span><span class="lineCov">          1 :   match&lt;false,mode1&gt;(t, 14, &quot;{'foo':'bar', 'baz':{'email':'migashko1111@gmail.com'}}&quot;_json, FAS_FLS );</span>
+<span class="lineNum">     150 </span><span class="lineCov">          1 :   match&lt;false, mode1&gt;(t, 14, &quot;{'foo':'bar', 'baz':{'emailX':'migashko@gmail.com'}}&quot;_json, FAS_FLS );</span>
+<span class="lineNum">     151 </span>            :   
+<span class="lineNum">     152 </span><span class="lineCov">          1 :   match&lt;false, mode1&gt;(t, 15, &quot;{'foo':'bar', 'baz':{'emailX':'migashko@gmail.com', 'user':'migashko'}}&quot;_json, FAS_FLS );</span>
+<span class="lineNum">     153 </span><span class="lineCov">          1 :   match&lt;true, mode1&gt;(t, 15, &quot;{'foo':'bar', 'baz':{'email':'migashko@gmail.com', 'user':'migashko'}}&quot;_json, FAS_FLS );</span>
+<span class="lineNum">     154 </span><span class="lineCov">          1 :   match&lt;false, mode1&gt;(t, 15, &quot;{'foo':'bar', 'baz':{'email':'migashko@gmail.com', 'user':'migashko1'}}&quot;_json, FAS_FLS );</span>
+<span class="lineNum">     155 </span><span class="lineCov">          1 :   match&lt;true, mode1&gt;(t, 15, &quot;{'foo':'bar', 'baz':{'email':'migashko1@gmail.com', 'user':'migashko'}}&quot;_json, FAS_FLS );</span>
+<span class="lineNum">     156 </span><span class="lineCov">          1 :   match&lt;false, mode1&gt;(t, 15, &quot;{'foo':'bar', 'baz':{'email':'migashko1111@gmail.com', 'user':'migashko'}}&quot;_json, FAS_FLS );</span>
+<span class="lineNum">     157 </span><span class="lineCov">          1 : }</span>
+<span class="lineNum">     158 </span>            : 
+<a name="159"><span class="lineNum">     159 </span>            : } // namespace</a>
+<span class="lineNum">     160 </span>            : 
+<span class="lineNum">     161 </span><span class="lineCov">          1 : BEGIN_SUITE(matchmaker_suite, &quot;&quot;)</span>
+<span class="lineNum">     162 </span>            :   ADD_VALUE(_matchmaker_, std::shared_ptr&lt;matchmaker&gt; )
+<span class="lineNum">     163 </span>            :   ADD_UNIT( create )
+<a name="164"><span class="lineNum">     164 </span>            :   ADD_UNIT( match0 )</a>
+<span class="lineNum">     165 </span>            :   ADD_UNIT( match0 )
+<span class="lineNum">     166 </span><span class="lineCov">          7 : END_SUITE(matchmaker_suite)</span>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.10</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

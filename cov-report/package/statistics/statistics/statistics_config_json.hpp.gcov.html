@@ -1,0 +1,136 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - wfc_jsonrpc-coverage.info - package/statistics/statistics/statistics_config_json.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../index.html">top level</a> - <a href="index.html">package/statistics/statistics</a> - statistics_config_json.hpp<span style="font-size: 80%;"> (source / <a href="statistics_config_json.hpp.func.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">wfc_jsonrpc-coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">3</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-09-12</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">3</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : #pragma once</a>
+<span class="lineNum">       2 </span>            : 
+<span class="lineNum">       3 </span>            : #include &quot;statistics_config.hpp&quot;
+<span class="lineNum">       4 </span>            : #include &lt;wfc/json.hpp&gt;
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : namespace wfc{ namespace jsonrpc{ 
+<span class="lineNum">       7 </span>            :   
+<a name="8"><span class="lineNum">       8 </span>            : struct statistics_config_json</a>
+<a name="9"><span class="lineNum">       9 </span>            : {</a>
+<a name="10"><span class="lineNum">      10 </span><span class="lineNoCov">          0 :   JSON_NAME(target)</span></a>
+<span class="lineNum">      11 </span><span class="lineNoCov">          0 :   JSON_NAME(enable_write_size)</span>
+<span class="lineNum">      12 </span><span class="lineNoCov">          0 :   JSON_NAME(enable_error_stat)</span>
+<span class="lineNum">      13 </span>            : 
+<span class="lineNum">      14 </span>            :   typedef json::object&lt;
+<span class="lineNum">      15 </span>            :     statistics_config,
+<span class="lineNum">      16 </span>            :     json::member_list&lt;
+<span class="lineNum">      17 </span>            :       json::member&lt;n_target, statistics_config, std::string, &amp;statistics_config::target&gt;,
+<span class="lineNum">      18 </span>            :       json::member&lt;n_enable_write_size, statistics_config, bool, &amp;statistics_config::enable_write_size&gt;,
+<span class="lineNum">      19 </span>            :       json::member&lt;n_enable_error_stat, statistics_config, bool, &amp;statistics_config::enable_error_stat&gt;
+<span class="lineNum">      20 </span>            :     &gt;
+<span class="lineNum">      21 </span>            :   &gt; type;
+<span class="lineNum">      22 </span>            :   
+<span class="lineNum">      23 </span>            :   typedef type::target target;
+<span class="lineNum">      24 </span>            :   typedef type::serializer serializer;
+<span class="lineNum">      25 </span>            :   typedef type::member_list member_list;
+<span class="lineNum">      26 </span>            : };
+<span class="lineNum">      27 </span>            : 
+<span class="lineNum">      28 </span>            : 
+<span class="lineNum">      29 </span>            : struct statistics_stat_json
+<span class="lineNum">      30 </span>            : {
+<span class="lineNum">      31 </span>            :   JSON_NAME(time_suffix)
+<span class="lineNum">      32 </span>            :   JSON_NAME(read_size_suffix)
+<span class="lineNum">      33 </span>            :   JSON_NAME(write_size_suffix)
+<span class="lineNum">      34 </span>            :   JSON_NAME(request_prefix)
+<span class="lineNum">      35 </span>            :   JSON_NAME(notify_prefix)
+<span class="lineNum">      36 </span>            : 
+<span class="lineNum">      37 </span>            :   JSON_NAME(other_time)
+<span class="lineNum">      38 </span>            :   JSON_NAME(other_read_size)
+<span class="lineNum">      39 </span>            :   JSON_NAME(other_write_size)
+<span class="lineNum">      40 </span>            : 
+<span class="lineNum">      41 </span>            :   typedef json::object&lt;
+<span class="lineNum">      42 </span>            :     statistics_stat,
+<span class="lineNum">      43 </span>            :     json::member_list&lt;
+<span class="lineNum">      44 </span>            :       json::member&lt;n_time_suffix, statistics_stat, std::string, &amp;statistics_stat::time_suffix&gt;,
+<span class="lineNum">      45 </span>            :       json::member&lt;n_read_size_suffix, statistics_stat, std::string, &amp;statistics_stat::read_size_suffix&gt;,
+<span class="lineNum">      46 </span>            :       json::member&lt;n_write_size_suffix, statistics_stat, std::string, &amp;statistics_stat::write_size_suffix&gt;,
+<span class="lineNum">      47 </span>            :       json::member&lt;n_request_prefix, statistics_stat, std::string, &amp;statistics_stat::request_prefix&gt;,
+<span class="lineNum">      48 </span>            :       json::member&lt;n_notify_prefix, statistics_stat, std::string, &amp;statistics_stat::notify_prefix&gt;,
+<span class="lineNum">      49 </span>            :       json::member&lt;n_other_time, statistics_stat, std::string, &amp;statistics_stat::other_time&gt;,
+<span class="lineNum">      50 </span>            :       json::member&lt;n_other_read_size, statistics_stat, std::string, &amp;statistics_stat::other_read_size&gt;,
+<span class="lineNum">      51 </span>            :       json::member&lt;n_other_write_size, statistics_stat, std::string, &amp;statistics_stat::other_write_size&gt;
+<span class="lineNum">      52 </span>            :     &gt;
+<span class="lineNum">      53 </span>            :   &gt; type;
+<span class="lineNum">      54 </span>            :   
+<span class="lineNum">      55 </span>            :   typedef type::target target;
+<span class="lineNum">      56 </span>            :   typedef type::serializer serializer;
+<span class="lineNum">      57 </span>            :   typedef type::member_list member_list;
+<span class="lineNum">      58 </span>            : };
+<span class="lineNum">      59 </span>            : 
+<span class="lineNum">      60 </span>            : }}
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.10</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

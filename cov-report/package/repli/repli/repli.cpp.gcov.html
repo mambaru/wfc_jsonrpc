@@ -1,0 +1,122 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - wfc_jsonrpc-coverage.info - package/repli/repli/repli.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../index.html">top level</a> - <a href="index.html">package/repli/repli</a> - repli.cpp<span style="font-size: 80%;"> (source / <a href="repli.cpp.func.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">wfc_jsonrpc-coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntry">21</td>
+            <td class="headerCovTableEntryLo">4.8 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-09-12</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntry">5</td>
+            <td class="headerCovTableEntryLo">40.0 %</td>
+          </tr>
+          <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : #include &quot;repli.hpp&quot;</a>
+<span class="lineNum">       2 </span>            : #include &lt;wfc/logger.hpp&gt;
+<span class="lineNum">       3 </span>            : #include &lt;wfc/asio.hpp&gt;
+<span class="lineNum">       4 </span>            : #include &lt;wfc/jsonrpc/target.hpp&gt;
+<span class="lineNum">       5 </span>            : 
+<a name="6"><span class="lineNum">       6 </span>            : namespace wfc{ namespace jsonrpc{</a>
+<span class="lineNum">       7 </span>            : 
+<span class="lineNum">       8 </span><span class="lineNoCov">          0 : void repli::restart()</span>
+<span class="lineNum">       9 </span>            : {
+<span class="lineNum">      10 </span><span class="lineNoCov">          0 :   std::lock_guard&lt;mutex_type&gt; lk(_mutex);</span>
+<span class="lineNum">      11 </span><span class="lineNoCov">          0 :   _targets.clear();</span>
+<span class="lineNum">      12 </span>            : 
+<span class="lineNum">      13 </span><span class="lineNoCov">          0 :   auto names = this-&gt;options().reply_targets;</span>
+<span class="lineNum">      14 </span>            :   std::transform(std::begin(names), std::end(names), std::back_inserter(_targets),
+<span class="lineNum">      15 </span><span class="lineNoCov">          0 :                  std::bind&lt;target_adapter&gt;(&amp;super::get_adapter, this, std::placeholders::_1, false));</span>
+<span class="lineNum">      16 </span>            : 
+<span class="lineNum">      17 </span>            :   /*for ( auto rname : this-&gt;options().reply_targets )
+<span class="lineNum">      18 </span>            :   {
+<span class="lineNum">      19 </span>            :     _targets.push_back(  this-&gt;get_adapter(rname) );
+<span class="lineNum">      20 </span>            :   }*/
+<a name="21"><span class="lineNum">      21 </span><span class="lineNoCov">          0 : }</span></a>
+<span class="lineNum">      22 </span>            : 
+<span class="lineNum">      23 </span><span class="lineNoCov">          0 : void repli::perform_incoming(incoming_holder holder, io_id_t io_id, outgoing_handler_t handler)</span>
+<span class="lineNum">      24 </span>            : {
+<span class="lineNum">      25 </span><span class="lineNoCov">          0 :   if ( !this-&gt;suspended() )</span>
+<span class="lineNum">      26 </span>            :   {
+<span class="lineNum">      27 </span><span class="lineNoCov">          0 :     read_lock&lt;mutex_type&gt; lk(_mutex);</span>
+<span class="lineNum">      28 </span><span class="lineNoCov">          0 :     for ( auto&amp; r : _targets )</span>
+<span class="lineNum">      29 </span><span class="lineNoCov">          0 :       r.perform_incoming( holder.clone(), io_id, nullptr);</span>
+<span class="lineNum">      30 </span>            :   }
+<span class="lineNum">      31 </span><span class="lineNoCov">          0 :   domain_proxy::perform_incoming( std::move(holder), io_id, handler );</span>
+<a name="32"><span class="lineNum">      32 </span><span class="lineNoCov">          0 : }</span></a>
+<span class="lineNum">      33 </span>            : 
+<span class="lineNum">      34 </span><span class="lineNoCov">          0 : void repli::perform_outgoing(outgoing_holder holder, io_id_t io_id)</span>
+<span class="lineNum">      35 </span>            : {
+<span class="lineNum">      36 </span><span class="lineNoCov">          0 :   if ( !this-&gt;suspended() &amp;&amp; holder.is_notify() )</span>
+<span class="lineNum">      37 </span>            :   {
+<span class="lineNum">      38 </span><span class="lineNoCov">          0 :     read_lock&lt;mutex_type&gt; lk(_mutex);</span>
+<span class="lineNum">      39 </span><span class="lineNoCov">          0 :     for ( auto&amp; r : _targets )</span>
+<span class="lineNum">      40 </span><span class="lineNoCov">          0 :       r.perform_outgoing( holder.clone() , io_id);</span>
+<span class="lineNum">      41 </span>            :   }
+<span class="lineNum">      42 </span><span class="lineNoCov">          0 :   domain_proxy::perform_outgoing( std::move(holder), io_id);</span>
+<span class="lineNum">      43 </span><span class="lineNoCov">          0 : }</span>
+<a name="44"><span class="lineNum">      44 </span>            : </a>
+<span class="lineNum">      45 </span>            : 
+<span class="lineNum">      46 </span><span class="lineCov">          3 : }}</span>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.10</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

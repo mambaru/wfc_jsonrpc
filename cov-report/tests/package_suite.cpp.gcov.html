@@ -1,0 +1,118 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - wfc_jsonrpc-coverage.info - tests/package_suite.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">tests</a> - package_suite.cpp<span style="font-size: 80%;"> (source / <a href="package_suite.cpp.func.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">wfc_jsonrpc-coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">16</td>
+            <td class="headerCovTableEntry">16</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-09-12</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">13</td>
+            <td class="headerCovTableEntry">13</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : #include &lt;fas/testing.hpp&gt;</a>
+<span class="lineNum">       2 </span>            : #include &lt;jsonrpc_package.hpp&gt;
+<span class="lineNum">       3 </span>            : #include &lt;wfc/module/imodule.hpp&gt;
+<span class="lineNum">       4 </span>            : #include &lt;wfc/core/wfcglobal.hpp&gt;
+<span class="lineNum">       5 </span>            : #include &lt;wfc/asio.hpp&gt;
+<span class="lineNum">       6 </span>            : #include &lt;memory&gt;
+<span class="lineNum">       7 </span>            : 
+<span class="lineNum">       8 </span>            : namespace {
+<span class="lineNum">       9 </span>            : 
+<span class="lineNum">      10 </span>            : struct _package_;
+<span class="lineNum">      11 </span>            : struct _global_;
+<a name="12"><span class="lineNum">      12 </span>            : struct _io_service_;</a>
+<span class="lineNum">      13 </span>            : 
+<span class="lineNum">      14 </span><span class="lineCov">          3 : UNIT(init, &quot;&quot;)</span>
+<span class="lineNum">      15 </span>            : {
+<span class="lineNum">      16 </span>            :   using namespace fas::testing;
+<span class="lineNum">      17 </span><span class="lineCov">          1 :   auto pkg = std::make_shared&lt;wfc::jsonrpc_package&gt;();</span>
+<span class="lineNum">      18 </span><span class="lineCov">          2 :   auto global = std::make_shared&lt;wfc::wfcglobal&gt;( GET_REF(_io_service_) );</span>
+<span class="lineNum">      19 </span><span class="lineCov">          1 :   GET_REF(_package_) = pkg;</span>
+<span class="lineNum">      20 </span><span class="lineCov">          1 :   GET_REF(_global_) = global;</span>
+<span class="lineNum">      21 </span><span class="lineCov">          1 :   pkg-&gt;create(global);</span>
+<span class="lineNum">      22 </span><span class="lineCov">          2 :   t &lt;&lt; nothing;</span>
+<a name="23"><span class="lineNum">      23 </span><span class="lineCov">          1 : }</span></a>
+<span class="lineNum">      24 </span>            : 
+<span class="lineNum">      25 </span><span class="lineCov">          3 : UNIT(backlog, &quot;&quot;)</span>
+<span class="lineNum">      26 </span>            : {
+<span class="lineNum">      27 </span>            :   using namespace fas::testing;
+<span class="lineNum">      28 </span><span class="lineCov">          1 :   std::shared_ptr&lt;wfc::wfcglobal&gt; g = GET_REF(_global_);</span>
+<span class="lineNum">      29 </span><span class="lineCov">          1 :   t &lt;&lt; is_true&lt;assert&gt;(g!=nullptr) &lt;&lt; FAS_FL;</span>
+<span class="lineNum">      30 </span><span class="lineCov">          2 :   auto m = g-&gt;registry.template get_object&lt;wfc::imodule&gt;(&quot;module&quot;,&quot;jsonrpc-backlog&quot;, false);</span>
+<span class="lineNum">      31 </span><span class="lineCov">          2 :   t &lt;&lt; is_true&lt;assert&gt;(m!=nullptr) &lt;&lt; FAS_FL;</span>
+<span class="lineNum">      32 </span><span class="lineCov">          1 : }</span>
+<span class="lineNum">      33 </span>            : 
+<a name="34"><span class="lineNum">      34 </span>            : }</a>
+<span class="lineNum">      35 </span>            :   
+<span class="lineNum">      36 </span><span class="lineCov">          1 : BEGIN_SUITE(package_suite, &quot;&quot;)</span>
+<span class="lineNum">      37 </span>            :   ADD_VALUE(_package_, std::shared_ptr&lt;wfc::jsonrpc_package&gt; )
+<span class="lineNum">      38 </span>            :   ADD_VALUE(_io_service_, wfc::asio::io_service )
+<span class="lineNum">      39 </span>            :   ADD_VALUE(_global_, std::shared_ptr&lt;wfc::wfcglobal&gt;)
+<a name="40"><span class="lineNum">      40 </span>            :   ADD_UNIT( init )</a>
+<span class="lineNum">      41 </span>            :   ADD_UNIT( backlog )
+<span class="lineNum">      42 </span><span class="lineCov">          7 : END_SUITE(package_suite)</span>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.10</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>
