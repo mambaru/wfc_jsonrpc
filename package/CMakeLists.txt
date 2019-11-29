@@ -1,10 +1,8 @@
-include(BuildInfo)
-
 SET(
   wfc_jsonrpc_source_list
 
   jsonrpc_package.cpp
-  
+
   broker/broker_module.cpp
   broker/broker/broker_multiton.cpp
   broker/broker/broker.cpp
@@ -20,7 +18,7 @@ SET(
   batch/batch_module.cpp
   batch/batch/batch_multiton.cpp
   batch/batch/batch.cpp
-  
+
   hub/hub_module.cpp
   hub/hub/hub_multiton.cpp
   hub/hub/hub.cpp
@@ -40,12 +38,11 @@ SET(
 )
 endif()
 
-add_library(
-  wfc_jsonrpc
-  ${wfc_jsonrpc_source_list}
-)
+add_library(wfc_jsonrpc ${wfc_jsonrpc_source_list})
+wci_targets(wfc_jsonrpc)
 
-target_link_libraries(wfc_jsonrpc matchmaker ${WFC_LIBRARIES})
+target_include_directories(wfc_jsonrpc PUBLIC ${wfc_jsonrpc_SOURCE_DIR})
+target_link_libraries(wfc_jsonrpc PUBLIC wfc matchmaker)
 
 build_info(wfc_jsonrpc jsonrpc)
 

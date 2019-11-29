@@ -7,11 +7,12 @@
 #include <string>
 #include <memory>
 
-namespace wfc{ namespace jsonrpc{ 
+namespace wfc{ namespace jsonrpc{
 
 class repli
   : public ::wfc::jsonrpc::domain_proxy< repli_config, ::wfc::nostat>
 {
+  typedef ::wfc::jsonrpc::domain_proxy< repli_config, ::wfc::nostat> super;
 public:
   virtual void restart() override;
 

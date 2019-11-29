@@ -1,5 +1,6 @@
-[![pipeline status](http://github.lan/cpp/wfc_jsonrpc/badges/wip-devel/pipeline.svg)](http://github.lan/cpp/wfc_jsonrpc/commits/wip-devel)
-[![coverage report](http://github.lan/cpp/wfc_jsonrpc/badges/wip-devel/coverage.svg)](http://github.lan/cpp/wfc_jsonrpc/commits/wip-devel)
+[![Build Status](https://github.com/mambaru/wfc_jsonrpc/workflows/C++%20CI/badge.svg?branch=master)](https://github.com/mambaru/wfc_jsonrpc/tree/master)
+[![Build Status](https://github.com/mambaru/wfc_jsonrpc/workflows/C++%20CI/badge.svg?branch=mambaru)](https://github.com/mambaru/wfc_jsonrpc/tree/mambaru)
+[![Coverage Report](http://github.lan/cpp/wfc_jsonrpc/badges/pre-release/coverage.svg)](http://github.lan/cpp/wfc_jsonrpc/commits/pre-release)
 
 
 * Репозитарий на [github.com](https://github.com/mambaru/wfc_jsonrpc).

@@ -10,19 +10,20 @@ namespace wfc{ namespace jsonrpc{
 #define BACKLOG(NAME, X) WFC_LOG_MESSAGE(NAME, X)
 namespace
 {
-  
+
   class backlog_proxy: public ibacklog
   {
   public:
-    explicit backlog_proxy(backlog* bl): _backlog(bl)
+    explicit backlog_proxy(backlog* bl) noexcept
+      : _backlog(bl)
     {
     }
-    
+
     virtual void rotate() override
     {
       _backlog->rotate();
     }
-    
+
     virtual bool lock() override
     {
       return _backlog->lock();
@@ -32,7 +33,7 @@ namespace
     {
       return _backlog->unlock();
     }
-    
+
     virtual size_t restore() override
     {
       return _backlog->restore();
@@ -43,7 +44,7 @@ namespace
 
 }
 
-void backlog::configure() 
+void backlog::configure()
 {
   domain_proxy::configure();
   _log = this->options().log;
@@ -55,14 +56,14 @@ void backlog::initialize()
   domain_proxy::initialize();
   _filelog.open(this->options().path, std::ofstream::out | std::ofstream::app);
 }
-  
-void backlog::perform_incoming(incoming_holder holder, io_id_t io_id, outgoing_handler_t handler) 
+
+void backlog::perform_incoming(incoming_holder holder, io_id_t io_id, outgoing_handler_t handler)
 {
   if ( holder.is_request() || holder.is_notify() )
     this->write_incoming_( holder);
   domain_proxy::perform_incoming( std::move(holder), io_id, handler);
 }
-  
+
 void backlog::perform_outgoing(outgoing_holder holder, io_id_t io_id)
 {
   if ( holder.is_request() || holder.is_notify() )
@@ -72,7 +73,7 @@ void backlog::perform_outgoing(outgoing_holder holder, io_id_t io_id)
     iholder.parse(nullptr);
     this->write_incoming_( iholder );
   }
-  
+
   domain_proxy::perform_outgoing( std::move(holder), io_id);
 }
 
@@ -82,9 +83,9 @@ void backlog::write_incoming_(const incoming_holder& holder)
   {
     std::string jsonmsg = holder.str();
     std::lock_guard<mutex_type> lk(_mutex);
-    
+
     if ( !_log.empty() )  { BACKLOG(_log,jsonmsg) }
-    
+
     if ( _lock_flag )
       _ss << jsonmsg << std::endl;
     else
@@ -97,26 +98,26 @@ size_t backlog::apply_backlog_()
   auto opt = this->options();
   if ( !boost::filesystem::exists(opt.path) )
     return 0;
-  
+
   size_t ready_count = 0;
   std::ifstream filelog(opt.path);
-  
-  
+
+
   target_adapter next = this->get_adapter(opt.restore_target, true);
-  if ( !next ) 
+  if ( !next )
   {
     COMMON_LOG_WARNING("JSON-RPC backlog '" << this->name() << "' is using main target. "
       << "You may set another target with 'restore_target' property " )
   }
-    
+
   while ( filelog )
   {
     std::string json;
     while ( std::getline(filelog, json) )
     {
-      if ( this->system_is_stopped() )
+      if ( this->global_stop_flag() )
         return ready_count;
-      
+
       incoming_holder holder( json );
       json::json_error er;
       holder.parse(&er);
@@ -132,7 +133,7 @@ size_t backlog::apply_backlog_()
       {
         COMMON_LOG_ERROR("Restore jsonrpc::backlog JSON error: " << json::strerror::message_trace(er, json.begin(), json.end() )  )
       }
-        
+
       if ( opt.restore_trace!=0 && ((ready_count%opt.restore_trace)==0) )
       {
         COMMON_LOG_PROGRESS("JSON-RPC backlog restored " << ready_count << " records. " )
