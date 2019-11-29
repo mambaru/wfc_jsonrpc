@@ -6,9 +6,9 @@
 #include "matcher/builder.hpp"
 #include "matcher/imatcher.hpp"
 
-namespace wfc{ namespace jsonrpc{ 
+namespace wfc{ namespace jsonrpc{
 
-bool matchmaker::reconfigure(int mode, const std::string& jsonconfig, json::json_error& err)
+bool matchmaker::reconfigure(int mode, const std::string& jsonconfig, wjson::json_error& err)
 {
   auto bldr = std::make_shared<builder>(mode);
   const char* beg = jsonconfig.c_str();
@@ -18,14 +18,14 @@ bool matchmaker::reconfigure(int mode, const std::string& jsonconfig, json::json
     return false;
   return _matcher->configure(beg, end, err);
 }
-  
-bool matchmaker::match(const std::string& json, json::json_error& err)
+
+bool matchmaker::match(const std::string& json, wjson::json_error& err)
 {
   const char* beg = json.c_str();
   return this->match( beg, beg + json.size(), err);
 }
 
-bool matchmaker::match(const char* beg, const char* end, json::json_error& err)
+bool matchmaker::match(const char* beg, const char* end, wjson::json_error& err)
 {
   return _matcher->match(beg, end, err);
 }

@@ -115,7 +115,7 @@ size_t backlog::apply_backlog_()
     std::string json;
     while ( std::getline(filelog, json) )
     {
-      if ( this->system_is_stopped() )
+      if ( this->global_stop_flag() )
         return ready_count;
 
       incoming_holder holder( json );

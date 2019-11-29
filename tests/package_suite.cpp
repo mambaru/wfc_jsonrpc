@@ -1,5 +1,5 @@
 #include <fas/testing.hpp>
-#include <jsonrpc_package.hpp>
+#include <package/jsonrpc_package.hpp>
 #include <wfc/module/imodule.hpp>
 #include <wfc/core/wfcglobal.hpp>
 #include <wfc/asio.hpp>
@@ -31,6 +31,14 @@ UNIT(backlog, "")
   t << is_true<assert>(m!=nullptr) << FAS_FL;
 }
 
+UNIT(deinit, "")
+{
+  using namespace fas::testing;
+  auto global = GET_REF(_global_);
+  global->clear();
+  t << nothing;
+}
+
 }
   
 BEGIN_SUITE(package_suite, "")
@@ -39,4 +47,5 @@ BEGIN_SUITE(package_suite, "")
   ADD_VALUE(_global_, std::shared_ptr<wfc::wfcglobal>)
   ADD_UNIT( init )
   ADD_UNIT( backlog )
+  ADD_UNIT( deinit )
 END_SUITE(package_suite)

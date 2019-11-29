@@ -1,19 +1,19 @@
 #include "full_match.hpp"
 #include <cstring>
 
-namespace wfc{ namespace jsonrpc{ 
+namespace wfc{ namespace jsonrpc{
 
-bool full_match::configure(const char* beg, const char* end, json::json_error& err) 
+bool full_match::configure(const char* beg, const char* end, wjson::json_error& err)
 {
-  const char* send = json::parser::parse_string(beg, end, &err);
+  const char* send = wjson::parser::parse_string(beg, end, &err);
   if (err) return false;
-  _sjson = std::string(beg, send); 
+  _sjson = std::string(beg, send);
   return true;
 }
-  
-bool full_match::match(const char* beg, const char* end, json::json_error& err)
+
+bool full_match::match(const char* beg, const char* end, wjson::json_error& err)
 {
-  const char* send = json::parser::parse_value(beg, end, &err);
+  const char* send = wjson::parser::parse_value(beg, end, &err);
   if (err) return false;
   if ( static_cast<std::ptrdiff_t>(_sjson.size()) != std::distance(beg, send) )
     return false;

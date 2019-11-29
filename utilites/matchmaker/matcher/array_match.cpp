@@ -9,11 +9,11 @@ array_match::array_match( const std::shared_ptr<ibuilder>& builder )
 {
 }
 
-bool array_match::configure(const char* beg, const char* end, json::json_error& err)
+bool array_match::configure(const char* beg, const char* end, wjson::json_error& err)
 {
   typedef std::pair<const char*, const char*> field_pair_t;
   typedef std::vector< field_pair_t > pair_list_t;
-  typedef json::vector_of< json::iterator_pair<field_pair_t> > pair_list_json;
+  typedef wjson::vector_of< wjson::iterator_pair<field_pair_t> > pair_list_json;
   pair_list_t pair_list;
   pair_list_json::serializer()(pair_list, beg, end, &err);
   if (err)
@@ -32,17 +32,17 @@ bool array_match::configure(const char* beg, const char* end, json::json_error& 
   return true;
 }
 
-bool array_match::match(const char* beg, const char* end, json::json_error& err)
+bool array_match::match(const char* beg, const char* end, wjson::json_error& err)
 {
   if ( _matchers.empty() )
     return true;
 
-  if (!json::parser::is_array(beg,end))
+  if (!wjson::parser::is_array(beg,end))
     return false;
 
   typedef std::pair<const char*, const char*> field_pair_t;
   typedef std::vector< field_pair_t > pair_list_t;
-  typedef json::vector_of< json::iterator_pair<field_pair_t> > pair_list_json;
+  typedef wjson::vector_of< wjson::iterator_pair<field_pair_t> > pair_list_json;
   pair_list_t pair_list;
   pair_list_json::serializer()(pair_list, beg, end, &err);
   if (err) return false;
