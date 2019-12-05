@@ -1,6 +1,10 @@
+
+[![tag](https://img.shields.io/github/v/tag/mambaru/wfc_jsonrpc.svg?sort=semver)](https://github.com/mambaru/wfc_jsonrpc/tree/master)
 [![Build Status](https://github.com/mambaru/wfc_jsonrpc/workflows/C++%20CI/badge.svg?branch=master)](https://github.com/mambaru/wfc_jsonrpc/tree/master)
 [![Build Status](https://github.com/mambaru/wfc_jsonrpc/workflows/C++%20CI/badge.svg?branch=mambaru)](https://github.com/mambaru/wfc_jsonrpc/tree/mambaru)
-[![Coverage Report](http://github.lan/cpp/wfc_jsonrpc/badges/pre-release/coverage.svg)](http://github.lan/cpp/wfc_jsonrpc/commits/pre-release)
+[![Build Status](https://travis-ci.com/mambaru/wfc_jsonrpc.svg?branch=master)](https://travis-ci.com/mambaru/wfc_jsonrpc)
+[![Build Status](https://travis-ci.com/mambaru/wfc_jsonrpc.svg?branch=mambaru)](https://travis-ci.com/mambaru/wfc_jsonrpc)
+[![codecov](https://codecov.io/gh/mambaru/wfc_jsonrpc/branch/master/graph/badge.svg)](https://codecov.io/gh/mambaru/wfc_jsonrpc)
 
 
 * Репозитарий на [github.com](https://github.com/mambaru/wfc_jsonrpc).
