@@ -28,7 +28,7 @@ SET(
   backlog/backlog/backlog.cpp
 )
 
-if ( WFC_ENABLE_STAT OR STANDALONE )
+if ( WFC_ENABLE_STAT)
 SET(
   wfc_jsonrpc_source_list
   ${wfc_jsonrpc_source_list}
@@ -42,7 +42,7 @@ add_library(wfc_jsonrpc ${wfc_jsonrpc_source_list})
 wci_targets(wfc_jsonrpc)
 
 target_include_directories(wfc_jsonrpc PUBLIC ${wfc_jsonrpc_SOURCE_DIR})
-target_link_libraries(wfc_jsonrpc PUBLIC wfc matchmaker)
+target_link_libraries(wfc_jsonrpc PUBLIC matchmaker wfc )
 
 build_info(wfc_jsonrpc jsonrpc)
 
