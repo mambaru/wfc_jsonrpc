@@ -1,7 +1,6 @@
 #include "batch.hpp"
 #include <wfc/logger.hpp>
 #include <wfc/asio.hpp>
-#include <wfc/jsonrpc/target.hpp>
 
 namespace wfc{ namespace jsonrpc{ 
 

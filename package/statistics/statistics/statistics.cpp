@@ -1,7 +1,6 @@
 #include "statistics.hpp"
 #include <wfc/logger.hpp>
 #include <wfc/asio.hpp>
-#include <wfc/jsonrpc/target.hpp>
 #include <wfc/jsonrpc.hpp>
 
 namespace wfc{ namespace jsonrpc{ 

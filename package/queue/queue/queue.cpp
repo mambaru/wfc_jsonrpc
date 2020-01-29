@@ -83,6 +83,9 @@ std::function<void()> queue::make_track_fun_(io_id_t io_id, std::function<void()
 
 queue::outgoing_handler_t queue::make_outgoing_handler_(outgoing_handler_t handler)
 {
+  if ( handler == nullptr )
+    return nullptr; // Это уведомление 
+  
   if ( _callback_workflow == nullptr ) 
     return handler;
   
