@@ -27,6 +27,7 @@ private:
   typedef rwlock<std::mutex> mutex_type;
   target_list _targets;
   mutex_type _mutex;
+  bool _notifier = false;
 };
 
 }}
