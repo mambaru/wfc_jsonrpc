@@ -13,6 +13,8 @@ add_library(
 )
 wci_targets(matchmaker)
 
-target_link_libraries(matchmaker PRIVATE wjson)
+find_package(Boost COMPONENTS regex REQUIRED)
+
+target_link_libraries(matchmaker PRIVATE wjson Boost::regex)
 target_include_directories(matchmaker PUBLIC "${wfc_jsonrpc_SOURCE_DIR}/utilites")
 

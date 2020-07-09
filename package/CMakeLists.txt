@@ -42,6 +42,8 @@ add_library(wfc_jsonrpc ${wfc_jsonrpc_source_list})
 wci_targets(wfc_jsonrpc)
 
 target_include_directories(wfc_jsonrpc PUBLIC ${wfc_jsonrpc_SOURCE_DIR})
+target_compile_definitions(wfc_jsonrpc PRIVATE -DBOOST_ASIO_NO_DEPRECATED)
+
 target_link_libraries(wfc_jsonrpc PUBLIC matchmaker wfc )
 
 build_info(wfc_jsonrpc jsonrpc)

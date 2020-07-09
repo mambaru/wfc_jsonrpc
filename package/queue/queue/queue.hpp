@@ -9,13 +9,13 @@
 #include <memory>
 
 namespace wfc{ namespace jsonrpc{
-  
+
 class queue
   : public domain_proxy<queue_config, nostat>
   , public std::enable_shared_from_this<queue>
 {
   typedef domain_proxy<queue_config, nostat> super;
-  typedef std::shared_ptr< workflow > workflow_ptr;
+  typedef std::shared_ptr<wflow::workflow > workflow_ptr;
 public:
   queue();
 // domain
@@ -24,7 +24,7 @@ public:
 // ijsonrpc
   virtual void perform_incoming(incoming_holder, io_id_t, outgoing_handler_t handler) override;
   virtual void perform_outgoing(outgoing_holder, io_id_t) override;
-  
+
 private:
   std::function<void()> make_post_fun_(const std::shared_ptr<incoming_holder>& pholder, io_id_t io_id, outgoing_handler_t handler);
   std::function<void()> make_track_fun_(io_id_t io_id, std::function<void()> fun);
