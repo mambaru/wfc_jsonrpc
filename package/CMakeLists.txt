@@ -47,6 +47,6 @@ target_compile_definitions(wfc_jsonrpc PRIVATE -DBOOST_ASIO_NO_DEPRECATED)
 
 target_link_libraries(wfc_jsonrpc PUBLIC matchmaker wfc )
 
-build_info(wfc_jsonrpc jsonrpc)
+build_info(TARGET wfc_jsonrpc PREFIX jsonrpc)
 
 install(TARGETS wfc_jsonrpc DESTINATION ${CMAKE_INSTALL_PREFIX})
