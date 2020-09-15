@@ -3,8 +3,8 @@
 #include <wfc/asio.hpp>
 #include <wfc/jsonrpc.hpp>
 
-namespace wfc{ namespace jsonrpc{ 
-  
+namespace wfc{ namespace jsonrpc{
+
 void statistics::configure()
 {
   std::lock_guard<std::mutex> lk(_mutex);
@@ -21,7 +21,7 @@ void statistics::reconfigure()
   _ntf_meters.clear();
 }
 
-static void static_error_meter(const std::string& method, statistics::data_ptr d, 
+static void static_error_meter(const std::string& method, statistics::data_ptr d,
                                std::shared_ptr< wfc::statistics::statistics > stat)
 {
   wfc::json::json_error e;
@@ -41,7 +41,7 @@ static void static_error_meter(const std::string& method, statistics::data_ptr d
   }
 }
 
-void statistics::perform_incoming(incoming_holder holder, io_id_t io_id, outgoing_handler_t handler) 
+void statistics::perform_incoming(incoming_holder holder, io_id_t io_id, outgoing_handler_t handler)
 {
   if ( this->suspended() )
     return domain_proxy::perform_incoming( std::move(holder), io_id, handler );
@@ -62,7 +62,7 @@ void statistics::perform_incoming(incoming_holder holder, io_id_t io_id, outgoin
   if ( enable_write_size || enable_error_stat)
   {
     wstat = this->get_statistics();
-    domain_proxy::perform_incoming( std::move(holder), io_id, 
+    domain_proxy::perform_incoming( std::move(holder), io_id,
       [handler, meter, wstat, enable_write_size, enable_error_stat, method]( outgoing_holder outholder)
       {
         if ( auto stat = wstat.lock() )
@@ -76,15 +76,15 @@ void statistics::perform_incoming(incoming_holder holder, io_id_t io_id, outgoin
               static_error_meter( method, std::move(d), stat);
           }
         }
-        handler( std::move(outholder) );    
-      } 
+        handler( std::move(outholder) );
+      }
     );
   }
   else
   {
     domain_proxy::perform_incoming( std::move(holder), io_id, std::move(handler) );
   }
-    
+
 }
 
 void statistics::perform_outgoing(outgoing_holder holder, io_id_t io_id)
@@ -115,8 +115,8 @@ statistics::meter_ptr statistics::request_meter_(std::string meter_name, size_t 
     itr = _req_meters.insert( std::make_pair(meter_name, prototype) ).first;
   }
   return itr->second.create_shared(
-    static_cast<wrtstat::size_type>(1), 
-    static_cast<wrtstat::value_type>(size), 
+    static_cast<wrtstat::size_type>(1),
+    static_cast<wrtstat::value_type>(size),
     static_cast<wrtstat::value_type>(0)
   );
 }
@@ -140,8 +140,8 @@ statistics::meter_ptr statistics::notify_meter_(std::string meter_name, size_t s
     itr = _ntf_meters.insert( std::make_pair(meter_name, prototype) ).first;
   }
   return itr->second.create_shared(
-    static_cast<wrtstat::size_type>(1), 
-    static_cast<wrtstat::value_type>(size), 
+    static_cast<wrtstat::size_type>(1),
+    static_cast<wrtstat::value_type>(size),
     static_cast<wrtstat::value_type>(0)
   );
 
@@ -156,16 +156,16 @@ statistics::meter_ptr statistics::other_meter_(size_t size)
   std::lock_guard<std::mutex> lk(_mutex);
   if ( _other.size() == 0 )
   {
-    _other = stat->create_composite_meter( 
-      opt.other_time, 
-      opt.other_read_size, 
+    _other = stat->create_composite_meter(
+      opt.other_time,
+      opt.other_read_size,
       this->_enable_write_size ? opt.other_write_size : "",
       true
     );
   }
   return _other.create_shared(
-    static_cast<wrtstat::size_type>(1), 
-    static_cast<wrtstat::value_type>(size), 
+    static_cast<wrtstat::size_type>(1),
+    static_cast<wrtstat::value_type>(size),
     static_cast<wrtstat::value_type>(0)
   );
 }
