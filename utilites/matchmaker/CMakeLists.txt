@@ -11,10 +11,10 @@ add_library(
   matcher/true_match.cpp
   matcher/variant_match.cpp
 )
-wci_targets(matchmaker)
+wci_utils(matchmaker)
 
 find_package(Boost COMPONENTS regex REQUIRED)
 
 target_link_libraries(matchmaker PRIVATE wjson Boost::regex)
 target_include_directories(matchmaker PUBLIC "${wfc_jsonrpc_SOURCE_DIR}/utilites")
-
+set_target_properties(matchmaker PROPERTIES POSITION_INDEPENDENT_CODE ON)
