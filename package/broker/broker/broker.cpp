@@ -67,6 +67,12 @@ void broker::reconfigure()
   _reconf_flag = true;
 }
 
+void broker::start()
+{
+  this->restart();
+}
+
+
 void broker::restart()
 {
   target_list  targets;

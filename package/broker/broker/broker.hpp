@@ -8,13 +8,13 @@
 #include <string>
 #include <memory>
 
-namespace wfc{ namespace jsonrpc{ 
-  
+namespace wfc{ namespace jsonrpc{
+
 class broker
   : public ::wfc::jsonrpc::domain_proxy<broker_config, wfc::nostat>
 {
   typedef ::wfc::jsonrpc::domain_proxy<broker_config, wfc::nostat> super;
-  
+
 public:
   typedef super::domain_config domain_config;
   virtual domain_config generate(const std::string&) override;
@@ -22,6 +22,7 @@ public:
   virtual void configure() override;
   virtual void reconfigure() override;
   // domain_proxy
+  virtual void start() override;
   virtual void restart() override;
   virtual void reg_io(io_id_t io_id, std::weak_ptr<iinterface> itf) override;
   virtual void unreg_io(io_id_t io_id) override;
@@ -31,7 +32,7 @@ public:
   virtual void perform_outgoing(outgoing_holder, io_id_t) override;
 
 private:
-  
+
   struct rule_target
   {
     std::set<std::string> methods;
@@ -39,9 +40,9 @@ private:
     std::shared_ptr<matchmaker> matcher;
     std::string rule_log;
   };
- 
+
   typedef std::list<target_adapter> target_list;
-  
+
   typedef std::set<std::string> reject_list;
   typedef rwlock<std::recursive_mutex> mutex_type;
   typedef std::vector<rule_target> rule_list;
@@ -49,7 +50,7 @@ private:
   target_list  _targets;
   reject_list  _reject;
   rule_list    _rules;
-  
+
   std::string _target_log;
   std::string _reject_log;
 

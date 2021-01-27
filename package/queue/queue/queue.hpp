@@ -19,6 +19,7 @@ class queue
 public:
   queue();
 // domain
+  virtual void start() override;
   virtual void restart() override;
   virtual void stop() override;
 // ijsonrpc

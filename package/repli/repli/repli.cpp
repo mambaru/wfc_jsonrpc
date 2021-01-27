@@ -4,6 +4,11 @@
 
 namespace wfc{ namespace jsonrpc{
 
+void repli::start()
+{
+  this->restart();
+}
+
 void repli::restart()
 {
   std::lock_guard<mutex_type> lk(_mutex);
