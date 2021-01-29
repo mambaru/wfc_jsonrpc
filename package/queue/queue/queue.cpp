@@ -9,7 +9,7 @@ queue::queue()
 
 void queue::start()
 {
-  this->start();
+  this->restart();
 }
 
 void queue::restart()
