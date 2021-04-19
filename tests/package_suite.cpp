@@ -40,10 +40,10 @@ UNIT(deinit, "")
 }
 
 }
-  
+
 BEGIN_SUITE(package_suite, "")
   ADD_VALUE(_package_, std::shared_ptr<wfc::jsonrpc_package> )
-  ADD_VALUE(_io_service_, wfc::asio::io_service )
+  ADD_VALUE(_io_service_, boost::asio::io_context )
   ADD_VALUE(_global_, std::shared_ptr<wfc::wfcglobal>)
   ADD_UNIT( init )
   ADD_UNIT( backlog )

@@ -14,6 +14,7 @@ class repli
 {
   typedef ::wfc::jsonrpc::domain_proxy< repli_config, ::wfc::nostat> super;
 public:
+  virtual void start() override;
   virtual void restart() override;
 
   // ijsonrpc

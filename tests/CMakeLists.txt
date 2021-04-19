@@ -1,3 +1,4 @@
+add_definitions(-DBOOST_ASIO_NO_DEPRECATED)
 add_executable(
   package_test
     matchmaker_suite.cpp

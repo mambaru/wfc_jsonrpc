@@ -12,7 +12,7 @@
 #include <wfc/module/module_list.hpp>
 
 namespace wfc{
-  
+
 class jsonrpc_package::impl: public ::wfc::module_list<
   jsonrpc_build_info,
   jsonrpc::broker_module,
@@ -30,8 +30,8 @@ class jsonrpc_package::impl: public ::wfc::module_list<
   {
     return "Additional jsonrpc modules";
   }
-  
-  virtual int order() const override
+
+  virtual int show_order() const override
   {
     return 2000;
   }
