@@ -1,9 +1,9 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
-<meta name="generator" content="Doxygen 1.8.13"/>
+<meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>wfc_jsonrpc: Титульная страница</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
@@ -27,61 +27,159 @@
 </table>
 </div>
 <!-- end header part -->
-<!-- Создано системой Doxygen 1.8.13 -->
+<!-- Создано системой Doxygen 1.8.17 -->
 <script type="text/javascript" src="menudata.js"></script>
 <script type="text/javascript" src="menu.js"></script>
 <script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
 $(function() {
   initMenu('',false,false,'search.php','Поиск');
 });
-</script>
+/* @license-end */</script>
 <div id="main-nav"></div>
 </div><!-- top -->
-<div class="header">
+<div class="PageDoc"><div class="header">
   <div class="headertitle">
 <div class="title">wfc_jsonrpc Документация</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a href="https://github.com/mambaru/wfc_jsonrpc/tree/master"></a> <a href="https://github.com/mambaru/wfc_jsonrpc/tree/master"></a> <a href="https://github.com/mambaru/wfc_jsonrpc/tree/mambaru"></a> <a href="https://travis-ci.com/mambaru/wfc_jsonrpc"></a> <a href="https://travis-ci.com/mambaru/wfc_jsonrpc"></a> <a href="https://codecov.io/gh/mambaru/wfc_jsonrpc"></a></p>
+<div class="textblock"><p><a href="https://github.com/mambaru/wfc_jsonrpc/tree/master"><object type="image/svg+xml" data="https://img.shields.io/github/v/tag/mambaru/wfc_jsonrpc.svg?sort=semver" style="pointer-events: none;">tag</object></a> <a href="https://github.com/mambaru/wfc_jsonrpc/tree/master"><object type="image/svg+xml" data="https://github.com/mambaru/wfc_jsonrpc/workflows/C++%20CI/badge.svg?branch=master" style="pointer-events: none;">Build Status</object></a> <a href="https://github.com/mambaru/wfc_jsonrpc/tree/mambaru"><object type="image/svg+xml" data="https://github.com/mambaru/wfc_jsonrpc/workflows/C++%20CI/badge.svg?branch=mambaru" style="pointer-events: none;">Build Status</object></a> <a href="https://travis-ci.com/mambaru/wfc_jsonrpc"><object type="image/svg+xml" data="https://travis-ci.com/mambaru/wfc_jsonrpc.svg?branch=master" style="pointer-events: none;">Build Status</object></a> <a href="https://travis-ci.com/mambaru/wfc_jsonrpc"><object type="image/svg+xml" data="https://travis-ci.com/mambaru/wfc_jsonrpc.svg?branch=mambaru" style="pointer-events: none;">Build Status</object></a> <a href="https://codecov.io/gh/mambaru/wfc_jsonrpc"><object type="image/svg+xml" data="https://codecov.io/gh/mambaru/wfc_jsonrpc/branch/master/graph/badge.svg" style="pointer-events: none;">codecov</object></a></p>
 <ul>
 <li>Репозитарий на <a href="https://github.com/mambaru/wfc_jsonrpc">github.com</a>.</li>
 <li>Документация <a href="https://mambaru.github.io/wfc_jsonrpc/index.html">doxygen</a>.</li>
 <li>Отчет <a href="https://mambaru.github.io/wfc_jsonrpc/cov-report/index.html">coverage</a></li>
 </ul>
-<h1>wfc_jsonrpc: Пает модулей для работы с JSON-RPC 2.0</h1>
+<h1><a class="anchor" id="autotoc_md0"></a>
+wfc_jsonrpc: Пает модулей для работы с JSON-RPC 2.0</h1>
 <p><a href="#JSONRPC-QUEUE">JSONRPC-QUEUE</a> - <a href="#JSONRPC-BROKER">JSONRPC-BROKER</a> <a href="#JSONRPC-REPLI">JSONRPC-REPLI</a> - <a href="#JSONRPC-HUB">JSONRPC-HUB</a> - <a href="#JSONRPC-BATCH">JSONRPC-BATCH</a> - <a href="#JSONRPC-BACKLOG">JSONRPC-BACKLOG</a> - <a href="#JSONRPC-STATISTICS">JSONRPC-STATISTICS</a> -</p>
 <p>Отправляет входящие запросы в очередь "workflow", а исходящие в "callback_workflow". Если <b>workflow</b> не заданны, то входящие отправляются напрямую в "target" без очереди. Если указан <b>tracking</b>==true то включается режим отслеживания входящих подключений, в котором сообщение из очереди выкидывается, если клиент отключился. Прочие ограничения на очередь (максимальный размер, управление управлению потоками) настраиваются в указанном <b>workflow</b>. Если цель не задана, то возвращает JSONRPC ошибку -32003 "Service Unavailable". Если не задан "workflow", то используется общий <b>workflow</b>. На высоких нагрузках всегда рекомендуется настроить отдельный workflow для очереди.</p>
 <p>{ "jsonrpc-queue": [ { "name": "jsonrpc-queue1", "enabled": true, /* В режиме suspend сообщения передаются target напрямую */ "suspend": false, /* Включить режим отслеживания входящих подключений */ "tracking": false, /* Для входящих сообщений */ "workflow": "", /* Цель */ "target": "", /* Включить асинхронную обработку исходящих сообщений */ "callback_queue": false, /* Для исходящих сообщений */ "callback_workflow": "" } ] }</p>
-<div class="fragment"><div class="line">┌─────────────┐</div><div class="line">│ server-tcp  ├─┐</div><div class="line">└─────────────┘ │     ┌───────────────┐    ┌──────────┐   ┌────────┐</div><div class="line">                ├─────┤ jsonrpc-queue ├────┤ service  ├───┤ domain │</div><div class="line">┌─────────────┐ │     └───────────────┘    └──────────┘   └────────┘</div><div class="line">│ server-udp  ├─┘   </div><div class="line">└─────────────┘</div></div><!-- fragment --><p>{ "jsonrpc-queue": [ { "name": "jsonrpc-queue1", "enabled": true, "suspend": false, "tracking": false, "startup_priority": 0, "shutdown_priority": 0, "workflow": "", "target": "", "callback_queue": false, "callback_workflow": "" } ] }</p>
-<h2>JSONRPC-BROKER</h2>
+<div class="fragment"><div class="line">┌─────────────┐</div>
+<div class="line">│ server-tcp  ├─┐</div>
+<div class="line">└─────────────┘ │     ┌───────────────┐    ┌──────────┐   ┌────────┐</div>
+<div class="line">                ├─────┤ jsonrpc-queue ├────┤ service  ├───┤ domain │</div>
+<div class="line">┌─────────────┐ │     └───────────────┘    └──────────┘   └────────┘</div>
+<div class="line">│ server-udp  ├─┘   </div>
+<div class="line">└─────────────┘</div>
+</div><!-- fragment --><p>{ "jsonrpc-queue": [ { "name": "jsonrpc-queue1", "enabled": true, "suspend": false, "tracking": false, "startup_priority": 0, "shutdown_priority": 0, "workflow": "", "target": "", "callback_queue": false, "callback_workflow": "" } ] }</p>
+<h2><a class="anchor" id="autotoc_md1"></a>
+JSONRPC-BROKER</h2>
 <p>Позволяет управлять входящим потоком сообщений jsonrpc-сообщений распределяя их по целям в соответствии с заданными правилами. Например можно вызов конкретного метода отправить в отдельную очередь или же запретить его. Правило можно задать для нескольких методов с учетом входящих параметров запроса в том числе и с использованием регулярных выражений. Работает только со входящим потоком (запросы и уведомления).</p>
-<div class="fragment"><div class="line">{</div><div class="line">  <span class="stringliteral">&quot;name&quot;</span>: <span class="stringliteral">&quot;jsonrpc-broker1&quot;</span>,</div><div class="line">  <span class="stringliteral">&quot;enabled&quot;</span>: <span class="keyword">true</span>,</div><div class="line"></div><div class="line">  <span class="comment">/* В режиме suspend отправляет все запросы без проверки в &#39;target&#39; */</span></div><div class="line">  <span class="stringliteral">&quot;suspend&quot;</span>: <span class="keyword">false</span>,</div><div class="line"></div><div class="line">  <span class="comment">/* Цель по умолчанию (имя объекта), если сообщение не подошло */</span></div><div class="line">  <span class="stringliteral">&quot;target&quot;</span>: <span class="stringliteral">&quot;&lt;&lt;target-name&gt;&gt;&quot;</span>,</div><div class="line"></div><div class="line">  <span class="comment">/* Список запрещенных методов (клиент получает &quot;Procedure not found&quot;) */</span></div><div class="line">  <span class="stringliteral">&quot;reject&quot;</span>: [<span class="stringliteral">&quot;&lt;&lt;method-name-1&gt;&gt;&quot;</span>, <span class="stringliteral">&quot;&lt;&lt;method-name-2&gt;&gt;&quot;</span>],</div><div class="line"></div><div class="line">  </div><div class="line">  std::string target_log;</div><div class="line">  </div><div class="line">  std::string reject_log;</div><div class="line"></div><div class="line">  <span class="comment">/* Список правил */</span></div><div class="line">  <span class="stringliteral">&quot;rules&quot;</span>: [</div><div class="line">    {<span class="comment">/*правило1*/</span>},</div><div class="line">    {<span class="comment">/*правило2*/</span>}</div><div class="line">  ]</div><div class="line">}</div></div><!-- fragment --><ul>
+<div class="fragment"><div class="line">{</div>
+<div class="line">  <span class="stringliteral">&quot;name&quot;</span>: <span class="stringliteral">&quot;jsonrpc-broker1&quot;</span>,</div>
+<div class="line">  <span class="stringliteral">&quot;enabled&quot;</span>: <span class="keyword">true</span>,</div>
+<div class="line"> </div>
+<div class="line">  <span class="comment">/* В режиме suspend отправляет все запросы без проверки в &#39;target&#39; */</span></div>
+<div class="line">  <span class="stringliteral">&quot;suspend&quot;</span>: <span class="keyword">false</span>,</div>
+<div class="line"> </div>
+<div class="line">  <span class="comment">/* Цель по умолчанию (имя объекта), если сообщение не подошло */</span></div>
+<div class="line">  <span class="stringliteral">&quot;target&quot;</span>: <span class="stringliteral">&quot;&lt;&lt;target-name&gt;&gt;&quot;</span>,</div>
+<div class="line"> </div>
+<div class="line">  <span class="comment">/* Список запрещенных методов (клиент получает &quot;Procedure not found&quot;) */</span></div>
+<div class="line">  <span class="stringliteral">&quot;reject&quot;</span>: [<span class="stringliteral">&quot;&lt;&lt;method-name-1&gt;&gt;&quot;</span>, <span class="stringliteral">&quot;&lt;&lt;method-name-2&gt;&gt;&quot;</span>],</div>
+<div class="line"> </div>
+<div class="line">  </div>
+<div class="line">  std::string target_log;</div>
+<div class="line">  </div>
+<div class="line">  std::string reject_log;</div>
+<div class="line"> </div>
+<div class="line">  <span class="comment">/* Список правил */</span></div>
+<div class="line">  <span class="stringliteral">&quot;rules&quot;</span>: [</div>
+<div class="line">    {<span class="comment">/*правило1*/</span>},</div>
+<div class="line">    {<span class="comment">/*правило2*/</span>}</div>
+<div class="line">  ]</div>
+<div class="line">}</div>
+</div><!-- fragment --><ul>
 <li><em>target</em> - имя объекта, которому будет передан запрос, который не подошел ни к одному из правил. Может быть пустым, в этом случае в ответ отсылается стандартная для WFC JSONRPC-ошибка, что сервис не доступен</li>
 <li><em>reject</em> - все вызовы методов из этого списка блокируются, правила не проверяются, клиент получает JSONRPC-ошибку, что процедура не найдена.</li>
 <li><em>rules</em> - список правил (см. следующий раздел)</li>
 </ul>
-<h3>Правила для методов</h3>
-<p>Правила применяются последовательно, в тоже последовательности, как и задано в конфигурации, до тех пор пока не выполнится </p><div class="fragment"><div class="line"><span class="comment">/*правило*/</span></div><div class="line">{</div><div class="line">  <span class="comment">/* Список методов */</span></div><div class="line">  <span class="stringliteral">&quot;methods&quot;</span>: [<span class="stringliteral">&quot;&lt;&lt;method-name-1&gt;&gt;&quot;</span>, <span class="stringliteral">&quot;&lt;&lt;method-name-2&gt;&gt;&quot;</span>],</div><div class="line">  <span class="comment">/* Цель для этих методов */</span></div><div class="line">  <span class="stringliteral">&quot;target&quot;</span>: <span class="stringliteral">&quot;&lt;&lt;target-name&gt;&gt;&quot;</span></div><div class="line">}</div></div><!-- fragment --><h3>Правила для параметров</h3>
-<div class="fragment"><div class="line"> {</div><div class="line">  <span class="comment">/* Список методов */</span></div><div class="line">  <span class="stringliteral">&quot;methods&quot;</span>: [<span class="stringliteral">&quot;&lt;&lt;method-name-1&gt;&gt;&quot;</span>, <span class="stringliteral">&quot;&lt;&lt;method-name-2&gt;&gt;&quot;</span>],</div><div class="line">  <span class="comment">/* Цель для этих методов */</span></div><div class="line">  <span class="stringliteral">&quot;target&quot;</span>: <span class="stringliteral">&quot;&lt;&lt;target-name&gt;&gt;&quot;</span></div><div class="line">  <span class="comment">/* Режим сравнения для имен полей и их значений */</span></div><div class="line">  <span class="stringliteral">&quot;params_mode&quot;</span>: <span class="stringliteral">&quot;FullMatchName|PrefixMatchValue&quot;</span>,</div><div class="line">  <span class="comment">/* Список полей запроса */</span></div><div class="line">  <span class="stringliteral">&quot;params&quot;</span>: {</div><div class="line">    <span class="stringliteral">&quot;arg1&quot;</span>: <span class="stringliteral">&quot;value1&quot;</span>,</div><div class="line">    <span class="stringliteral">&quot;arg2&quot;</span>: <span class="stringliteral">&quot;value2&quot;</span></div><div class="line">  }</div><div class="line">}</div></div><!-- fragment --><p>┌─────────────┐ ┌───────────────┐ │ server-tcp ├─┐ ┌─┤ jsonrpc-queue ├─┐ └─────────────┘ │ ┌────────────────┐ │ └───────────────┘ │ ┌─────────┐ ┌────────┐ ├─┤ jsonrpc-broker ├─┤ ├──┤ service ├───┤ domain │ ┌─────────────┐ │ └────────────────┘ │ ┌───────────────┐ │ └─────────┘ └────────┘ │ server-udp ├─┘ └─┤ jsonrpc-queue ├─┘ └─────────────┘ └───────────────┘</p>
-<h2>JSONRPC-REPLI</h2>
+<h3><a class="anchor" id="autotoc_md2"></a>
+Правила для методов</h3>
+<p>Правила применяются последовательно, в тоже последовательности, как и задано в конфигурации, до тех пор пока не выполнится </p><div class="fragment"><div class="line"><span class="comment">/*правило*/</span></div>
+<div class="line">{</div>
+<div class="line">  <span class="comment">/* Список методов */</span></div>
+<div class="line">  <span class="stringliteral">&quot;methods&quot;</span>: [<span class="stringliteral">&quot;&lt;&lt;method-name-1&gt;&gt;&quot;</span>, <span class="stringliteral">&quot;&lt;&lt;method-name-2&gt;&gt;&quot;</span>],</div>
+<div class="line">  <span class="comment">/* Цель для этих методов */</span></div>
+<div class="line">  <span class="stringliteral">&quot;target&quot;</span>: <span class="stringliteral">&quot;&lt;&lt;target-name&gt;&gt;&quot;</span></div>
+<div class="line">}</div>
+</div><!-- fragment --><h3><a class="anchor" id="autotoc_md3"></a>
+Правила для параметров</h3>
+<div class="fragment"><div class="line"> {</div>
+<div class="line">  <span class="comment">/* Список методов */</span></div>
+<div class="line">  <span class="stringliteral">&quot;methods&quot;</span>: [<span class="stringliteral">&quot;&lt;&lt;method-name-1&gt;&gt;&quot;</span>, <span class="stringliteral">&quot;&lt;&lt;method-name-2&gt;&gt;&quot;</span>],</div>
+<div class="line">  <span class="comment">/* Цель для этих методов */</span></div>
+<div class="line">  <span class="stringliteral">&quot;target&quot;</span>: <span class="stringliteral">&quot;&lt;&lt;target-name&gt;&gt;&quot;</span></div>
+<div class="line">  <span class="comment">/* Режим сравнения для имен полей и их значений */</span></div>
+<div class="line">  <span class="stringliteral">&quot;params_mode&quot;</span>: <span class="stringliteral">&quot;FullMatchName|PrefixMatchValue&quot;</span>,</div>
+<div class="line">  <span class="comment">/* Список полей запроса */</span></div>
+<div class="line">  <span class="stringliteral">&quot;params&quot;</span>: {</div>
+<div class="line">    <span class="stringliteral">&quot;arg1&quot;</span>: <span class="stringliteral">&quot;value1&quot;</span>,</div>
+<div class="line">    <span class="stringliteral">&quot;arg2&quot;</span>: <span class="stringliteral">&quot;value2&quot;</span></div>
+<div class="line">  }</div>
+<div class="line">}</div>
+</div><!-- fragment --><p>┌─────────────┐ ┌───────────────┐ │ server-tcp ├─┐ ┌─┤ jsonrpc-queue ├─┐ └─────────────┘ │ ┌────────────────┐ │ └───────────────┘ │ ┌─────────┐ ┌────────┐ ├─┤ jsonrpc-broker ├─┤ ├──┤ service ├───┤ domain │ ┌─────────────┐ │ └────────────────┘ │ ┌───────────────┐ │ └─────────┘ └────────┘ │ server-udp ├─┘ └─┤ jsonrpc-queue ├─┘ └─────────────┘ └───────────────┘</p>
+<h2><a class="anchor" id="autotoc_md4"></a>
+JSONRPC-REPLI</h2>
 <p>Дублирует входящие запросы и уведомления по целям перечисленных в "reply_targets", при этом уведомления копируются как есть, а запросы преобразуются в уведомления.</p>
-<div class="fragment"><div class="line">{</div><div class="line">  &quot;jsonrpc-repli&quot;: [</div><div class="line">    {</div><div class="line">      &quot;name&quot;: &quot;jsonrpc-repli1&quot;,</div><div class="line">      &quot;enabled&quot;: true,</div><div class="line">      &quot;suspend&quot;: false,</div><div class="line">      &quot;target&quot;: &quot;&quot;,</div><div class="line">      &quot;reply_targets&quot;: []</div><div class="line">    }</div><div class="line">  ]</div><div class="line">}</div></div><!-- fragment --><p>┌─────────────┐ ┌───────────────┐ ┌─────────┐ ┌────────┐ │ server-tcp ├─┐ ┌─┤ jsonrpc-queue ├──┤ service ├───┤ domain │ └─────────────┘ │ ┌───────────────┐ │ └───────────────┘ └─────────┘ └────────┘ ├─┤ jsonrpc-repli ├─┤ ┌─────────────┐ │ └───────────────┘ │ ┌────────────┐ │ server-udp ├─┘ └─┤ client-tcp │ └─────────────┘ └────────────┘</p>
-<h2>JSONRPC-HUB</h2>
+<div class="fragment"><div class="line">{</div>
+<div class="line">  &quot;jsonrpc-repli&quot;: [</div>
+<div class="line">    {</div>
+<div class="line">      &quot;name&quot;: &quot;jsonrpc-repli1&quot;,</div>
+<div class="line">      &quot;enabled&quot;: true,</div>
+<div class="line">      &quot;suspend&quot;: false,</div>
+<div class="line">      &quot;target&quot;: &quot;&quot;,</div>
+<div class="line">      &quot;reply_targets&quot;: []</div>
+<div class="line">    }</div>
+<div class="line">  ]</div>
+<div class="line">}</div>
+</div><!-- fragment --><p>┌─────────────┐ ┌───────────────┐ ┌─────────┐ ┌────────┐ │ server-tcp ├─┐ ┌─┤ jsonrpc-queue ├──┤ service ├───┤ domain │ └─────────────┘ │ ┌───────────────┐ │ └───────────────┘ └─────────┘ └────────┘ ├─┤ jsonrpc-repli ├─┤ <br  />
+ ┌─────────────┐ │ └───────────────┘ │ ┌────────────┐ │ server-udp ├─┘ └─┤ client-tcp │ └─────────────┘ └────────────┘</p>
+<h2><a class="anchor" id="autotoc_md5"></a>
+JSONRPC-HUB</h2>
 <p>Дублирует входящие запросы и уведомления по всем зарегистрированным объектам (которые вызвали reg_io)</p>
 <p>{ "jsonrpc-hub": [ { "name": "jsonrpc-hub1", "enabled": true, "suspend": false, "startup_priority": 0, "shutdown_priority": 0, "target": "" } ] }</p>
-<div class="fragment"><div class="line">┌─────────────┐</div><div class="line">│ server-tcp  ├─┐</div><div class="line">└─────────────┘ │     ┌─────────────┐    ┌──────────┐   ┌────────┐</div><div class="line">                ├─────┤ jsonrpc-hub ├────┤ service  ├───┤ domain │</div><div class="line">┌─────────────┐ │     └──────┬──────┘    └──────────┘   └────────┘</div><div class="line">│ server-udp  ├─┘            │</div><div class="line">└─────────────┘              │</div><div class="line">                             │</div><div class="line">┌─────────────┐              │</div><div class="line">│ server-tcp  ├──────────────┘</div><div class="line">└─────────────┘</div><div class="line">      ^</div><div class="line">      |</div><div class="line">   telnet</div></div><!-- fragment --><h2>JSONRPC-BATCH</h2>
+<div class="fragment"><div class="line">┌─────────────┐</div>
+<div class="line">│ server-tcp  ├─┐</div>
+<div class="line">└─────────────┘ │     ┌─────────────┐    ┌──────────┐   ┌────────┐</div>
+<div class="line">                ├─────┤ jsonrpc-hub ├────┤ service  ├───┤ domain │</div>
+<div class="line">┌─────────────┐ │     └──────┬──────┘    └──────────┘   └────────┘</div>
+<div class="line">│ server-udp  ├─┘            │</div>
+<div class="line">└─────────────┘              │</div>
+<div class="line">                             │</div>
+<div class="line">┌─────────────┐              │</div>
+<div class="line">│ server-tcp  ├──────────────┘</div>
+<div class="line">└─────────────┘</div>
+<div class="line">      ^</div>
+<div class="line">      |</div>
+<div class="line">   telnet</div>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md6"></a>
+JSONRPC-BATCH</h2>
 <p>Включает поддержку JSONRPC пакетов (batch <a href="https://www.jsonrpc.org/specification#batch">https://www.jsonrpc.org/specification#batch</a>). Этот объект должен быть настроен первым в цепочке обработке jsonrpc (другие компоненты batch не поддерживают). Этот объект разбивает входящий массив на JSONRPC сообщения и отправляет их в "target", далее запросы могут обрабатываться как синхронно так и асинхронно, в любом порядке. Как только все ответы на запросы из массива будут собраны, будет сформирован и отправлен массив ответов.</p>
-<div class="fragment"><div class="line">{</div><div class="line">  &quot;jsonrpc-batch&quot;: [</div><div class="line">    {</div><div class="line">      &quot;name&quot;: &quot;jsonrpc-batch1&quot;,</div><div class="line">      &quot;enabled&quot;: true,</div><div class="line">      &quot;suspend&quot;: false,</div><div class="line">      &quot;target&quot;: &quot;&quot;</div><div class="line">    }</div><div class="line">  ]</div><div class="line">}</div></div><!-- fragment --><h2>JSONRPC-BACKLOG</h2>
+<div class="fragment"><div class="line">{</div>
+<div class="line">  &quot;jsonrpc-batch&quot;: [</div>
+<div class="line">    {</div>
+<div class="line">      &quot;name&quot;: &quot;jsonrpc-batch1&quot;,</div>
+<div class="line">      &quot;enabled&quot;: true,</div>
+<div class="line">      &quot;suspend&quot;: false,</div>
+<div class="line">      &quot;target&quot;: &quot;&quot;</div>
+<div class="line">    }</div>
+<div class="line">  ]</div>
+<div class="line">}</div>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md7"></a>
+JSONRPC-BACKLOG</h2>
 <p>Записывает входящий поток в файл или лог. Запись в файл ("path") производиться для последующего восстановления с помощью объектов которые умеют это делать (см. документацию этих объектов). Если вам нужен дамп потока, то пишите его в лог "log", который настройте в модуле logger (там можно настроить формат вывода и режим ротации). Сам по себе <b>jsonrpc-backlog</b> восстановится при запуске не может, нужен специальный запрос от прикладного объекта, который может с этим работать. После этого запроса, все записанные сообщения отправляются "restore_trace". Как правильно настроить этот объект для восстановления прикладного объекта из бэклога читайте в документации этого объекта.</p>
 <p>{ "jsonrpc-backlog": [ { "name": "jsonrpc-backlog1", "enabled": true, "suspend": false, "target": "", /* Цель для восстановления */ "restore_target": "", /* Путь файла backlog для записи jsonrpc-сообщений */ "path": "", /* Интенсивность логирования восстановления (каждые restore_trace записей, 0 - без логирования, 1 - на каждую запись, 2 - на каждую вторую запись и т.д. ) */ "restore_trace": 0, /* Имя лога (не файла) для записи jsonrpc-сообщений */ "log": "" } ] }</p>
-<h2>JSONRPC-STATISTICS</h2>
+<h2><a class="anchor" id="autotoc_md8"></a>
+JSONRPC-STATISTICS</h2>
 <p>{ "jsonrpc-statistics": [ { "name": "jsonrpc-statistics1", "enabled": true, "suspend": false, "statistics": { "disabled": true, "target": "", "time_suffix": ".time", "read_size_suffix": ".rsize", "write_size_suffix": ".wsize", "request_prefix": "req:", "notify_prefix": "ntf:", "other_time": "other.time", "other_read_size": "other.rsize", "other_write_size": "other.wsize" }, "target": "", "enable_write_size": true, "enable_error_stat": true } ] } </p>
-</div></div><!-- contents -->
+</div></div><!-- PageDoc -->
+</div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Создано системой &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.8.13
+</a> 1.8.17
 </small></address>
 </body>
 </html>
