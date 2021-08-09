@@ -43,6 +43,7 @@ wci_targets(wfc_jsonrpc)
 enable_stat(wfc_jsonrpc)
 
 target_include_directories(wfc_jsonrpc PUBLIC ${wfc_jsonrpc_SOURCE_DIR})
+target_include_directories(wfc_jsonrpc PUBLIC ${wfc_jsonrpc_SOURCE_DIR}/package/backlog)
 target_compile_definitions(wfc_jsonrpc PRIVATE -DBOOST_ASIO_NO_DEPRECATED)
 
 target_link_libraries(wfc_jsonrpc PUBLIC matchmaker wfc )
