@@ -1,6 +1,7 @@
 
 #include "object_match.hpp"
 #include "builder.hpp"
+#include <iostream>
 
 namespace wfc{ namespace jsonrpc{
 
@@ -29,7 +30,14 @@ bool object_match::configure(const char* beg, const char* end, wjson::json_error
     const char* beg_value = p.second.first;
 
     auto name = _builder->build_name();
-    if ( name==nullptr || err) return false;
+    if ( name==nullptr ) 
+    {
+      std::cerr << "object_match::match: Name is null!" << std::endl;
+      return this->create_error(beg, end, err);
+    }
+    
+    if ( err )
+      return false;
 
     if ( !name->configure(beg_name, end, err) )
       return false;
@@ -56,7 +64,10 @@ bool object_match::match(const char* beg, const char* end, wjson::json_error& er
     return true;
 
   if (!wjson::parser::is_object(beg,end))
-    return false;
+  {
+    std::cerr << "object_match::match: Object required!" << std::endl;
+    return this->create_error(beg, end, err);
+  }
 
   member_list_t member_list;
   object_json::serializer()(member_list, beg, end, &err);

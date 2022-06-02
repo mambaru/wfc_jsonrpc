@@ -1,6 +1,4 @@
-unusedStructMember:
-syntaxError:
+unknownMacro:
 unusedFunction:
-missingInclude:./package/jsonrpc_package.cpp:10
-unmatchedSuppression:./package/jsonrpc_package.cpp:10
-
+missingInclude:./package/jsonrpc_package.cpp:2
+unmatchedSuppression:./package/jsonrpc_package.cpp:2

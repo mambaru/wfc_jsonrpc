@@ -1,5 +1,6 @@
 
 #include "regex_match.hpp"
+#include <iostream>
 
 namespace wfc{ namespace jsonrpc{
 
@@ -10,27 +11,37 @@ try
   _reg.assign(_str);
   return !err;
 }
+catch(const std::exception& e)
+{
+  std::cerr << "regex_match::configure: " << e.what() << std::endl;
+  return this->create_error(beg, end, err);
+}
 catch(...)
 {
-  return false;
+  std::cerr << "regex_match::configure: Unknown error" << std::endl;
+  return this->create_error(beg, end, err);
 }
 
 bool regex_match::match(const char* beg, const char* end, wjson::json_error& err)
 {
   const char* send = wjson::parser::parse_value(beg, end, &err);
   if (err) return false;
+
   if ( wjson::parser::is_string(beg, end) )
   {
     std::string val;
     wjson::string<>::serializer()(val, beg, end, &err);
     if (err) return false;
-    return boost::regex_match(val, _reg );
+    if ( !boost::regex_match(val, _reg ) )
+      return false;
   }
   else
   {
     // на сыром json
-    return boost::regex_match(beg, send, _reg );
+    if ( !boost::regex_match(beg, send, _reg ) )
+      return false;
   }
+  return true;
 }
 
 }}

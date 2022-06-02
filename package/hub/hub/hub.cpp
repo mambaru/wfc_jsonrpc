@@ -18,14 +18,14 @@ struct incoming_json
 {
   typedef incoming::pair_type pair_type;
   typedef ::wjson::iterator_pair<pair_type> pair_json;
-  JSON_NAME(version)
+  JSON_NAME(jsonrpc)
   JSON_NAME(method)
   JSON_NAME(params)
 
   typedef ::wjson::object<
     incoming, 
     json::member_list<
-      json::member<n_version, incoming, char[4], &incoming::version >,
+      json::member<n_jsonrpc, incoming, char[4], &incoming::version >,
       json::member<n_method, incoming, pair_type, &incoming::method, pair_json>,
       json::member<n_params, incoming, pair_type, &incoming::params, pair_json>
     >

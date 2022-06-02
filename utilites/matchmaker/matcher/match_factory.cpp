@@ -28,7 +28,8 @@ std::shared_ptr<imatcher> match_factory::create_name()
   {
     return std::make_shared<regex_match>();
   }
-  return nullptr;
+  
+  return std::make_shared<full_match>();
 }
 
 std::shared_ptr<imatcher> match_factory::create_value()
@@ -47,7 +48,8 @@ std::shared_ptr<imatcher> match_factory::create_value()
   {
     return std::make_shared<regex_match>();
   }
-  return nullptr;
+  
+  return std::make_shared<full_match>();
 }
 
 }}

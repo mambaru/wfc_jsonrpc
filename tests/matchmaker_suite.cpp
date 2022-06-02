@@ -54,6 +54,7 @@ void match(T& t, int nconfig, const std::string& json, const std::string& fl)
     << FAS_FL << std::endl << " from:" << fl;
   t << is_true<assert>(res) << " reconfigure for "<< configs[nconfig] << FAS_FL;
   t << stop;
+  err.reset();
   bool match_result = mm->match( json, err );
   t << is_false<assert>(err) << wfc::json::strerror::message_trace(err, json.begin(), json.end() ) 
     << FAS_FL<< std::endl << " from:" << fl;
@@ -91,12 +92,12 @@ UNIT(match0, "")
   match<false, match_mode::RegexMatchValue>(t, 1, "'hello'"_json, FAS_FLS );
   match<true, match_mode::RegexMatchValue>(t, 1, "'hell'"_json, FAS_FLS );
 
-/*
+
   match<true,  match_mode::RegexMatchValue>(t, 2, "'hello'"_json, FAS_FLS );
   match<false, match_mode::RegexMatchValue>(t, 2, "'hell'"_json, FAS_FLS );
   match<false, match_mode::RegexMatchValue>(t, 3, "'hello'"_json, FAS_FLS );
   match<true,  match_mode::RegexMatchValue>(t, 3, "'hell'"_json, FAS_FLS );
-*/
+
 
   match<true,  match_mode::RegexMatchValue>(t, 4, "'hello'"_json, FAS_FLS );
   match<false, match_mode::RegexMatchValue>(t, 4, "'hell'"_json, FAS_FLS );
