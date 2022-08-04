@@ -31,7 +31,7 @@ void repli::perform_incoming(incoming_holder holder, io_id_t io_id, outgoing_han
       if ( holder.is_notify() || _notifier )
         r.perform_incoming( std::move(req), this->get_id(), nullptr);
       else
-        r.perform_incoming( std::move(req), this->get_id(), [](outgoing_holder){ });
+        r.perform_incoming( std::move(req), this->get_id(), [](outgoing_holder) noexcept{ });
     }
   }
   domain_proxy::perform_incoming( std::move(holder), io_id, handler );
@@ -49,7 +49,7 @@ void repli::perform_outgoing(outgoing_holder holder, io_id_t io_id)
       else
       {
         auto req = holder.clone(1);
-        req.result_handler([](incoming_holder){});
+        req.result_handler([](incoming_holder) noexcept {});
         r.perform_outgoing( std::move(req), this->get_id() );
       }
     }
