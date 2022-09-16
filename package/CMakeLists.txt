@@ -15,10 +15,6 @@ SET(
   repli/repli/repli_multiton.cpp
   repli/repli/repli.cpp
 
-  batch/batch_module.cpp
-  batch/batch/batch_multiton.cpp
-  batch/batch/batch.cpp
-
   hub/hub_module.cpp
   hub/hub/hub_multiton.cpp
   hub/hub/hub.cpp
@@ -26,6 +22,14 @@ SET(
   backlog/backlog_module.cpp
   backlog/backlog/backlog_multiton.cpp
   backlog/backlog/backlog.cpp
+
+  batch/batch_module.cpp
+  batch/batch/batch_multiton.cpp
+  batch/batch/batch.cpp
+
+  extract/extract_module.cpp
+  extract/extract/extract_multiton.cpp
+  extract/extract/extract.cpp
 )
 
 if ( WFC_ENABLE_STAT)
