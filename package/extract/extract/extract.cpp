@@ -1,6 +1,7 @@
 #include "extract.hpp"
 #include <wfc/logger.hpp>
 #include <wfc/asio.hpp>
+#include <iostream>
 
 namespace wfc{ namespace jsonrpc{ 
 
@@ -101,7 +102,7 @@ bool extract::parse_once_(const_iterator beg, const_iterator end, const_iterator
   {
     JSONRPC_LOG_WARNING("EXTRACT parser error:" << wjson::strerror::message_trace(je, start, end) );
   }
-  return je;
+  return !je;
 }
 
 }}
