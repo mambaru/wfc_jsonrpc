@@ -67,14 +67,18 @@ void statistics::perform_incoming(incoming_holder holder, io_id_t io_id, outgoin
       {
         if ( auto stat = wstat.lock() )
         {
-          auto oholder = outholder.clone();
-          if ( auto d = oholder.detach() )
+          if ( outholder.is_result() )
           {
-            if ( enable_write_size )
-              meter->set_write_size( static_cast<wrtstat::value_type>( d->size() ) );
-            if ( enable_error_stat )
-              static_error_meter( method, std::move(d), stat);
+            auto oholder = outholder.clone();
+            if ( auto d = oholder.detach() )
+            {
+              if ( enable_write_size )
+                meter->set_write_size( static_cast<wrtstat::value_type>( d->size() ) );
+              if ( enable_error_stat )
+                static_error_meter( method, std::move(d), stat);
+            }
           }
+          // else: TODO: статистику для встречных вызовов
         }
         handler( std::move(outholder) );
       }
