@@ -38,6 +38,11 @@ struct incoming_json
 
 }
 
+void hub::start()
+{
+  _counter = 0;
+}
+
 void hub::reg_io(io_id_t io_id, std::weak_ptr<iinterface> itf) 
 {
   std::lock_guard<mutex_type> lk(_mutex);
@@ -60,7 +65,7 @@ void hub::perform_outgoing(outgoing_holder holder, io_id_t io_id)
 {
   if ( holder.is_request() || holder.is_notify() )
   {
-    outgoing_holder oholder = holder.clone();
+    outgoing_holder oholder = holder.clone(_counter);
     auto d = oholder.detach();
     incoming_holder iholder( std::move(d) );
     iholder.parse(nullptr);
@@ -103,10 +108,7 @@ void hub::perform_incoming_(const incoming_holder& holder, io_id_t io_id)
         if ( auto c = wc.lock() )
         {
           auto dd = std::make_unique<data_type>(d);
-          c->perform_io( std::move(dd), this->get_id(), [](data_ptr d2)
-          {
-            JSONRPC_LOG_WARNING("HUB prohibited message: [" << d2 << "]")
-          });
+          c->perform_io( std::move(dd), this->get_id(), [](data_ptr) noexcept {});
         }
       }
     }

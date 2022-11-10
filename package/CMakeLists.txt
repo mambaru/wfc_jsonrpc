@@ -30,6 +30,10 @@ SET(
   extract/extract_module.cpp
   extract/extract/extract_multiton.cpp
   extract/extract/extract.cpp
+
+  stub/stub_module.cpp
+  stub/stub/stub_multiton.cpp
+  stub/stub/stub.cpp
 )
 
 if ( WFC_ENABLE_STAT)

@@ -9,6 +9,7 @@
 #include "backlog/backlog_module.hpp"
 #include "batch/batch_module.hpp"
 #include "extract/extract_module.hpp"
+#include "stub/stub_module.hpp"
 #include "statistics/statistics_module.hpp"
 #include <wfc/module/module_list.hpp>
 
@@ -20,6 +21,7 @@ class jsonrpc_package::impl: public ::wfc::module_list<
   jsonrpc::queue_module,
   jsonrpc::repli_module,
   jsonrpc::hub_module,
+  jsonrpc::stub_module,
   jsonrpc::batch_module,
   jsonrpc::extract_module,
   jsonrpc::backlog_module

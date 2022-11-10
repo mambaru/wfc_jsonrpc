@@ -69,7 +69,10 @@ void statistics::perform_incoming(incoming_holder holder, io_id_t io_id, outgoin
         {
           if ( outholder.is_result() )
           {
-            auto oholder = outholder.clone();
+            auto call_id = outholder.call_id();
+            // call_id передается по ссылке для инкремента id запросов
+            // для result без изменений
+            auto oholder = outholder.clone(call_id);
             if ( auto d = oholder.detach() )
             {
               if ( enable_write_size )

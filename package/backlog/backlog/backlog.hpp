@@ -15,8 +15,10 @@ class backlog
   : public ::wfc::jsonrpc::domain_proxy<backlog_config, ::wfc::nostat>
 {
 public:
+  backlog();
   virtual void configure() override;
   virtual void initialize() override;
+  virtual void start() override;
 // ijsonrpc
   virtual void perform_incoming(incoming_holder, io_id_t, outgoing_handler_t handler) override;
   virtual void perform_outgoing(outgoing_holder, io_id_t) override;
@@ -38,6 +40,7 @@ private:
   bool _lock_flag = false;
   std::ofstream _filelog;
   std::stringstream _ss;
+  std::atomic_int _counter;
 };
 
 }}

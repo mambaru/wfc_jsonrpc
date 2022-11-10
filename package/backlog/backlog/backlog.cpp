@@ -44,6 +44,11 @@ namespace
 
 }
 
+backlog::backlog()
+  : _counter(0)
+{
+}
+
 void backlog::configure()
 {
   domain_proxy::configure();
@@ -57,6 +62,13 @@ void backlog::initialize()
   _filelog.open(this->options().path, std::ofstream::out | std::ofstream::app);
 }
 
+void backlog::start()
+{
+  domain_proxy::start();
+  _counter = 0;
+}
+
+
 void backlog::perform_incoming(incoming_holder holder, io_id_t io_id, outgoing_handler_t handler)
 {
   if ( holder.is_request() || holder.is_notify() )
@@ -68,7 +80,7 @@ void backlog::perform_outgoing(outgoing_holder holder, io_id_t io_id)
 {
   if ( holder.is_request() || holder.is_notify() )
   {
-    outgoing_holder oholder = holder.clone();
+    outgoing_holder oholder = holder.clone(_counter);
     incoming_holder iholder( oholder.detach() );
     iholder.parse(nullptr);
     this->write_incoming_( iholder );
