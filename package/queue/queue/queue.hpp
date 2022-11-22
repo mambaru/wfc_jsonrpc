@@ -32,7 +32,6 @@ private:
   outgoing_handler_t make_outgoing_handler_(outgoing_handler_t handler);
   void drop_handler_(std::shared_ptr<incoming_holder> pholder, outgoing_handler_t handler);
 private:
-  typedef std::mutex mutex_type;
   workflow_ptr _callback_workflow;
 };
 
