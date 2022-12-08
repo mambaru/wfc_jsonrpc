@@ -159,17 +159,18 @@ void stub::reg_io( io_id_t io_id, std::weak_ptr<iinterface> itf)
     super::reg_io(io_id, itf);
   else
   {
-    std::lock_guard<mutex_type> lk(_mutex);
     auto handler  = std::make_shared<stab_handler>(itf, _conf);
-    _handler_map[io_id] = handler;
     super::reg_io(io_id, handler);
+    std::lock_guard<mutex_type> lk(_mutex);
+    _handler_map[io_id] = handler;
   }
 }
 
 void stub::unreg_io(io_id_t io_id)
 {
-  _handler_map.erase(io_id);
   super::unreg_io(io_id);
+  std::lock_guard<mutex_type> lk(_mutex);
+  _handler_map.erase(io_id);
 }
 
 void stub::start()
