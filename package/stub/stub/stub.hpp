@@ -31,7 +31,7 @@ public:
 
 private:
   typedef std::vector< target_adapter > target_list;
-  typedef rwlock<std::mutex> mutex_type;
+  typedef std::mutex mutex_type;
   target_list _targets;
   mutex_type _mutex;
   stub_config _conf;
