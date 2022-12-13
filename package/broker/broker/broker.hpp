@@ -41,13 +41,13 @@ private:
     std::string rule_log;
   };
 
-  typedef std::list<target_adapter> target_list;
+  typedef std::list<target_adapter> targets_list_t;
 
   typedef std::set<std::string> reject_list;
   typedef rwlock<std::recursive_mutex> mutex_type;
   typedef std::vector<rule_target> rule_list;
 
-  target_list  _targets;
+  targets_list_t  _targets;
   reject_list  _reject;
   rule_list    _rules;
 

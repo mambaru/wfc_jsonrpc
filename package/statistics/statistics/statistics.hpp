@@ -36,7 +36,8 @@ private:
   meter_map _req_meters;
   meter_map _ntf_meters;
   composite_meter  _other;
-  std::mutex _mutex;
+  typedef std::recursive_mutex mutex_type;
+  mutex_type _mutex;
   std::shared_ptr<outgoing_statistics> _outgoing_statistics;
 };
 

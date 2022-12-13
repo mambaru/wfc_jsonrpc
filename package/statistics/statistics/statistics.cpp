@@ -7,14 +7,14 @@ namespace wfc{ namespace jsonrpc{
 
 void statistics::configure()
 {
-  std::lock_guard<std::mutex> lk(_mutex);
+  std::lock_guard<mutex_type> lk(_mutex);
   _enable_write_size = this->options().enable_write_size;
   _enable_error_stat = this->options().enable_error_stat;
 }
 
 void statistics::reconfigure()
 {
-  std::lock_guard<std::mutex> lk(_mutex);
+  std::lock_guard<mutex_type> lk(_mutex);
   _enable_write_size = this->options().enable_write_size;
   _enable_error_stat = this->options().enable_error_stat;
   _req_meters.clear();
@@ -107,7 +107,7 @@ statistics::meter_ptr statistics::request_meter_(std::string meter_name, size_t 
   auto stat = this->get_statistics();
   if ( stat == nullptr ) return nullptr;
 
-  std::lock_guard<std::mutex> lk(_mutex);
+  std::lock_guard<mutex_type> lk(_mutex);
   auto itr = _req_meters.find(meter_name);
   if (itr == _req_meters.end() )
   {
@@ -134,7 +134,7 @@ statistics::meter_ptr statistics::notify_meter_(std::string meter_name, size_t s
   if ( stat == nullptr ) return nullptr;
 
   auto opt = this->statistics_options();
-  std::lock_guard<std::mutex> lk(_mutex);
+  std::lock_guard<mutex_type> lk(_mutex);
   auto itr = _ntf_meters.find(meter_name);
   if (itr == _ntf_meters.end() )
   {
@@ -160,7 +160,7 @@ statistics::meter_ptr statistics::other_meter_(size_t size)
   if ( stat == nullptr ) return nullptr;
 
   auto opt = this->statistics_options();
-  std::lock_guard<std::mutex> lk(_mutex);
+  std::lock_guard<mutex_type> lk(_mutex);
   if ( _other.size() == 0 )
   {
     _other = stat->create_composite_meter(

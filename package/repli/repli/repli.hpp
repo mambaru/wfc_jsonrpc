@@ -27,9 +27,9 @@ public:
   virtual void perform_outgoing(outgoing_holder, io_id_t) override;
 
 private:
-  typedef std::vector< target_adapter > target_list;
-  typedef rwlock<std::mutex> mutex_type;
-  target_list _targets;
+  typedef std::vector< target_adapter > targets_list_t;
+  typedef rwlock<std::recursive_mutex> mutex_type;
+  targets_list_t _targets;
   mutex_type _mutex;
   std::atomic_int _counter;
 };

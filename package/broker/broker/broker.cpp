@@ -75,7 +75,7 @@ void broker::start()
 
 void broker::restart()
 {
-  target_list  targets;
+  targets_list_t  targets;
   reject_list  reject;
   rule_list    rules;
 
@@ -113,11 +113,13 @@ void broker::restart()
       {
         if ( _reconf_flag )
         {
-          COMMON_LOG_ERROR( "jsonrpc-broker configuration error: " <<  json::strerror::message_trace(err, r.params->begin(), r.params->end()) )
+          COMMON_LOG_ERROR( "jsonrpc-broker configuration error: "
+          <<  json::strerror::message_trace(err, r.params->begin(), r.params->end()) )
         }
         else
         {
-          COMMON_LOG_FATAL( "jsonrpc-broker configuration error: " <<  json::strerror::message_trace(err, r.params->begin(), r.params->end()) )
+          COMMON_LOG_FATAL( "jsonrpc-broker configuration error: "
+          <<  json::strerror::message_trace(err, r.params->begin(), r.params->end()) )
         }
         return;
       }
@@ -136,7 +138,11 @@ void broker::restart()
 void broker::reg_io(io_id_t io_id, std::weak_ptr<iinterface> itf)
 {
   domain_proxy::reg_io(io_id, itf);
-  read_lock<mutex_type> lk(_mutex);
+  targets_list_t tl;
+  {
+    read_lock<mutex_type> lk(_mutex);
+    tl = _targets;
+  }
   for (auto& t : _targets )
   {
     t.reg_io(io_id, itf);
@@ -147,8 +153,12 @@ void broker::unreg_io(io_id_t io_id)
 {
   domain_proxy::unreg_io(io_id);
 
-  read_lock<mutex_type> lk(_mutex);
-  for (auto& t : _targets )
+  targets_list_t tl;
+  {
+    read_lock<mutex_type> lk(_mutex);
+    tl = _targets;
+  }
+  for (auto& t : tl )
   {
     t.unreg_io(io_id);
   }
@@ -169,45 +179,64 @@ void broker::perform_incoming(incoming_holder holder, io_id_t io_id, outgoing_ha
     return;
   }
 
-  read_lock<mutex_type> lk(_mutex);
-  if ( !_reject.empty() )
+  bool error = false;
   {
-    if ( _reject_all || _reject.count( holder.method() ) != 0 )
+    read_lock<mutex_type> lk(_mutex);
+    if ( !_reject.empty() )
     {
-      BROKER_LOG(_reject_log, holder.str())
-      this->send_error< wjrpc::procedure_not_found >(std::move(holder), std::move(handler));
-      return;
+      if ( _reject_all || _reject.count( holder.method() ) != 0 )
+      {
+        error = true;
+      }
     }
   }
 
-  for (const rule_target& r: _rules)
+  if ( error )
   {
-    bool all_methods = r.methods.empty() || r.methods.count("*")!=0;
-    if ( 0 != r.methods.count(holder.method()) || all_methods )
+    BROKER_LOG(_reject_log, holder.str())
+    this->send_error< wjrpc::procedure_not_found >(std::move(holder), std::move(handler));
+    return;
+  }
+
+  std::shared_ptr<target_adapter> ptarget;
+  {
+    for (const rule_target& r: _rules)
     {
-      bool match = true;
-      if ( r.matcher!=nullptr)
+      bool all_methods = r.methods.empty() || r.methods.count("*")!=0;
+      if ( 0 != r.methods.count(holder.method()) || all_methods )
       {
-        json::json_error err;
-        const char *beg = &(*holder.get().params.first);
-        const char *end = &(*holder.get().params.second);
-        match = r.matcher->match(beg, end, err);
-        if ( err )
+        bool match = true;
+        if ( r.matcher!=nullptr)
         {
-          match = false;
-          JSONRPC_LOG_ERROR("broker match error: " << json::strerror::message_trace(err, beg, end) );
+          json::json_error err;
+          const char *beg = &(*holder.get().params.first);
+          const char *end = &(*holder.get().params.second);
+          match = r.matcher->match(beg, end, err);
+          if ( err )
+          {
+            match = false;
+            JSONRPC_LOG_ERROR("broker match error: " << json::strerror::message_trace(err, beg, end) );
+          }
+        }
+        if (match)
+        {
+          BROKER_LOG(r.rule_log, holder.str())
+          ptarget = std::make_shared<target_adapter>(r.target);
+          break;
         }
       }
-      if (match)
-      {
-        BROKER_LOG(r.rule_log, holder.str())
-        r.target.perform_incoming(std::move(holder), io_id, std::move(handler) );
-        return;
-      }
     }
   }
 
-  BROKER_LOG(_target_log, holder.str())
+  if ( ptarget != nullptr )
+  {
+    ptarget->perform_incoming(std::move(holder), io_id, std::move(handler) );
+    return;
+  }
+  else
+  {
+    BROKER_LOG(_target_log, holder.str())
+  }
   domain_proxy::perform_incoming(std::move(holder), io_id, std::move(handler) );
 }
 

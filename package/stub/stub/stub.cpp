@@ -13,7 +13,7 @@ namespace wfc{ namespace jsonrpc{
 class stub::stab_handler
   : public consumer_adapter
 {
-  typedef std::mutex mutex_type;
+  typedef std::recursive_mutex mutex_type;
 
 public:
   explicit stab_handler(consumer_adapter::itf_ptr_t itf, const stub_config& opt)
@@ -188,14 +188,15 @@ void stub::perform_incoming(incoming_holder holder, io_id_t io_id, outgoing_hand
 {
   std::shared_ptr<stab_handler> pstub;
   {
-    std::lock_guard<mutex_type> lk(_mutex);
+    read_lock<mutex_type> lk(_mutex);
     auto itr = _handler_map.find(io_id);
     if ( itr != _handler_map.end() )
       pstub = itr->second;
-    else
-    {
-      DOMAIN_LOG_WARNING("stub::perform_incoming: requried call stub::reg_io")
-    }
+  }
+
+  if (pstub == nullptr)
+  {
+    DOMAIN_LOG_WARNING("stub::perform_incoming: requried call stub::reg_io")
   }
 
   if ( this->suspended() || pstub==nullptr)
@@ -215,18 +216,18 @@ void stub::perform_outgoing(outgoing_holder holder, io_id_t io_id)
   {
     std::shared_ptr<stab_handler> pstub;
     {
-      std::lock_guard<mutex_type> lk(_mutex);
+      read_lock<mutex_type> lk(_mutex);
       auto itr = _handler_map.find(io_id);
       if ( itr != _handler_map.end() )
         pstub = itr->second;
-      else
-      {
-        DOMAIN_LOG_WARNING("stub::perform_incoming: requried call stub::reg_io")
-      }
     }
 
     if ( pstub!=nullptr)
       holder = pstub->make( std::move(holder));
+    else
+    {
+      DOMAIN_LOG_WARNING("stub::perform_incoming: requried call stub::reg_io")
+    }
   }
   domain_proxy::perform_outgoing( std::move(holder), io_id);
 }

@@ -34,8 +34,12 @@ void repli::perform_incoming(incoming_holder holder, io_id_t io_id, outgoing_han
 
   auto repli_holder = holder.clone(_counter);
   domain_proxy::perform_incoming( std::move(holder), io_id, handler );
-  read_lock<mutex_type> lk(_mutex);
-  for ( auto& r : _targets )
+  targets_list_t tl;
+  {
+    read_lock<mutex_type> lk(_mutex);
+    tl = _targets;
+  }
+  for ( auto& r : tl )
   {
     incoming_holder req = repli_holder.clone(_counter);
     req.parse(nullptr);
@@ -54,8 +58,12 @@ void repli::perform_outgoing(outgoing_holder holder, io_id_t io_id)
   auto repli_holder = holder.clone(_counter);
   domain_proxy::perform_outgoing( std::move(holder), io_id );
 
-  read_lock<mutex_type> lk(_mutex);
-  for ( auto& r : _targets )
+  targets_list_t tl;
+  {
+    read_lock<mutex_type> lk(_mutex);
+    tl = _targets;
+  }
+  for ( auto& r : tl )
   {
     outgoing_holder outg = repli_holder.clone(_counter);
     if ( outg.is_request() )
