@@ -17,9 +17,9 @@ namespace
   class impl: public ::wfc::multiton<
     multiton_name,
     ::wfc::instance<backlog>,
-    backlog_config_json,
+    backlog_config_json/*,
     component_features::DisabledWorkflow
-    | component_features::DisabledPriority
+    | component_features::DisabledPriority*/
   >
   {
     virtual std::string interface_name() const override
