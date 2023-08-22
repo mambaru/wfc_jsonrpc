@@ -3,6 +3,7 @@
 #include <wfc/logger.hpp>
 #include <wfc/memory.hpp>
 #include <sstream>
+#include <thread>
 #include <boost/filesystem.hpp>
 #include <iostream>
 
@@ -193,6 +194,7 @@ void backlog::write_incoming_(const incoming_holder& holder)
   }
 }
 
+/*
 size_t backlog::apply_backlog_()
 {
   auto opt = this->options();
@@ -247,8 +249,79 @@ size_t backlog::apply_backlog_()
   filelog.close();
   return ready_count;
 }
+*/
 
 
+size_t backlog::apply_backlog_()
+{
+  auto opt = this->options();
+
+  if ( !boost::filesystem::exists(opt.path) )
+    return 0;
+
+  size_t ready_count = 0;
+  std::ifstream filelog(opt.path);
+
+  target_adapter next = this->get_adapter(opt.restore_target, true);
+  if ( !next )
+  {
+    COMMON_LOG_WARNING("JSON-RPC backlog '" << this->name() << "' is using main target. "
+      << "You may set another target with 'restore_target' property " )
+  }
+
+  auto limit = opt.restore_rate / 10;
+  size_t limit_count = 0;
+  while ( filelog )
+  {
+    std::string json;
+    auto start = std::chrono::steady_clock::now();
+    while ( std::getline(filelog, json) )
+    {
+      ++limit_count;
+
+      if ( this->global_stop_flag() )
+        return ready_count;
+
+      incoming_holder holder( json );
+      json::json_error er;
+      holder.parse(&er);
+      if ( !er )
+      {
+        if ( next )
+          next.perform_incoming( std::move(holder), this->get_id(), nullptr);
+        else
+          domain_proxy::perform_incoming( std::move(holder), this->get_id(), nullptr);
+        ++ready_count;
+      }
+      else
+      {
+        COMMON_LOG_ERROR("Restore jsonrpc::backlog JSON error: "
+                      << json::strerror::message_trace(er, json.begin(), json.end() )  )
+      }
+
+
+      if ( limit!=0 && limit_count == limit )
+      {
+        limit_count = 0;
+
+        auto finish = std::chrono::steady_clock::now();
+        time_t diff_ms = std::chrono::duration_cast<std::chrono::milliseconds>( finish - start ).count();
+        if ( diff_ms < 100 )
+        {
+          if ( opt.restore_trace )
+          {
+            COMMON_LOG_PROGRESS("JSON-RPC backlog restored " << ready_count << " records.   " )
+          }
+          std::this_thread::sleep_for( std::chrono::milliseconds(100 - diff_ms) );
+        }
+
+        start = finish;
+      }
+    }
+  }
+  filelog.close();
+  return ready_count;
+}
 
 bool backlog::lock()
 {

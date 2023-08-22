@@ -18,7 +18,8 @@ struct backlog_config
   std::string restore_target;
   std::string path;
   std::string log;
-  size_t restore_trace = 0;
+  bool restore_trace = true;
+  size_t restore_rate = 1000;
 };
 
 }}
