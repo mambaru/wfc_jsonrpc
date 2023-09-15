@@ -127,10 +127,6 @@ void backlog::start()
 {
   domain_proxy::start();
   _counter = 0;
-/*  if ( _client_mode )
-  {
-    this->get_target().reg_io( this->get_id(), this->get_object<iinterface>("backlog", this->name()) );
-  }*/
 }
 
 void backlog::reg_io( io_id_t io_id, std::weak_ptr<iinterface> itf)
@@ -157,13 +153,12 @@ void backlog::perform_incoming(incoming_holder holder, io_id_t io_id, outgoing_h
     if ( holder.is_request() || holder.is_notify() )
       this->write_incoming_( holder);
   }
-  domain_proxy::perform_incoming( std::move(holder), io_id, handler);
+  if ( !_client_mode || (_client_mode && !_active) )
+    domain_proxy::perform_incoming( std::move(holder), io_id, handler);
 }
 
 void backlog::perform_outgoing(outgoing_holder holder, io_id_t io_id)
 {
-  //COMMON_LOG_MESSAGE("JSON-RPC backlog::perform_outgoing " << io_id)
-
   if ( _active )
   {
     if ( holder.is_request() || holder.is_notify() )
@@ -175,7 +170,8 @@ void backlog::perform_outgoing(outgoing_holder holder, io_id_t io_id)
     }
   }
 
-  domain_proxy::perform_outgoing( std::move(holder), io_id);
+  if ( !_client_mode || (_client_mode && !_active) )
+    domain_proxy::perform_outgoing( std::move(holder), io_id);
 }
 
 void backlog::write_incoming_(const incoming_holder& holder)
@@ -359,7 +355,6 @@ size_t backlog::restore()
 void backlog::async_restore(std::function<void(size_t)> cb)
 {
   this->get_workflow()->safe_post(
-    /*std::chrono::seconds(10),*/
     _restore_owner.wrap([this, cb](){
       size_t count = this->restore();
       if ( cb != nullptr )
