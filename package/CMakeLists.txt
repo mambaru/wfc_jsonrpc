@@ -50,12 +50,10 @@ add_library(wfc_jsonrpc ${wfc_jsonrpc_source_list})
 wci_targets(wfc_jsonrpc)
 enable_stat(wfc_jsonrpc)
 
-target_include_directories(wfc_jsonrpc PUBLIC ${wfc_jsonrpc_SOURCE_DIR})
-target_include_directories(wfc_jsonrpc PUBLIC ${wfc_jsonrpc_SOURCE_DIR}/package/backlog)
+target_include_directories(wfc_jsonrpc PUBLIC $<BUILD_INTERFACE:${wfc_jsonrpc_SOURCE_DIR}>)
+target_include_directories(wfc_jsonrpc PUBLIC $<BUILD_INTERFACE:${wfc_jsonrpc_SOURCE_DIR}/package/backlog>)
 target_compile_definitions(wfc_jsonrpc PRIVATE -DBOOST_ASIO_NO_DEPRECATED)
 
-target_link_libraries(wfc_jsonrpc PUBLIC matchmaker wfc )
+target_link_libraries(wfc_jsonrpc PUBLIC $<BUILD_INTERFACE:matchmaker> wfc )
 
 build_info(TARGET wfc_jsonrpc PREFIX jsonrpc)
-
-install(TARGETS wfc_jsonrpc DESTINATION ${CMAKE_INSTALL_PREFIX})
