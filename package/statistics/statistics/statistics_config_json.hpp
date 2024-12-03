@@ -33,6 +33,7 @@ struct statistics_stat_json
   JSON_NAME(write_size_suffix)
   JSON_NAME(request_prefix)
   JSON_NAME(notify_prefix)
+  JSON_NAME(error_prefix)
 
   JSON_NAME(other_time)
   JSON_NAME(other_read_size)
@@ -46,6 +47,7 @@ struct statistics_stat_json
       json::member<n_write_size_suffix, statistics_stat, std::string, &statistics_stat::write_size_suffix>,
       json::member<n_request_prefix, statistics_stat, std::string, &statistics_stat::request_prefix>,
       json::member<n_notify_prefix, statistics_stat, std::string, &statistics_stat::notify_prefix>,
+      json::member<n_error_prefix, statistics_stat, std::string, &statistics_stat::error_prefix>,
       json::member<n_other_time, statistics_stat, std::string, &statistics_stat::other_time>,
       json::member<n_other_read_size, statistics_stat, std::string, &statistics_stat::other_read_size>,
       json::member<n_other_write_size, statistics_stat, std::string, &statistics_stat::other_write_size>

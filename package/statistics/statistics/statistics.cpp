@@ -30,13 +30,15 @@ static void static_error_meter(const std::string& method, statistics::data_ptr d
   error_json::serializer()(err, d->begin(), d->end(), &e);
   if ( !e && err.error!=nullptr )
   {
+    /*
     std::string message;
     wfc::jsonrpc::error_codes_json::serializer()( err.error->code, std::back_inserter(message) );
     if ( message.size() > 2 )
       message = message.substr(1, message.size()-2 );
     else
-      message="Unknown Error";
-    auto mproto = stat->create_value_meter(method + ":" + message);
+      message="Unknown Error";*/
+    // Убрать сообщение в иени, смотрим в лог
+    auto mproto = stat->create_value_meter(method /* + ":" + message*/);
     mproto.create( static_cast<wrtstat::value_type>(0), static_cast<wrtstat::size_type>(1) );
   }
 }
@@ -62,8 +64,9 @@ void statistics::perform_incoming(incoming_holder holder, io_id_t io_id, outgoin
   if ( enable_write_size || enable_error_stat)
   {
     wstat = this->get_statistics();
+    auto err_method = this->name() + this->statistics_options().error_prefix + method;
     domain_proxy::perform_incoming( std::move(holder), io_id,
-      [handler, meter, wstat, enable_write_size, enable_error_stat, method]( outgoing_holder outholder)
+      [handler, meter, wstat, enable_write_size, enable_error_stat, err_method]( outgoing_holder outholder)
       {
         if ( auto stat = wstat.lock() )
         {
@@ -78,7 +81,7 @@ void statistics::perform_incoming(incoming_holder holder, io_id_t io_id, outgoin
               if ( enable_write_size )
                 meter->set_write_size( static_cast<wrtstat::value_type>( d->size() ) );
               if ( enable_error_stat )
-                static_error_meter( method, std::move(d), stat);
+                static_error_meter( err_method, std::move(d), stat);
             }
           }
           // else: TODO: статистику для встречных вызовов
@@ -113,10 +116,10 @@ statistics::meter_ptr statistics::request_meter_(std::string meter_name, size_t 
   {
     auto opt = this->statistics_options();
     auto prototype = stat->create_composite_meter(
-      !opt.time_suffix.empty()       ?  opt.request_prefix + meter_name + opt.time_suffix : "",
-      !opt.read_size_suffix.empty()  ?  opt.request_prefix + meter_name + opt.read_size_suffix : "",
+      !opt.time_suffix.empty()       ?  this->name() + opt.request_prefix + meter_name + opt.time_suffix : "",
+      !opt.read_size_suffix.empty()  ?  this->name() + opt.request_prefix + meter_name + opt.read_size_suffix : "",
       !opt.write_size_suffix.empty()
-      && this->_enable_write_size    ?  opt.request_prefix + meter_name + opt.write_size_suffix : "",
+      && this->_enable_write_size    ?  this->name() + opt.request_prefix + meter_name + opt.write_size_suffix : "",
       true
     );
     itr = _req_meters.insert( std::make_pair(meter_name, prototype) ).first;
@@ -139,8 +142,8 @@ statistics::meter_ptr statistics::notify_meter_(std::string meter_name, size_t s
   if (itr == _ntf_meters.end() )
   {
     auto prototype = stat->create_composite_meter(
-      !opt.time_suffix.empty()       ?  opt.notify_prefix + meter_name + opt.time_suffix : "",
-      !opt.read_size_suffix.empty()  ?  opt.notify_prefix + meter_name + opt.read_size_suffix : "",
+      !opt.time_suffix.empty()       ?  this->name() + opt.notify_prefix + meter_name + opt.time_suffix : "",
+      !opt.read_size_suffix.empty()  ?  this->name() + opt.notify_prefix + meter_name + opt.read_size_suffix : "",
       "",
       true
     );
@@ -164,9 +167,9 @@ statistics::meter_ptr statistics::other_meter_(size_t size)
   if ( _other.size() == 0 )
   {
     _other = stat->create_composite_meter(
-      opt.other_time,
-      opt.other_read_size,
-      this->_enable_write_size ? opt.other_write_size : "",
+      this->name() + opt.other_time,
+      this->name() + opt.other_read_size,
+      this->_enable_write_size ? this->name() + opt.other_write_size : "",
       true
     );
   }
