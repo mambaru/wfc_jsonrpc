@@ -264,6 +264,12 @@ size_t backlog::apply_backlog_()
     COMMON_LOG_WARNING("JSON-RPC backlog '" << this->name() << "' is using main target. "
       << "You may set another target with 'restore_target' property " )
   }
+  else
+  {
+    auto bl = this->get_object<backlog_proxy>("backlog", this->name());
+    domain_proxy::reg_io(this->get_id(), bl);
+    next.reg_io(this->get_id(), bl);
+  }
 
   auto limit = opt.restore_rate / 10;
   size_t limit_count = 0;
@@ -283,10 +289,12 @@ size_t backlog::apply_backlog_()
       holder.parse(&er);
       if ( !er )
       {
+        auto stub_handler = [](outgoing_holder) noexcept {};
+
         if ( next )
-          next.perform_incoming( std::move(holder), this->get_id(), nullptr);
+          next.perform_incoming( std::move(holder), this->get_id(), stub_handler);
         else
-          domain_proxy::perform_incoming( std::move(holder), this->get_id(), nullptr);
+          domain_proxy::perform_incoming( std::move(holder), this->get_id(), stub_handler);
         ++ready_count;
       }
       else

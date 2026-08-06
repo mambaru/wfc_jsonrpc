@@ -15,6 +15,6 @@ wci_utils(matchmaker)
 
 get_boost(regex)
 
-target_link_libraries(matchmaker PRIVATE wjson Boost::regex)
-target_include_directories(matchmaker PUBLIC $<BUILD_INTERFACE:${wfc_jsonrpc_SOURCE_DIR}/utilites>)
+target_link_libraries(matchmaker PRIVATE wjson ${Boost_LIBRARIES})
+target_include_directories(matchmaker PUBLIC $<BUILD_INTERFACE:${wfc_jsonrpc_SOURCE_DIR}/utilites> $<BUILD_INTERFACE:${Boost_INCLUDE_DIR}>)
 set_target_properties(matchmaker PROPERTIES POSITION_INDEPENDENT_CODE ON)
