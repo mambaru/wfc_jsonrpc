@@ -28,10 +28,13 @@ std::shared_ptr<imatcher> builder::build_value_nv(const char* beg, const char* e
 
 std::shared_ptr<imatcher> builder::build_value_(const char* beg, const char* end, wjson::json_error& err, bool nv)
 {
-  beg = wjson::parser::parse_space(beg, end, &err);
-  if (err || beg==end) return nullptr;
-
   std::shared_ptr<imatcher> ptr;
+
+  beg = wjson::parser::parse_space(beg, end, &err);
+
+  if (err || beg==end)
+    return ptr;
+
   if ( wjson::parser::is_null(beg, end) )
   {
     ptr = std::make_shared<true_match>();

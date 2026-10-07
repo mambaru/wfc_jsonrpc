@@ -98,7 +98,7 @@ queue::outgoing_handler_t queue::make_outgoing_handler_(outgoing_handler_t handl
   if ( _callback_workflow == nullptr )
     return handler;
 
-  outgoing_handler_t fun = [handler, this](outgoing_holder holder)
+  return [handler, this](outgoing_holder holder)
   {
     if ( auto w = this->_callback_workflow )
     {
@@ -117,7 +117,6 @@ queue::outgoing_handler_t queue::make_outgoing_handler_(outgoing_handler_t handl
       handler( std::move( holder ) );
     }
   };
-  return fun;
 }
 
 void queue::drop_handler_(const std::shared_ptr<incoming_holder> pholder, outgoing_handler_t handler)

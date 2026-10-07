@@ -86,12 +86,13 @@ public:
       holder = holder.clone_request(_counter);
       holder.result_handler([](incoming_holder)noexcept{});
     }
+
     return holder;
   }
 
   stab_handler::incoming_holder make(incoming_holder holder, const outgoing_handler_t& handler)
   {
-    if (holder.ready())
+    if ( !holder.ready() )
       holder.parse(nullptr);
 
     if ( _opt.to_notify && holder.is_request() )
@@ -99,19 +100,25 @@ public:
       if ( _opt.mode !=stub_config::advance_response )
         handler( outgoing_holder(make_result_(holder.raw_id())));
       holder = holder.clone_notify();
+      holder.parse(nullptr);
     }
     else if ( _opt.to_request && holder.is_notify() )
     {
       holder = holder.clone_request(_counter);
+      holder.parse(nullptr);
     }
     else if ( (_opt.mode == stub_config::ignore_errors || _opt.mode == stub_config::fake_response) && holder.is_error())
     {
       holder = incoming_holder( make_result_(holder.raw_id()), holder.get_time_point() );
+      holder.parse(nullptr);
     }
     else if ( _opt.mode == stub_config::fake_response && holder.is_response() )
     {
       holder = incoming_holder( make_result_(holder.raw_id()), holder.get_time_point() );
     }
+
+    if ( !holder.ready() )
+      holder.parse(nullptr);
     return holder;
   }
 
