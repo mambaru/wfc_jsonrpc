@@ -4,7 +4,7 @@ project(wfc_jsonrpc VERSION "0.9.8")
 
 include(cmake/ci.cmake)
 
-wci_submodule(NAME wfc SUPERMODULE )
+wci_submodule(NAME wfc SUPERMODULE DIRECT)
 enable_stat()
 
 add_subdirectory(utilites)

@@ -8,6 +8,7 @@ add_executable(
 
 target_link_libraries(package_test PRIVATE wfc_jsonrpc fas::testing)
 add_dependencies(package_test matchmaker)
+update_ogenc(TARGETS package_test WARNINGS -Wnull-dereference OFF)
 wci_test(TARGET package_test COMMAND package_test)
 
 
